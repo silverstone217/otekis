@@ -72,7 +72,7 @@ const MainOrders = ({ myOrders, shopPreferences, shop }: MainOrdersProps) => {
         {/* top filter */}
         <div className="w-full grid grid-cols-2 gap-4 overflow-hidden items-center">
           {/* search Text */}
-          <div className="relative w-full h-12">
+          <div className="relative w-full ">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 z-10" />
 
             <input
@@ -81,7 +81,7 @@ const MainOrders = ({ myOrders, shopPreferences, shop }: MainOrdersProps) => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               className={`
-          w-full focus:outline-none focus:ring-0
+          w-full focus:outline-none focus:ring-0 py-2
           border outline-none pl-12 pr-2 outline-gray-500 h-full text-sm
           focus:border-gray-500 focus:outline-gray-500 focus:ring-gray-500
           
@@ -128,7 +128,7 @@ const MainOrders = ({ myOrders, shopPreferences, shop }: MainOrdersProps) => {
                 <SelectValue placeholder="Status de la commande" />
               </SelectTrigger>
               <SelectContent
-                className=" w-full outline-none focus:outline-none focus:ring-0 "
+                className=" w-full outline-none focus:outline-none focus:ring-0 p-3"
                 style={{
                   borderColor: shopPreferences.buttonColor,
                   outline: shopPreferences.buttonColor,

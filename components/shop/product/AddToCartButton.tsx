@@ -236,7 +236,7 @@ const AddToCartButton = ({
           <SheetDescription hidden>Ajouter dans le panier</SheetDescription>
         </SheetHeader>
 
-        <div className="w-full grid gap-4 py-4">
+        <div className="w-full grid gap-4 p-4">
           {/* name */}
           <h2 className="capitalize text-xl font-bold">{product.name}</h2>
 

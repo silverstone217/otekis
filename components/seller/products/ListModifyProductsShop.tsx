@@ -298,7 +298,7 @@ export const ListAddProductCard = ({
         isInShop && "ring-2 ring-primary/30"
       )}
     >
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 -mt-6">
         <div className="relative h-56 w-full overflow-hidden rounded-t-xl">
           <Image
             src={product.image || noProduct}
@@ -533,7 +533,8 @@ export function AddProductToShopSheet({
       <SheetContent
         side="right"
         className={cn(
-          "max-w-full w-[400px] sm:w-[440px] md:w-[520px] p-0 bg-background flex flex-col"
+          "max-w-full w-[400px] sm:w-[440px] md:w-[520px] p-0",
+          "bg-background flex flex-col "
         )}
       >
         <SheetHeader className="px-6 pt-6 pb-2">

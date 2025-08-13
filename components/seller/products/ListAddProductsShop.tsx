@@ -267,7 +267,7 @@ function ProductCardAddShop({
       className="relative flex flex-col h-full rounded-2xl shadow group 
     transition hover:shadow-lg ring-0 hover:ring-primary/20 border"
     >
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 -mt-6">
         <div className="relative w-full h-56 overflow-hidden rounded-t-2xl">
           <Image
             src={product.image || noProduct}

@@ -196,7 +196,7 @@ const SheetMenuNav = ({
           {isOpen ? <X /> : <IconMenu />}
         </button>
       </SheetTrigger>
-      <SheetContent className="w-full h-svh overflow-y-auto overflow-x-hidden">
+      <SheetContent className="w-full h-svh overflow-y-auto overflow-x-hidden ">
         <SheetHeader>
           <SheetTitle>{capitalizeText(shop.name)}</SheetTitle>
           <SheetDescription
@@ -211,7 +211,7 @@ const SheetMenuNav = ({
         <Separator className="bg-gray-500 w-full my-4" />
 
         {/* content */}
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4 px-4">
           <h2 className="font-bold text-lg">MENU</h2>
 
           {/* Links */}

@@ -154,7 +154,7 @@ const PaymentSheetComponent = ({
         </SheetHeader>
 
         {/* content */}
-        <div className="w-full grid gap-4 py-4">
+        <div className="w-full grid gap-4 p-4">
           {/* Client info */}
 
           <div

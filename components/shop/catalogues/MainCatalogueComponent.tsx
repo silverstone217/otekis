@@ -32,6 +32,7 @@ import { ProductCard } from "../home/NewArrivalProductSection";
 import PaginationSection from "@/components/PaginationSection";
 import { useRouter, useSearchParams } from "next/navigation";
 import SetValueComponent from "../SetValueComponent";
+import { luminanceColor } from "@/utils/shopFunctions";
 
 type Props = {
   shop: Shop;
@@ -284,8 +285,8 @@ const MainCatalogueComponent = ({
               borderRadius: preferences.buttonRadius,
               color: preferences.textColor,
               backgroundColor:
-                preferences.background === "#ffffff"
-                  ? "transparent"
+                luminanceColor(preferences.background) === "light"
+                  ? "rgba(255, 255, 255, 0.3)"
                   : "rgba(19, 19, 19, 0.3)",
             }}
           />
@@ -431,7 +432,7 @@ const TopFilterProductShop = ({
         </SheetHeader>
         <div
           style={{ color: preferences.textColor }}
-          className="grid gap-4 py-4 grid-cols-1"
+          className="grid gap-4 p-4 grid-cols-1"
         >
           {/* infos produit */}
           {/* color */}
@@ -453,11 +454,11 @@ const TopFilterProductShop = ({
                     borderRadius: preferences.buttonRadius,
                     color: preferences.textColor,
                     backgroundColor:
-                      preferences.background === "#ffffff"
+                      luminanceColor(preferences.background) === "light"
                         ? "rgba(255, 255, 255, 0.3)"
                         : "rgba(19, 19, 19, 0.3)",
                   }}
-                  className={`group px-4 py-2 item-center 
+                  className={`group px-4 py-2 item-center cursor-pointer
                   border-2 hover:border-primary flex gap-2 text-sm
                   
                           ${
@@ -474,7 +475,7 @@ const TopFilterProductShop = ({
                       borderRadius: "50%",
                       backgroundColor: stat.value,
                     }}
-                    className={`
+                    className={`cursor-pointer
                     ${
                       stat.value === "other" || stat.value === "multicolor"
                         ? "bg-fuchsia-950"
@@ -498,17 +499,17 @@ const TopFilterProductShop = ({
                   borderRadius: preferences.buttonRadius,
                   color: preferences.textColor,
                   backgroundColor:
-                    preferences.background === "#ffffff"
+                    luminanceColor(preferences.background) === "light"
                       ? "rgba(255, 255, 255, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
                 className={`group px-4 py-2 item-center border-2 hover:border-primary flex flex-col gap-2 text-sm
                           ${
                             color === ""
-                              ? " border-2 text-primary"
+                              ? `border-2 text-[${preferences.buttonColor}]`
                               : "opacity-70 border-secondary"
                           } 
-                          transition-all duration-500 ease-in-out rounded opacity-70`}
+                         cursor-pointer transition-all duration-500 ease-in-out rounded opacity-70`}
               >
                 Toutes
               </span>
@@ -533,7 +534,7 @@ const TopFilterProductShop = ({
                     borderRadius: preferences.buttonRadius,
                     color: preferences.textColor,
                     backgroundColor:
-                      preferences.background === "#ffffff"
+                      luminanceColor(preferences.background) === "light"
                         ? "rgba(255, 255, 255, 0.3)"
                         : "rgba(19, 19, 19, 0.3)",
                   }}
@@ -544,7 +545,7 @@ const TopFilterProductShop = ({
                               : "opacity-70 border-secondary"
                           } 
                           uppercase tabular-nums
-                          transition-all duration-500 ease-in-out rounded opacity-70`}
+                        cursor-pointer  transition-all duration-500 ease-in-out rounded opacity-70`}
                 >
                   <span>{stat}</span>
                 </span>
@@ -561,18 +562,18 @@ const TopFilterProductShop = ({
                   borderRadius: preferences.buttonRadius,
                   color: preferences.textColor,
                   backgroundColor:
-                    preferences.background === "#ffffff"
+                    luminanceColor(preferences.background) === "light"
                       ? "rgba(255, 255, 255, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
                 className={`group px-4 py-2 item-center border-2 hover:border-primary flex flex-col gap-2 text-sm
                           ${
                             size === ""
-                              ? " border-2 text-primary"
+                              ? `border-2 text-[${preferences.buttonColor}]`
                               : "opacity-70 border-secondary"
                           } 
                             capitalize tabular-nums
-                            transition-all duration-500 ease-in-out rounded opacity-70`}
+                        cursor-pointer transition-all duration-500 ease-in-out rounded opacity-70`}
               >
                 Toutes
               </span>
