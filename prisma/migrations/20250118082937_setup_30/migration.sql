@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Shop" ADD COLUMN     "ajout" STRING NOT NULL DEFAULT 'self';
+ALTER TABLE "Shop" ADD COLUMN     "percentage" INT4 NOT NULL DEFAULT 5;

@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "Preferences" ADD COLUMN     "Footer" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "Preferences" ADD COLUMN     "Header" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "Preferences" ADD COLUMN     "Hero" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "Preferences" ADD COLUMN     "Popular" STRING NOT NULL DEFAULT '0';
+
+-- AlterTable
+ALTER TABLE "ShopPreferences" ADD COLUMN     "Footer" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "ShopPreferences" ADD COLUMN     "Header" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "ShopPreferences" ADD COLUMN     "Hero" STRING NOT NULL DEFAULT '0';
+ALTER TABLE "ShopPreferences" ADD COLUMN     "Popular" STRING NOT NULL DEFAULT '0';
