@@ -85,7 +85,7 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       // Gère les erreurs de validation Zod
-      const formattedErrors = error.errors.map((err) => ({
+      const formattedErrors = error.issues.map((err) => ({
         path: err.path.join(" > "), // Chemin de l'erreur dans l'objet de données
         message: err.message, // Message d'erreur
       }));
