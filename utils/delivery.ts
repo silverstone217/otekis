@@ -92,12 +92,12 @@ export function deliveryPriceByDeliveryChoice({
 
   // Livraison transkin express forfaitaire
   if (deliveryChoice === "transkin express") {
-    return 10;
+    return 1;
   }
 
   // Livraison otekis express forfaitaire
   if (deliveryChoice === "otekis delivery") {
-    return 3;
+    return 0;
   }
 
   // Livraison express kin24 basée sur la commune

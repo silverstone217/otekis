@@ -48,7 +48,7 @@ const SetValueComponent = ({
                 ${
                   value === stat.value
                     ? `border-2 text-[${preferences.buttonColor}]`
-                    : "opacity-70 border-secondary"
+                    : "opacity-70 border-s econdary"
                 } 
                 tabular-nums ${
                   title?.includes("taille") ? "uppercase" : "capitalize"
