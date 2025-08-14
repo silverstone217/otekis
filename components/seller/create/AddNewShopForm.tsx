@@ -1,4 +1,5 @@
 "use client";
+
 import BorderWrapper from "@/components/BorderWrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,10 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { X } from "lucide-react";
+import { X, UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";
 
@@ -24,52 +25,63 @@ const AddNewShopForm = () => {
   const [category, setCategory] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
   const [logo, setLogo] = useState<File | null>(null);
   const [cover, setCover] = useState<File | null>(null);
-
   const [paymentName, setPaymentName] = useState("");
   const [paymentPhone, setPaymentPhone] = useState("");
-
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const uploadLogo = async () => {
-    if (!logo) return;
+  // Drag & drop handlers for logo and cover (optional)
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrop = useCallback(
+    (
+      e: React.DragEvent,
+      setFile: React.Dispatch<React.SetStateAction<File | null>>
+    ) => {
+      e.preventDefault();
+      if (loading) return;
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        setFile(file);
+      } else {
+        toast.error("Merci de déposer une image valide.");
+      }
+    },
+    [loading]
+  );
+
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+
+  const uploadFile = async (file: File, pathPrefix: string) => {
     try {
-      const logoId = v4().toString().replace(/-/g, "");
-      const storageRef = ref(storage, `oteki/shops/logos/${logoId}`);
-      const snapshot = await uploadBytes(storageRef, logo);
+      const fileId = v4().replace(/-/g, "");
+      const storageRef = ref(storage, `oteki/shops/${pathPrefix}/${fileId}`);
+      const snapshot = await uploadBytes(storageRef, file);
       return await getDownloadURL(snapshot.ref);
     } catch (error) {
-      console.error("Error uploading logo", error);
+      console.error(`Error uploading ${pathPrefix}`, error);
       return "";
     }
   };
 
-  const uploadCover = async () => {
-    if (!cover) return;
-    try {
-      const coverId = v4().toString().replace(/-/g, "");
-      const storageRef = ref(storage, `oteki/shops/covers/${coverId}`);
-      const snapshot = await uploadBytes(storageRef, cover);
-      return await getDownloadURL(snapshot.ref);
-    } catch (error) {
-      console.error("Error uploading cover", error);
-      return "";
-    }
-  };
+  const uploadLogo = () =>
+    logo ? uploadFile(logo, "logos") : Promise.resolve("");
+  const uploadCover = () =>
+    cover ? uploadFile(cover, "covers") : Promise.resolve("");
 
   const handleSubmit = async () => {
     setLoading(true);
-    let logoUrl;
-    let coverUrl;
+    let logoUrl = "";
+    let coverUrl = "";
     try {
       logoUrl = await uploadLogo();
       coverUrl = await uploadCover();
 
       if (!logoUrl) {
-        throw new Error("Erreur lors de l'upload du logo");
+        throw new Error("Le logo est obligatoire et doit être valide.");
       }
 
       const formData = {
@@ -81,12 +93,10 @@ const AddNewShopForm = () => {
         paymentName,
         paymentPhone,
       };
-      // save to database
+
       const response = await fetch("/api/seller/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -96,21 +106,21 @@ const AddNewShopForm = () => {
         throw new Error(data.message);
       }
 
-      const shop = data.data;
-
-      // success toast
       toast.success("Votre boutique a été créée avec succès.");
-      console.log({ shop });
-      // redirect to shop page
+      // Reset form
       setName("");
       setDescription("");
       setCategory("");
       setLogo(null);
       setCover(null);
+      setPaymentName("");
+      setPaymentPhone("");
       router.push(`/ma-boutique`);
     } catch (error) {
+      // Cleanup uploaded files on error
       if (logoUrl) await deleteObject(ref(storage, logoUrl));
       if (coverUrl) await deleteObject(ref(storage, coverUrl));
+
       console.error("Error creating new shop", error);
       const err = error as Error;
       toast.error("Erreur lors de la création de votre boutique", {
@@ -122,275 +132,267 @@ const AddNewShopForm = () => {
   };
 
   return (
-    <div className="w-full grid grid-cols-1 lg:grid-cols-6 min-h-96 gap-4">
-      {/* infos details */}
-      <div className="lg:col-span-4 col-span-1 space-y-6 ">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-6 gap-6 min-h-[24rem]">
+      {/* LEFT SIDE - Informations */}
+      <div className="lg:col-span-4 space-y-8">
         <BorderWrapper>
-          <div className="space-y-4">
-            {/* Category */}
-            <BorderWrapper>
-              <div className="space-y-2.5">
-                <Label className="text-[18px] font-bold">
-                  Catégorie de votre boutique *
-                </Label>
-                {/* cat */}
-                <div className="w-full flex flex-wrap gap-2">
-                  {CategoriesData.map((cat, idx) => (
-                    <div
-                      key={idx}
-                      role="button"
+          <div className="space-y-8">
+            {/* CATEGORY */}
+            <div>
+              <Label className="text-lg font-semibold mb-3 block">
+                Catégorie de votre boutique{" "}
+                <span className="text-destructive">*</span>
+              </Label>
+              <div className="flex flex-wrap gap-3">
+                {CategoriesData.map((cat) => {
+                  const isAllowed =
+                    cat.value.includes("vetements") ||
+                    cat.value.includes("accessoires") ||
+                    cat.value.includes("cosmetiques");
+                  const isSelected = category === cat.value;
+                  return (
+                    <button
+                      key={cat.value}
+                      type="button"
+                      disabled={loading}
+                      aria-pressed={isSelected}
                       onClick={() => {
                         if (!loading) {
-                          if (
-                            cat.value.includes("vetements") ||
-                            cat.value.includes("accessoires") ||
-                            cat.value.includes("cosmetiques")
-                          ) {
+                          if (isAllowed) {
                             setCategory(cat.value);
                           } else {
                             toast.error("Catégorie indisponible", {
                               description:
-                                "Pour le moment seulement les ventes de vetements, cosmétiques et accessoires sont disponibles.",
+                                "Seules les ventes de vêtements, cosmétiques et accessoires sont disponibles actuellement.",
                             });
                           }
                         }
                       }}
-                      className={`group p-4 item-center border-2 
-                   hover:border-primary flex flex-col gap-2
-                   text-sm transition-all duration-500 ease-in-out rounded
-                   ${
-                     category === cat.value
-                       ? "border-primary border-2 text-primary"
-                       : " text-gray-500 border-gray-300"
-                   }
-                   `}
+                      className={`group flex flex-col items-center justify-center gap-1 rounded-md border-2 px-5 py-4 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary ${
+                        isSelected
+                          ? "border-primary bg-primary bg-opacity-10 text-white"
+                          : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
+                      }`}
                     >
-                      <cat.icon className="w-8 flex-shrink-0 self-center " />
-                      <span className="text-sm ">{cat.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-2 text-gray-600 text-sm">
-                  Clicker pour choisir la catégorie de votre boutique. <br /> La
-                  catégorie est obligatoire permet de specifier ce qui pourrait
-                  être vendu dans votre boutique{" "}
-                </p>
+                      <cat.icon className={`w-7 h-7 `} aria-hidden="true" />
+                      <span>{cat.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-            </BorderWrapper>
+              <p className="mt-2 text-muted-foreground text-sm max-w-lg leading-snug">
+                Cliquer pour choisir la catégorie de votre boutique.
+                <br />
+                <strong>Obligatoire :</strong> seulement vêtements, cosmétiques
+                et accessoires sont disponibles.
+              </p>
+            </div>
 
-            {/* name, desc */}
-            <BorderWrapper>
-              <div className="space-y-2.5 w-full">
-                <Label className="text-[18px] font-bold">
-                  Information de la boutique *
-                </Label>
-                <div className="w-full flex flex-col gap-4">
-                  {/* nom */}
-                  <Input
-                    placeholder="Nom de la boutique..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    minLength={3}
-                    maxLength={40}
-                    disabled={loading}
-                  />
-
-                  {/* description */}
-                  <Textarea
-                    placeholder="Décrire votre boutique... parler de votre experience etc"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    minLength={10}
-                    maxLength={5000}
-                    disabled={loading}
-                    className="max-h-72 min-h-36"
-                  />
-                </div>
-                <p className="mt-2 text-gray-600 text-sm">
-                  <strong>NB: </strong>
-                  Le nom doit être unique et composé d au moins 3 characters.
-                  <br /> La Description doit être composée entre 10-500
-                  characters.
-                </p>
+            {/* SHOP INFO */}
+            <div>
+              <Label className="text-lg font-semibold mb-3 block">
+                Informations de la boutique{" "}
+                <span className="text-destructive">*</span>
+              </Label>
+              <div className="flex flex-col space-y-4">
+                <Input
+                  placeholder="Nom de la boutique..."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  minLength={3}
+                  maxLength={40}
+                  disabled={loading}
+                  aria-label="Nom de la boutique"
+                />
+                <Textarea
+                  placeholder="Décrire votre boutique... parler de votre expérience etc."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  minLength={10}
+                  maxLength={5000}
+                  disabled={loading}
+                  className="min-h-[10rem]"
+                  aria-label="Description de la boutique"
+                />
               </div>
-            </BorderWrapper>
+              <p className="mt-2 text-muted-foreground text-sm max-w-lg">
+                <strong>NB:</strong> Le nom doit avoir au moins 3 caractères
+                uniques.
+                <br />
+                La description doit contenir entre 10 et 5000 caractères.
+              </p>
+            </div>
 
-            {/* Payment info */}
-            <BorderWrapper>
-              <div className="space-y-2.5 w-full">
-                <Label className="text-[18px] font-bold">
-                  Information de Paiement
-                </Label>
-                <div className="w-full flex flex-col gap-4">
-                  {/* nom de paiement*/}
-                  <Input
-                    placeholder="jonh doe"
-                    value={paymentName}
-                    onChange={(e) => setPaymentName(e.target.value)}
-                    required
-                    minLength={3}
-                    maxLength={40}
-                    disabled={loading}
-                  />
-
-                  {/* nom de paiement*/}
-                  <Input
-                    placeholder="817777777"
-                    value={paymentPhone}
-                    onChange={(e) => setPaymentPhone(e.target.value)}
-                    required
-                    minLength={9}
-                    maxLength={9}
-                    disabled={loading}
-                    type="tel"
-                  />
-                </div>
-                <p className="mt-2 text-gray-600 text-sm">
-                  <strong>NB: </strong>
-                  Les informations de paiement sont utilisées pour vous envoyer
-                  vos gains effectués
-                </p>
+            {/* PAYMENT INFO */}
+            <div>
+              <Label className="text-lg font-semibold mb-3 block">
+                Informations de paiement
+              </Label>
+              <div className="flex flex-col space-y-4">
+                <Input
+                  placeholder="John Doe"
+                  value={paymentName}
+                  onChange={(e) => setPaymentName(e.target.value)}
+                  required
+                  minLength={3}
+                  maxLength={40}
+                  disabled={loading}
+                  aria-label="Nom pour paiement"
+                />
+                <Input
+                  placeholder="819999999"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                  required
+                  minLength={9}
+                  maxLength={9}
+                  disabled={loading}
+                  type="tel"
+                  aria-label="Téléphone pour paiement"
+                />
               </div>
-            </BorderWrapper>
+              <p className="mt-2 text-muted-foreground text-sm max-w-lg">
+                Les informations de paiement servent à vous envoyer vos gains.
+              </p>
+            </div>
           </div>
         </BorderWrapper>
       </div>
 
-      {/* logo and cover */}
-      <div className="lg:col-span-2 col-span-1">
-        <BorderWrapper>
-          <div className="w-full flex flex-col gap-4">
-            {/* image profile boutique */}
-            <BorderWrapper>
-              <div className="w-full flex flex-col gap-2 item-center transition-all duration-500 ease-in-out">
-                <label className="text-[18px] font-bold">
-                  Logo de la boutique *
-                </label>
-                {!logo ? (
-                  <div className="flex justify-center items-center transition-all duration-500 ease-in-out">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      id="file-upload"
-                      onChange={(e) => {
-                        const img = e.target.files;
-                        if (img) {
-                          setLogo(img[0]);
-                          return;
-                        }
-                        setLogo(null);
-                      }}
-                      required
-                      disabled={loading}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="file-upload"
-                      className={` w-full h-36 p-4 border-2 border-gray-300 
-                        rounded-lg cursor-pointer bg-gray-100 flex items-center justify-center text-center ${
-                          loading ? "bg-gray-300 cursor-not-allowed" : ""
-                        }`}
-                    >
-                      Choisir un logo
-                    </label>
-                  </div>
-                ) : (
-                  <div className="w-full h-full rounded relative transition-all duration-500 ease-in-out">
-                    <Image
-                      src={URL.createObjectURL(logo)}
-                      alt="image de la boutique"
-                      width={1500}
-                      height={1500}
-                      priority
-                      className="w-full h-full object-cover"
-                    />
-                    <span
-                      className="absolute top-1 right-1 text-sm text-destructive 
-                      cursor-pointer bg-overlay2 rounded-lg"
-                      onClick={() => {
-                        setLogo(null);
-                      }}
-                    >
-                      <X className="w-8 text-destructive" />
-                    </span>
-                  </div>
-                )}
-              </div>
-            </BorderWrapper>
+      {/* RIGHT SIDE - Logo & Cover */}
+      <div className="lg:col-span-2 flex flex-col space-y-10">
+        <BorderWrapper className="p-6 flex flex-col gap-6">
+          {/* Logo */}
+          <div
+            onDrop={(e) => handleDrop(e, setLogo)}
+            onDragOver={handleDragOver}
+            className="relative border-2 border-dashed rounded-lg cursor-pointer p-4 hover:border-primary transition-colors focus-within:border-primary outline-none"
+          >
+            <Label
+              htmlFor="upload-logo"
+              className="block text-lg font-semibold mb-3"
+            >
+              Logo de la boutique <span className="text-destructive">*</span>
+            </Label>
 
-            {/* image cover boutique */}
-            <BorderWrapper>
-              <div className="w-full flex flex-col gap-2 item-center transition-all duration-500 ease-in-out">
-                <label className="text-[18px] font-bold">
-                  Couverture de la boutique
-                </label>
-                {!cover ? (
-                  <div className="flex justify-center items-center transition-all duration-500 ease-in-out">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      id="file-upload-cover"
-                      onChange={(e) => {
-                        const img = e.target.files;
-                        if (img) {
-                          setCover(img[0]);
-                          return;
-                        }
-                        setCover(null);
-                      }}
-                      required
-                      disabled={loading}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="file-upload-cover"
-                      className={` w-full min-h-44 p-4 border-2 border-gray-300 
-                        rounded-lg cursor-pointer bg-gray-100 flex items-center justify-center text-center ${
-                          loading ? "bg-gray-300 cursor-not-allowed" : ""
-                        }`}
-                    >
-                      Choisir une image de couverture
-                    </label>
-                  </div>
-                ) : (
-                  <div className="w-full h-full rounded relative transition-all duration-500 ease-in-out">
-                    <Image
-                      src={URL.createObjectURL(cover)}
-                      alt="cover de la boutique"
-                      width={1500}
-                      height={1500}
-                      priority
-                      className="w-full h-full object-cover"
-                    />
-                    <span
-                      className="absolute top-1 right-1 text-sm text-destructive 
-                      cursor-pointer bg-overlay2 rounded-lg"
-                      onClick={() => {
-                        setCover(null);
-                      }}
-                    >
-                      <X className="w-8 text-destructive" />
-                    </span>
-                  </div>
-                )}
+            {!logo ? (
+              <>
+                <input
+                  type="file"
+                  id="upload-logo"
+                  ref={logoInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  disabled={loading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setLogo(file);
+                  }}
+                />
+                <div
+                  className="flex flex-col items-center justify-center py-10 text-muted-foreground select-none"
+                  onClick={() => !loading && logoInputRef.current?.click()}
+                >
+                  <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
+                  <span className="text-center text-sm">
+                    Glisser & déposer un fichier ou clique pour sélectionner
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="relative flex items-center justify-center rounded overflow-hidden h-40">
+                <Image
+                  src={URL.createObjectURL(logo)}
+                  alt="Logo de la boutique"
+                  fill
+                  style={{ objectFit: "contain" }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
+                <button
+                  type="button"
+                  aria-label="Supprimer le logo"
+                  onClick={() => setLogo(null)}
+                  className="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-white shadow-md transition"
+                  disabled={loading}
+                >
+                  <X className="w-5 h-5 text-destructive" />
+                </button>
               </div>
-            </BorderWrapper>
-            <p className="mt-2 text-gray-600 text-sm">
-              <strong>
-                Le Logo est obligatoire avant de soumettre
-                <br /> La cover quant à elle est optionnelle.
-              </strong>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">
+              Le logo est obligatoire avant de soumettre.
+            </p>
+          </div>
+
+          {/* Cover */}
+          <div
+            onDrop={(e) => handleDrop(e, setCover)}
+            onDragOver={handleDragOver}
+            className="relative border-2 border-dashed rounded-lg cursor-pointer p-4 hover:border-primary transition-colors focus-within:border-primary outline-none"
+          >
+            <Label
+              htmlFor="upload-cover"
+              className="block text-lg font-semibold mb-3"
+            >
+              Couverture de la boutique (optionnel)
+            </Label>
+
+            {!cover ? (
+              <>
+                <input
+                  type="file"
+                  id="upload-cover"
+                  ref={coverInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  disabled={loading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setCover(file);
+                  }}
+                />
+                <div
+                  className="flex flex-col items-center justify-center py-14 text-muted-foreground select-none"
+                  onClick={() => !loading && coverInputRef.current?.click()}
+                >
+                  <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
+                  <span className="text-center text-sm">
+                    Glisser & déposer un fichier ou clique pour sélectionner
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="relative flex items-center justify-center rounded overflow-hidden h-52">
+                <Image
+                  src={URL.createObjectURL(cover)}
+                  alt="Couverture de la boutique"
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
+                <button
+                  type="button"
+                  aria-label="Supprimer la couverture"
+                  onClick={() => setCover(null)}
+                  className="absolute top-2 right-2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-white shadow-md transition"
+                  disabled={loading}
+                >
+                  <X className="w-5 h-5 text-destructive" />
+                </button>
+              </div>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">
+              La couverture est optionnelle.
             </p>
           </div>
         </BorderWrapper>
-      </div>
 
-      {/* submit */}
-      <div className="flex w-full mt-10 lg:col-span-4">
+        {/* SUBMIT BUTTON */}
         <Button
-          onClick={handleSubmit}
           disabled={
             loading ||
             isEmptyString(name) ||
@@ -398,9 +400,11 @@ const AddNewShopForm = () => {
             isEmptyString(description) ||
             !logo
           }
-          className="w-full py-5"
+          onClick={handleSubmit}
+          size="lg"
+          className="w-full py-5 font-semibold"
         >
-          {loading ? "En cours..." : "Créer"}
+          {loading ? "Création en cours..." : "Créer ma boutique"}
         </Button>
       </div>
     </div>
