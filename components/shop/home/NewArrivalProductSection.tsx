@@ -92,24 +92,34 @@ export const ProductCard = ({
 }) => {
   // benefit
   const benefit = useMemo(
-    () => Number(Math.round((productShopPercentage! * product.price) / 100)),
+    () =>
+      product.price > 0
+        ? Number(Math.round((productShopPercentage! * product.price) / 100))
+        : 0,
     [product.price, productShopPercentage]
   );
 
   const beneficeAfterDiscount = useMemo(
-    () => applyPromotionOnProfit(benefit!, productShopPromotion!),
+    () =>
+      benefit > 0 ? applyPromotionOnProfit(benefit!, productShopPromotion!) : 0,
     [benefit, productShopPromotion]
   );
 
   const totalPriceAfterDiscount = useMemo(
-    () => product.price + beneficeAfterDiscount,
+    () =>
+      beneficeAfterDiscount > 0 ? product.price + beneficeAfterDiscount : 0,
     [product.price, beneficeAfterDiscount]
   );
 
   const discountPercentage = useMemo(
     () =>
-      calculateDiscountPercentage(productShopPrice!, totalPriceAfterDiscount),
-    [productShopPrice, totalPriceAfterDiscount]
+      product.price > 0
+        ? calculateDiscountPercentage(
+            productShopPrice!,
+            totalPriceAfterDiscount
+          )
+        : 0,
+    [productShopPrice, totalPriceAfterDiscount, product.price]
   );
 
   const articles = product.Article;

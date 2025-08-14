@@ -543,7 +543,7 @@ const CartItemProduct = ({
         )}
         <span
           role="button"
-          className="opacity-75 hover:opacity-50 my-1"
+          className="opacity-75 hover:opacity-50 my-1 cursor-pointer"
           onClick={handleDelete}
         >
           Supprimer
