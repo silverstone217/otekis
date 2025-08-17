@@ -79,7 +79,7 @@ const MyProductsPage = async () => {
 
       {/* Shops */}
       {/* <AdminsDataTable data={admins} columns={AdminsColumns} /> */}
-      <Suspense fallback={<div>loading...</div>}>
+      <Suspense fallback={<div>chargement...</div>}>
         <MyMainProductsShopsComponent
           shops={shops}
           products={products}

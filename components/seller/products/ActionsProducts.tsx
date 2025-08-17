@@ -6,7 +6,7 @@ import {
 } from "@/actions/shopActions";
 import { Shop } from "@prisma/client";
 import { CircleDollarSign, Podcast, Trash, Plus, Minus } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -256,6 +256,18 @@ const SetAutoOrSelfAddProducts = ({
     }
   };
 
+  const isButtonDisabled = useMemo(() => {
+    if (loading) return true;
+    if (
+      shop.percentage === percentage &&
+      addType === "auto" &&
+      shop.ajout === "auto"
+    )
+      return true;
+    if (shop.ajout === "self" && addType === "self") return true;
+    return false;
+  }, [loading, shop, percentage, addType]);
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -340,7 +352,8 @@ const SetAutoOrSelfAddProducts = ({
               pourcentage choisi).
               <br />
               <span className="text-xs text-rose-700 font-semibold">
-                Choisir automatique supprime tous les produits déjà existants.
+                Choisir automatique ajustera le pourcentage pour tous les
+                produits déjà existants .
               </span>
             </CardContent>
           </Card>
@@ -348,7 +361,7 @@ const SetAutoOrSelfAddProducts = ({
         <AlertDialogFooter>
           <AlertDialogCancel className="rounded-lg">Annuler</AlertDialogCancel>
           <AlertDialogAction
-            disabled={loading || shop.ajout === addType}
+            disabled={isButtonDisabled}
             className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => !loading && setAddTypeAndPercentAllProducts()}
           >

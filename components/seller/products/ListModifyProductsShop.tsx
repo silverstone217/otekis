@@ -371,7 +371,10 @@ export const ListAddProductCard = ({
         </div>
         <div className="flex items-center justify-between gap-2 mt-2">
           <span className="text-sm text-muted-foreground">
-            <strong>{String(totalQuantity)}</strong> en stock
+            <strong>
+              {totalQuantity > 0 ? String(totalQuantity).padStart(2, "0") : "0"}
+            </strong>{" "}
+            en stock
           </span>
           <AddProductToShopSheet
             product={product}

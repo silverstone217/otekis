@@ -315,7 +315,10 @@ function ProductCardAddShop({
             <span className="text-xs font-light">{currency}</span>
           </span>
           <span className="text-sm text-muted-foreground">
-            <strong>{String(totalQuantity).padStart(2, "0")}</strong> en stock
+            <strong>
+              {totalQuantity > 0 ? String(totalQuantity).padStart(2, "0") : "0"}
+            </strong>{" "}
+            en stock
           </span>
         </div>
       </CardContent>

@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
 import { getProductShopByShopId } from "@/actions/shopActions";
 import ListModifyProductsShop from "./ListModifyProductsShop";
-import { capitalizeText } from "@/utils/shopFunctions";
 import { ProductWithArticle } from "@/types/data";
 import ActionsProducts from "./ActionsProducts";
 import { ShopDefaultSelect } from "../SelectWIthOptionsDefaultShop";
@@ -13,12 +12,17 @@ type Props = {
   shops: Shop[];
   products: ProductWithArticle[];
   currency: "$" | "CDF";
-  exchange :number
+  exchange: number;
 };
 
 type ProductShopTypeWithProducts = ProductShop & { product: Product };
 
-const MyMainProductsShopsComponent = ({ shops, products, currency, exchange }: Props) => {
+const MyMainProductsShopsComponent = ({
+  shops,
+  products,
+  currency,
+  exchange,
+}: Props) => {
   //   const [products, setProducts] = useState<Product[]>([]);
   const [productsShop, setProductsShop] = useState<
     ProductShopTypeWithProducts[]
@@ -73,7 +77,7 @@ const MyMainProductsShopsComponent = ({ shops, products, currency, exchange }: P
   }, [refreshData]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Chargement...</div>;
   }
 
   // if (!productsShop.length && !loading) {
@@ -85,7 +89,7 @@ const MyMainProductsShopsComponent = ({ shops, products, currency, exchange }: P
   //   );
   // }
   if (!shop) {
-    return <div>No shop found.</div>;
+    return <div>Pas de boutique trouvée.</div>;
   }
 
   return (
