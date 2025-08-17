@@ -366,6 +366,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
         <Link
           href={`/${shop.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full lg:w-fit lg:px-6 py-3 bg-primary text-center text-white font-medium border-2 border-primary 
         hover:bg-transparent hover:text-black transition-all duration-500 ease-in-out shadow-md
         flex items-center justify-center gap-4
