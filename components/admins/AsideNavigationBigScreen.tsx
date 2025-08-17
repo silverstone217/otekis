@@ -9,7 +9,7 @@ import { UserAvatar } from "../home/Header";
 import { Button } from "../ui/button";
 import { returnRoleWith } from "@/utils/functions";
 import { toast } from "sonner";
-import { useOrderCount } from "./clients-orders/OrderCountContext";
+// import { useOrderCount } from "./clients-orders/OrderCountContext";
 import { Badge } from "../ui/badge";
 import { useOrderCountRealtime } from "./clients-orders/OrderCountPusher";
 type Props = {
@@ -45,7 +45,7 @@ const AsideNavigationBigScreen = ({ initialCount }: Props) => {
   return (
     <div
       className="h-full hidden lg:flex flex-col
-    transition-all duration-500 ease-in-out 
+    transition-all duration-500 ease-in-out w-full
      gap-10 overflow-x-hidden overflow-y-auto py-4 relative"
     >
       {/* logo */}

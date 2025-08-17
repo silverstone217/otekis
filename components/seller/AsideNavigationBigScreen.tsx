@@ -36,7 +36,8 @@ const AsideNavigationBigScreen = () => {
 
   return (
     <div
-      className="w-full h-full flex flex-col gap-10 overflow-x-hidden overflow-y-auto p-4 relative
+      className="w-full h-full flex flex-col gap-10 overflow-x-hidden 
+      overflow-y-auto p-4 relative
     "
     >
       {/* logo */}
@@ -97,7 +98,7 @@ const AsideNavigationBigScreen = () => {
             justify-start w-full transition-all duration-500 ease-in-out
            py-4
              ${
-               pathname.includes("/help")
+               pathname.includes("/documentation")
                  ? "border-y-3 border-gray-300"
                  : "border-transparent"
              }
@@ -105,7 +106,7 @@ const AsideNavigationBigScreen = () => {
              `}
         >
           <Newspaper className="w-8 flex-shrink-0" />
-          <span>{"Documentation"}</span>
+          <span>{"Documentations"}</span>
         </Link>
         {/* avatar */}
         {user && (

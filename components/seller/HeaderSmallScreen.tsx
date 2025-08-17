@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { AlignJustify, LogOut, X } from "lucide-react";
+import { AlignJustify, Info, LogOut, Newspaper, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { SellerLinksPage, siteName } from "@/utils/data";
 import { usePathname, useRouter } from "next/navigation";
@@ -101,26 +101,47 @@ const HeaderSmallScreen = () => {
               ))}
             </div>
 
-            <div className="w-full flex flex-col items-start justify-start gap-4 flex-shrink-0 pt-6 border-t-2">
-              {/* <Link
+            <div
+              className="w-full flex flex-col items-start justify-start 
+            gap-4 flex-shrink-0 pt-6 border-t-2"
+            >
+              <Link
                 href={"/"}
                 onClick={() => setIsOpen(false)}
                 className={`flex gap-4 items-center  border-y-2 
             justify-start w-full transition-all duration-500 ease-in-out
-           py-4
+           py-3
              ${
-               pathname.includes("/help")
-                 ? "border-y-3 border-gray-300"
+               pathname.includes("/aide")
+                 ? "border-y-2 border-gray-300"
                  : "border-transparent"
              }
              hover:opacity-70
              `}
               >
                 <Info className="w-8 flex-shrink-0" />
-                <span>{"Help"}</span>
+                <span>{"Aide"}</span>
               </Link>
 
               <Link
+                href={"/documentation"}
+                onClick={() => setIsOpen(false)}
+                className={`flex gap-4 items-center  border-y-2 
+            justify-start w-full transition-all duration-500 ease-in-out
+           py-3
+             ${
+               pathname.includes("/documentation")
+                 ? "border-y-2 border-gray-300"
+                 : "border-transparent"
+             }
+             hover:opacity-70
+             `}
+              >
+                <Newspaper className="w-8 flex-shrink-0" />
+                <span>{"Documentations"}</span>
+              </Link>
+
+              {/* <Link
                 href={"/blog"}
                 onClick={() => setIsOpen(false)}
                 className={`flex gap-4 items-center  border-y-2 

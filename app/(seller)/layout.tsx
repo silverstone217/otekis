@@ -3,7 +3,7 @@ import AsideNavigationBigScreen from "@/components/seller/AsideNavigationBigScre
 import HeaderSmallScreen from "@/components/seller/HeaderSmallScreen";
 import { getUser } from "@/actions/actions";
 import React, { ReactNode } from "react";
-import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
+// import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 import BannedUserSeller from "@/components/BannedUserSeller";
 const SellerLayout = async ({ children }: { children: ReactNode }) => {
   const user = await getUser();
