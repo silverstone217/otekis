@@ -7,7 +7,7 @@ import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 import BannedUserSeller from "@/components/BannedUserSeller";
 const SellerLayout = async ({ children }: { children: ReactNode }) => {
   const user = await getUser();
-  const isPermitted = user?.role === "seller" || user?.role.includes("admin");
+  // const isPermitted = user?.role === "seller" || user?.role.includes("admin");
   const isBanned = user?.isBanned;
 
   // if (!user) {
@@ -39,10 +39,8 @@ const SellerLayout = async ({ children }: { children: ReactNode }) => {
           <NoUserComponent />
         ) : isBanned ? (
           <BannedUserSeller />
-        ) : isPermitted ? (
-          <div className="mx-auto max-w-7xl">{children}</div>
         ) : (
-          <NotAuthorizedComponent />
+          <div className="mx-auto max-w-7xl">{children}</div>
         )}
       </main>
     </div>

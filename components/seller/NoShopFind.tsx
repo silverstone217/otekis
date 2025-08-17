@@ -14,7 +14,7 @@ const NoShopFind = () => {
         commencez à réaliser vos rêves.
       </p>
 
-      <Link href="/ma-boutique/creer" passHref legacyBehavior>
+      <Link href="/ma-boutique/creer" passHref>
         <Button
           variant="default"
           size="lg"
