@@ -1,16 +1,13 @@
 export const LinksDocumentation = [
   {
     title: "Introduction",
-    url: "/documentation/introduction",
+    url: "/documentation",
   },
   {
-    title: "Creation de la Boutique",
-    url: "/documentation/creation-de-la-boutique",
+    title: "Gestion de la Boutique",
+    url: "/documentation/gestion-de-la-boutique",
   },
-  {
-    title: "Modification de la Boutique",
-    url: "/documentation/modification-de-la-boutique",
-  },
+
   {
     title: "Design de la Boutique",
     url: "/documentation/design-de-la-boutique",

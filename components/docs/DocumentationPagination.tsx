@@ -1,0 +1,77 @@
+import React from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+type NavProps = {
+  currentUrl: string; // url complète de la page actuelle pour trouver l'index
+  links: { title: string; url: string }[];
+};
+
+export function DocumentationPagination({ currentUrl, links }: NavProps) {
+  // Trouve l'index courant dans la liste des liens
+  const currentIndex = links.findIndex((link) => link.url === currentUrl);
+
+  // Page précédente (null si aucune)
+  const prevPage = currentIndex > 0 ? links[currentIndex - 1] : null;
+  // Page suivante (null si dernière)
+  const nextPage =
+    currentIndex !== -1 && currentIndex < links.length - 1
+      ? links[currentIndex + 1]
+      : null;
+
+  return (
+    <nav className="flex justify-between items-center border-t border-gray-200 mt-12 pt-6 text-gray-700 dark:text-gray-300">
+      {/* Lien précédent - à gauche */}
+      <div className="min-w-[150px]">
+        {prevPage ? (
+          <Link
+            href={prevPage.url}
+            className="flex items-center gap-2 hover:underline group 
+            ease-in-out duration-300"
+            aria-label={`Page précédente : ${prevPage.title}`}
+          >
+            <ArrowLeft
+              className="w-5 h-5 group-hover:-translate-x-1
+             ease-in-out duration-300
+            "
+            />
+            <span className="font-semibold truncate max-w-xs">
+              {prevPage.title}
+            </span>
+          </Link>
+        ) : (
+          <span className="text-gray-400"></span>
+        )}
+      </div>
+
+      {/* Page actuelle */}
+      <div className="text-center flex-grow font-medium text-gray-900 dark:text-gray-100">
+        {currentIndex !== -1 ? links[currentIndex].title : "Documentation"}
+      </div>
+
+      {/* Lien suivant - à droite */}
+      <div className="min-w-[150px] text-right">
+        {nextPage ? (
+          <Link
+            href={nextPage.url}
+            className="flex items-center gap-2 justify-end hover:underline group
+            ease-in-out duration-300
+            "
+            aria-label={`Page suivante : ${nextPage.title}`}
+          >
+            <span className="font-semibold truncate max-w-xs">
+              {nextPage.title}
+            </span>
+            <ArrowRight
+              className="w-5 h-5 group-hover:translate-x-1
+             ease-in-out duration-300
+            "
+            />
+          </Link>
+        ) : (
+          <span className="text-gray-400"></span>
+        )}
+      </div>
+    </nav>
+  );
+}

@@ -1,7 +1,7 @@
 import BigScreenAsideNav from "@/components/docs/BigScreenAsideNav";
+import SmallScreenSheetNav from "@/components/docs/SmallScreenSheetNav";
 import { siteName } from "@/utils/data";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Menu } from "lucide-react";
 import React from "react";
 
 type LayoutProps = {
@@ -10,16 +10,21 @@ type LayoutProps = {
 
 function layout({ children }: LayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* header fixed */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+        <div
+          className="max-w-7xl mx-auto px-4 h-12 flex items-center 
+        justify-between"
+        >
           <h1 className="text-xl font-bold">{capitalizeText(siteName!)}</h1>
           <span className="lg:hidden">
-            <Menu />
+            <SmallScreenSheetNav />
           </span>
         </div>
       </header>
+
+      {/* main content */}
       <main className="mt-16">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-start w-full">
           {/* nav big screen */}
@@ -27,7 +32,7 @@ function layout({ children }: LayoutProps) {
             <BigScreenAsideNav />
           </aside>
           {/* Content goes here */}
-          <aside className="flex-1 lg:px-6 xl:px-8">{children}</aside>
+          <aside className="flex-1 ">{children}</aside>
         </div>
       </main>
 
