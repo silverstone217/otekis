@@ -2,6 +2,7 @@ import BigScreenAsideNav from "@/components/docs/BigScreenAsideNav";
 import SmallScreenSheetNav from "@/components/docs/SmallScreenSheetNav";
 import { siteName } from "@/utils/data";
 import { capitalizeText } from "@/utils/shopFunctions";
+import Link from "next/link";
 import React from "react";
 
 type LayoutProps = {
@@ -17,7 +18,9 @@ function layout({ children }: LayoutProps) {
           className="max-w-7xl mx-auto px-4 h-12 flex items-center 
         justify-between"
         >
-          <h1 className="text-xl font-bold">{capitalizeText(siteName!)}</h1>
+          <Link href={"/"} className="text-xl font-bold">
+            {capitalizeText(siteName!)}
+          </Link>
           <span className="lg:hidden">
             <SmallScreenSheetNav />
           </span>
