@@ -11,10 +11,10 @@ import { LinksDocumentation } from "@/utils/documentation";
 function Page() {
   const currentUrl = usePathname();
   return (
-    <div className="max-w-4xl mx-auto xl:px-8 pb-8">
+    <div className="max-w-4xl mx-auto  xl:px-8 pb-8">
       {/* Titre */}
       <header className="mb-8">
-        <h1 className="text-3xl lg:text-5xl font-bold mb-2">Introduction</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold mb-2">Introduction</h1>
         <span className="inline-block bg-primary/10 text-primary px-4 py-2 rounded font-semibold tracking-wide mb-2">
           {capitalizeText(siteName!)}
         </span>

@@ -1,7 +1,9 @@
 "use client";
 
 import { DocumentationPagination } from "@/components/docs/DocumentationPagination";
+import { Alert } from "@/components/ui/alert";
 import { LinksDocumentation } from "@/utils/documentation";
+import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -12,7 +14,7 @@ export default function GestionBoutiquePage() {
   return (
     <div className="max-w-4xl mx-auto  xl:px-8 pb-8 space-y-16">
       <header className="mb-8">
-        <h1 className="text-3xl lg:text-5xl font-bold">
+        <h1 className="text-4xl sm:text-5xl font-bold">
           Gestion de la boutique
         </h1>
         <p className="mt-2 text-muted-foreground">
@@ -68,13 +70,48 @@ export default function GestionBoutiquePage() {
           </li>
           <li>
             Informations de paiement : compte Mpesa (le mobile money le plus
-            populaire en RDC) et nom du titulaire du compte.
-          </li>
-          <li>
-            Un utilisateur peut créer jusqu’à 3 boutiques et gérer différentes
-            catégories.
+            populaire en RDC) et nom du titulaire du compte. Ces informations
+            seront utilisées pour déposer automatiquement les bénéfices de la
+            boutique selon le calendrier de paiement défini.
           </li>
         </ul>
+        <Alert className="max-w-md mx-auto flex items-start gap-3 p-4 bg-yellow-50 border-yellow-300 rounded-md">
+          <TriangleAlert className="w-6 h-6 text-yellow-600 shrink-0" />
+          <p className="text-yellow-800">
+            Il est important de s’assurer que les informations fournies sont
+            exactes et à jour, afin d’éviter tout retard ou échec de transfert.
+          </p>
+        </Alert>
+
+        {/* Gestion multi-boutiques */}
+        <div className="mt-6 space-y-4">
+          <h4 className="font-medium">Gestion multi-boutiques</h4>
+          <p>
+            Un même compte utilisateur peut créer et gérer plusieurs boutiques
+            sur la plateforme. Chaque boutique peut avoir :
+          </p>{" "}
+          <ul className="list-disc list-inside space-y-1 text-gray-700 ">
+            <li>Une catégorie de produits différente</li>
+            <li>
+              Un nom, une description, et une image de couverture personnalisés
+            </li>
+            <li>Des produits, commandes, et statistiques propres</li>
+          </ul>
+          <p>
+            Toutes les boutiques associées à un compte sont regroupées dans
+            l’onglet{" "}
+            <strong>
+              <em>Mes boutiques</em>
+            </strong>
+            , accessible depuis le tableau de bord du vendeur
+          </p>
+          <p>
+            Cela permet aux vendeurs de diversifier leurs activités, par exemple
+            en séparant une boutique de vêtements d’une boutique d’accessoires
+            électroniques.
+          </p>
+        </div>
+
         <div className="mt-6">
           <Link
             href="/ma-boutique/creer"
@@ -94,11 +131,29 @@ export default function GestionBoutiquePage() {
       {/* Section Modification */}
       <section id="modification" className="space-y-4">
         <h2 className="text-2xl font-semibold">Modification de la boutique</h2>
+
         <p>
-          La modification reprend les mêmes données que la création (nom,
-          catégorie, description, images, paiement). Vous pouvez mettre à jour
-          les informations de vos boutiques existantes à tout moment.
+          La modification d’une boutique se fait directement depuis l’interface{" "}
+          <strong>
+            <em>Ma boutique</em>
+          </strong>
+          .Le vendeur peut accéder à ses boutiques via l’onglet{" "}
+          <strong>
+            {" "}
+            <em>Ma boutique</em>
+          </strong>{" "}
+          dans son tableau de bord. En cliquant sur l’une des boutiques listées,
+          une page de gestion s’ouvre, permettant de modifier toutes les
+          informations liées à cette boutique :
         </p>
+
+        <ul className="list-disc list-inside space-y-1 text-gray-700">
+          <li>Nom de la boutique </li>
+          <li>Image de couverture</li>
+          <li>Description</li>
+          <li>Catégorie</li>
+          <li>Informations de paiement</li>
+        </ul>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
@@ -125,6 +180,12 @@ export default function GestionBoutiquePage() {
 
           {/* Ajoute d'autres tutoriels vidéo ici */}
         </div>
+
+        {/* <p className="mt-6">
+          Ajout des produits Une fois la boutique créée, l’étape suivante
+          consiste à ajouter des produits à vendre. Les produits disponibles
+          dépendent de la catégorie choisie lors de la création de la boutique.
+        </p> */}
       </section>
 
       {/* nav */}
