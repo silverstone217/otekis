@@ -245,22 +245,30 @@ export const CardInfosSoldes = ({
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-1">
         {/* Card pour les boutiques */}
-        <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
+        <Card
+          className="flex items-center p-4 border border-gray-200 rounded-md 
+        shadow-sm w-full"
+        >
           <Store className="text-blue-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Boutiques à payer
             </p>
-            <p className="text-xl font-bold text-gray-900">{totalShops}</p>
+            <p className="text-xl font-bold text-gray-900 text-center">
+              {totalShops}
+            </p>
           </div>
         </Card>
 
         {/* Card pour le total à payer */}
-        <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
+        <Card
+          className="flex items-center p-4 border border-gray-200 
+        rounded-md shadow-sm w-full"
+        >
           <HandCoins className="text-red-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Montant dû</p>
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 text-center">
               {returnFormatedMoney(amountToPay)}{" "}
               <span className="font-mono text-sm text-gray-600">
                 {currencySymbol}
@@ -270,13 +278,16 @@ export const CardInfosSoldes = ({
         </Card>
 
         {/* Card pour le solde total */}
-        <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
-          <Landmark className="text-green-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+        <Card
+          className="flex items-center p-4 border border-gray-200 
+        rounded-md shadow-sm w-full"
+        >
+          <Landmark className="text-green-600 size-6 mr-3 flex-shrink-0 " />
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Solde disponible
             </p>
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 text-center">
               {returnFormatedMoney(totalBalance)}{" "}
               <span className="font-mono text-sm text-gray-600">
                 {currencySymbol}

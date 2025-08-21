@@ -50,9 +50,9 @@ export function PayShopsPopup({
       [&>button]:hidden
       "
       >
-        <DialogHeader className="w-full flex items-center justify-between flex-row ">
+        <DialogHeader className="w-full flex items-center justify-between flex-row py-2">
           <DialogTitle hidden>Paiement des boutiques</DialogTitle>
-          <DialogClose asChild className="sm:block hidden">
+          <DialogClose asChild className="">
             <Button variant="ghost" className="absolute top-4 right-2">
               Fermer
             </Button>
@@ -86,7 +86,9 @@ export function PayShopsPopupExcel({
       "
       >
         <DialogHeader className="w-full flex items-center justify-between flex-row py-4">
-          <DialogTitle>Importer en excel ou valider le transfert</DialogTitle>
+          <DialogTitle className="pt-4 md:pt-0">
+            Importer en excel ou valider le transfert
+          </DialogTitle>
           <DialogClose asChild>
             <Button variant="ghost" className="absolute top-4 right-2">
               Fermer

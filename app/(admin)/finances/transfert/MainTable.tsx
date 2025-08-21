@@ -3,7 +3,7 @@
 import { TransfertColumns } from "@/components/admins/finances/transfert/transfertTable/TransfertColumns";
 import { TransfertDataTable } from "@/components/admins/finances/transfert/transfertTable/TransfertTableData";
 import { Shop, WithdrawalHistory } from "@prisma/client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 type Props = {
   shops: Shop[];
@@ -13,7 +13,7 @@ type Props = {
 
 const MainTable = ({ shops, currencySymbol, allWidithdraw }: Props) => {
   //   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   //   useEffect(() => {
   //     async function fetchData() {

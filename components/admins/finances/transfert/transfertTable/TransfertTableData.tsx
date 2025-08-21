@@ -22,14 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, RefreshCw, Sheet } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Shop, WithdrawalHistory } from "@prisma/client";
 import PrintWholeTransfertTable from "./PrintWholeTransfertTable";
 import { toast } from "sonner";
@@ -90,7 +84,7 @@ export function TransfertDataTable<TData, TValue>({
         throw new Error(response.statusText);
         return;
       }
-      const data = await response.json();
+      await response.json();
 
       toast.success("Information actualisée avec succès!");
       location.reload();
