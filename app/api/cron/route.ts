@@ -20,18 +20,31 @@ export async function GET() {
     await Promise.all(
       shopProfitsWaited.map(async (profit) => {
         if (profit.shop) {
-          const currencyAmount =
-            profit.currency === "USD"
-              ? {
-                  benefit: profit.shop.benefit + profit.amount,
-                }
-              : {
-                  benefitCDF: profit.shop.benefitCDF + profit.amount,
-                };
+          // const currencyAmount =
+          //   profit.currency === "USD"
+          //     ? {
+          //         benefit: { increment: profit.amount },
+          //         benefitCDF: profit.shop.benefitCDF,
+          //       }
+          //     : {
+          //         benefitCDF: { increment: profit.amount },
+          //         benefit: profit.shop.benefit,
+          //       };
 
           await prisma.shop.update({
             where: { id: profit.shopId },
-            data: currencyAmount,
+            data:
+              profit.currency === "USD"
+                ? {
+                    benefit: {
+                      increment: profit.amount,
+                    },
+                  }
+                : {
+                    benefitCDF: {
+                      increment: profit.amount,
+                    },
+                  },
           });
         }
         await prisma.shopProfitWaited.update({

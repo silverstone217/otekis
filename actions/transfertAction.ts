@@ -50,6 +50,16 @@ export const transfertShop = async (data: TransfertShopType) => {
 
     const validated = validationResult.data;
 
+    const prefs = await prisma.otekisPreferences.findFirst();
+    if (!prefs) {
+      return {
+        error: true,
+        message:
+          "Aucune préférence de devise n'a été configurée pour l'instant",
+      };
+    }
+    const currency = prefs.currency;
+
     const companyPrefs = await prisma.otekisBenefitAmount.findFirst();
     if (!companyPrefs) {
       return {
@@ -63,7 +73,9 @@ export const transfertShop = async (data: TransfertShopType) => {
       return acc + item.amount;
     }, 0);
 
-    const hasEnoughMoney = totalMoneyToPay <= companyPrefs.amount;
+    const companyAmount =
+      currency === "USD" ? companyPrefs.amount : companyPrefs.amountCDF;
+    const hasEnoughMoney = totalMoneyToPay <= companyAmount;
 
     if (!hasEnoughMoney) {
       return {
