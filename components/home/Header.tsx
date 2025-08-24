@@ -67,12 +67,14 @@ const Header = () => {
           {/* buttons */}
           <div className="flex gap-2.5 items-center justify-center ">
             {!user && (
-              <Button
-                className="py-2 px-6 rounded-md text-white hover:text-gray-900 
+              <Link href={"/connexion"}>
+                <Button
+                  className="py-2 px-6 rounded-md text-white hover:text-gray-900 
         transition-all duration-500 ease-in-out hover:bg-transparent"
-              >
-                <Link href={"/connexion"}>Connexion</Link>
-              </Button>
+                >
+                  Connexion
+                </Button>
+              </Link>
             )}
             {/* <ToggleThemeMode /> */}
             {user && (
@@ -126,12 +128,14 @@ const Header = () => {
             {/* buttons */}
             <div className="flex flex-col gap-2 items-center justify-center">
               {!user && (
-                <Button
-                  className="py-2 px-4 rounded-md hover:text-gray-700 
+                <Link href={"/connexion"}>
+                  <Button
+                    className="py-2 px-4 rounded-md hover:text-gray-700 
             transition-all duration-500 ease-in-out border-primary border w-52"
-                >
-                  <Link href={"/connexion"}>connexion</Link>
-                </Button>
+                  >
+                    Connexion
+                  </Button>
+                </Link>
               )}
 
               {/* avatar user profile */}
@@ -198,10 +202,11 @@ export const UserAvatar = () => {
   const userNameSliced = changeName(user.name);
   return (
     <Avatar>
-      <AvatarImage
-        src={user.image ? user.image : "https://github.com/shadcn.png"}
-      />
-      <AvatarFallback>{userNameSliced}</AvatarFallback>
+      {user.image ? (
+        <AvatarImage src={user.image} />
+      ) : (
+        <AvatarFallback className="font-bold">{userNameSliced}</AvatarFallback>
+      )}
     </Avatar>
   );
 };
