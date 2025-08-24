@@ -48,7 +48,7 @@ type Props = {
 
 const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
   const router = useRouter();
-  const [category, setCategory] = useState(shop.category ?? "");
+  const [category] = useState(shop.category ?? "");
   const [name, setName] = useState(shop.name ?? "");
   const [description, setDescription] = useState(shop.description ?? "");
 
@@ -227,7 +227,13 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
                           ? "border-primary bg-primary bg-opacity-10 text-primary"
                           : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
                       )}
-                      onClick={() => !loading && setCategory(cat.value)}
+                      onClick={() => {
+                        if (loading) return;
+                        if (cat.value === category) return;
+                        toast.error(
+                          "La categorie de la boutique n'est pas modifiable."
+                        );
+                      }}
                       aria-pressed={isSelected}
                     >
                       <cat.icon aria-hidden="true" className="w-7 h-7 mb-1" />
