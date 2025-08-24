@@ -50,11 +50,6 @@ export const transfertShop = async (data: TransfertShopType) => {
 
     const validated = validationResult.data;
 
-    // Création des transferts en base
-    const withdrawalHistory = await prisma.withdrawalHistory.createMany({
-      data: validated,
-    });
-
     const companyPrefs = await prisma.otekisBenefitAmount.findFirst();
     if (!companyPrefs) {
       return {
@@ -62,6 +57,27 @@ export const transfertShop = async (data: TransfertShopType) => {
         message: "Aucune valeur de bénéfice n'a été configurée pour l'instant",
       };
     }
+
+    // find if we have enough money
+    const totalMoneyToPay = validated.reduce((acc, item) => {
+      return acc + item.amount;
+    }, 0);
+
+    const hasEnoughMoney = totalMoneyToPay <= companyPrefs.amount;
+
+    if (!hasEnoughMoney) {
+      return {
+        error: true,
+        message: "Fonds insuffisants pour effectuer le transfert",
+        data: [],
+      };
+    }
+
+    // Création des transferts en base
+    const withdrawalHistory = await prisma.withdrawalHistory.createMany({
+      data: validated,
+    });
+
     // Récupérer en batch les shops concernés
     const shopIds = Array.from(new Set(validated.map((item) => item.shopId)));
     const shopsMap = new Map(

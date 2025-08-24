@@ -105,11 +105,14 @@ export async function GET() {
       })
     );
 
-    const cronJobWorks = await prisma.testCronJob.create({
-      data: {
-        isWorking: true,
-      },
-    });
+    if (otekisProfitsWaited.length > 0 || shopProfitsWaited.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const cronJobWorks = await prisma.testCronJob.create({
+        data: {
+          isWorking: true,
+        },
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

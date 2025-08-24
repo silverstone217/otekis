@@ -101,7 +101,7 @@ export const CardInfosSoldes = ({
         {/* Card pour les boutiques */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
           <PackageCheck className="text-blue-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Produits vendus</p>
             <p className="text-xl font-bold text-gray-900">{productSold}</p>
           </div>
@@ -110,7 +110,7 @@ export const CardInfosSoldes = ({
         {/* Card pour le total à payer */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
           <HandCoins className="text-red-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Benefices</p>
             <p className="text-xl font-bold text-gray-900">
               {returnFormatedMoney(benefit)}{" "}
@@ -124,7 +124,7 @@ export const CardInfosSoldes = ({
         {/* Card pour le solde total */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
           <Landmark className="text-green-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Solde disponible
             </p>

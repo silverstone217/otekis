@@ -61,7 +61,7 @@ export function PaiementCinetPay({
   deliveryChoiceId,
   currency,
 }: Props) {
-  const [isCinetPayReady, setIsCinetPayReady] = useState(false);
+  // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =
     process.env.NODE_ENV === "production"
       ? "https://otekis.vercel.app"
@@ -130,47 +130,47 @@ export function PaiementCinetPay({
     const transaction_id = uuidv4().toString().replace(/-/g, "");
 
     // Fonction qui retourne une promesse qui se résout à la réponse du paiement
-    const paymentPromise = new Promise<{
-      status: string;
-      description?: string;
-    }>((resolve, reject) => {
-      // check if deliery is not a string
-      if (typeof deliveryPrice === "string") {
-        // setLoading(false);
-        return;
-      }
-      window.CinetPay.getCheckout({
-        transaction_id,
-        amount: totalPrice + deliveryPrice,
-        currency: currencyMoney,
-        channels: "ALL",
-        description: "Achat d'article",
-        customer_name: userName,
-        customer_surname: userLastName,
-        customer_email: user.email,
-        customer_phone_number: user.tel ?? receiverInfo.tel,
-        customer_address: user.address ?? receiverInfo.address,
-        customer_city: "Kinshasa",
-        customer_country: "CD",
-        customer_state: "Kinshasa",
-        customer_zip_code: "06510",
-      });
+    // const paymentPromise = new Promise<{
+    //   status: string;
+    //   description?: string;
+    // }>((resolve, reject) => {
+    //   // check if deliery is not a string
+    //   if (typeof deliveryPrice === "string") {
+    //     // setLoading(false);
+    //     return;
+    //   }
+    //   window.CinetPay.getCheckout({
+    //     transaction_id,
+    //     amount: totalPrice + deliveryPrice,
+    //     currency: currencyMoney,
+    //     channels: "ALL",
+    //     description: "Achat d'article",
+    //     customer_name: userName,
+    //     customer_surname: userLastName,
+    //     customer_email: user.email,
+    //     customer_phone_number: user.tel ?? receiverInfo.tel,
+    //     customer_address: user.address ?? receiverInfo.address,
+    //     customer_city: "Kinshasa",
+    //     customer_country: "CD",
+    //     customer_state: "Kinshasa",
+    //     customer_zip_code: "06510",
+    //   });
 
-      window.CinetPay.waitResponse((data: any) => {
-        if (data.status === "REFUSED") {
-          resolve({ status: "REFUSED", description: data.description });
-        } else if (data.status === "ACCEPTED") {
-          resolve({ status: "ACCEPTED" });
-        } else {
-          // Autres statuts possibles
-          reject(new Error("Statut de paiement inconnu"));
-        }
-      });
+    //   window.CinetPay.waitResponse((data: any) => {
+    //     if (data.status === "REFUSED") {
+    //       resolve({ status: "REFUSED", description: data.description });
+    //     } else if (data.status === "ACCEPTED") {
+    //       resolve({ status: "ACCEPTED" });
+    //     } else {
+    //       // Autres statuts possibles
+    //       reject(new Error("Statut de paiement inconnu"));
+    //     }
+    //   });
 
-      window.CinetPay.onError((error: any) => {
-        reject(new Error(error.description || "Erreur de paiement"));
-      });
-    });
+    //   window.CinetPay.onError((error: any) => {
+    //     reject(new Error(error.description || "Erreur de paiement"));
+    //   });
+    // });
 
     try {
       // check if deliery is not a string
@@ -187,12 +187,12 @@ export function PaiementCinetPay({
         return;
       }
 
-      const paymentResult = await paymentPromise;
+      // const paymentResult = await paymentPromise;
 
-      if (paymentResult.status === "REFUSED") {
-        alert("Votre paiement a échoué : " + paymentResult.description);
-        return;
-      }
+      // if (paymentResult.status === "REFUSED") {
+      //   alert("Votre paiement a échoué : " + paymentResult.description);
+      //   return;
+      // }
 
       // Paiement accepté, préparer les données de commande
 
