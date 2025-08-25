@@ -18,7 +18,7 @@ const LoginPage = async () => {
     >
       {/* image and ads */}
       <div
-        className="hidden lg:flex flex-col relative col-span-2 2xl:col-span-3 h-full
+        className="hidden lg:flex flex-col relative col-span-2 min-h-full
        transition-all ease-in-out duration-500
       "
       >
@@ -27,8 +27,9 @@ const LoginPage = async () => {
 
       {/* form and title */}
       <div
-        className="col-span-1 lg:col-span-2 2xl:col-span-1 h-full 
+        className="col-span-1 lg:col-span-2  min-h-full 
        transition-all ease-in-out duration-500
+       max-w-xl mx-auto
       "
       >
         <AuthForm />

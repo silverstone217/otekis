@@ -8,6 +8,7 @@ import appleIcon from "@/public/icons/appleIcon.svg";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { siteName } from "@/utils/data";
+import logo from "@/public/images/oteki-logo.png";
 
 const AuthForm = () => {
   const handleSubmitWithGoogle = async () => {
@@ -20,11 +21,18 @@ const AuthForm = () => {
 
   return (
     <div className="w-full flex h-full items-center justify-center gap-10 px-4 flex-col">
-      <Link
-        href={"/"}
-        className="font-extrabold tracking-tight text-3xl capitalize lg:hidden"
-      >
-        {siteName}.
+      <Link href={"/"} className="flex mb-1 items-center gap-0.5 lg:hidden">
+        <Image
+          src={logo}
+          alt="Logo de l'entreprise"
+          priority
+          className="object-cover w-10 h-auto shrink-0"
+          width={100}
+          height={100}
+        />
+        <span className="capitalize text-4xl font-bold ">
+          {siteName!.slice(1)}
+        </span>
       </Link>
       <div className="w-full text-center space-y-1">
         <h1 className="font-bold text-2xl">{`Connection à votre compte`}</h1>
