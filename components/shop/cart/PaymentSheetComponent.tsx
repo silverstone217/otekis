@@ -339,7 +339,10 @@ const PaymentSheetComponent = ({
                     <h4 className="capitalize font-medium line-clamp-2">
                       {product.productName}
                     </h4>
-                    <p className="opacity-75 text-xs capitalize flex items-center gap-2">
+                    <p
+                      className="opacity-75 text-xs capitalize flex 
+                    items-center gap-2"
+                    >
                       <span>{product.productSize}</span>
                       <span>
                         {product.productColor &&

@@ -83,18 +83,23 @@ const ShopHeader = ({
   return (
     <header
       style={{ backgroundColor: preference.background }}
-      className="w-full h-16 flex items-center px-4 fixed top-0 left-0 backdrop-blur z-40 shadow-md"
+      className="w-full h-14 flex items-center px-4 fixed top-0 left-0 
+      backdrop-blur z-40 shadow-md"
     >
       <div className="w-full flex item-center justify-between gap-6 h-full ">
         {/* title link */}
-        <div className="flex item-center justify-center gap-4 h-full place-items-center">
+        <div
+          className="flex item-center justify-center gap-4 h-full 
+        place-items-center"
+        >
           <div className="lg:hidden flex items-center">
             <SmallDevicesLinksPart shop={shop} preferences={preference} />
           </div>
 
           <Link
             href={`/${shop.slug}`}
-            className="flex item-center justify-center gap-2 h-full place-items-center"
+            className="flex item-center justify-center gap-2 h-full 
+            place-items-center"
           >
             {preference.logo === "name" ? (
               <h1
@@ -242,6 +247,7 @@ const SmallDevicesLinksPart = ({
           borderColor: preferences.background,
         }}
         side={"left"}
+        className="h-dvh overflow-x-hidden overflow-y-auto px-4"
       >
         <SheetHeader>
           <SheetTitle hidden>{capitalizeText(shop.name)}</SheetTitle>
@@ -252,7 +258,10 @@ const SmallDevicesLinksPart = ({
         {/* contents and links */}
         <div className="grid gap-4 py-4 grid-cols-1">
           {/* links */}
-          <div className="flex flex-col items-center justify-center gap-4 w-full py-4 border-b">
+          <div
+            className="flex flex-col items-center justify-center 
+          gap-4 w-full py-4 border-b"
+          >
             {/*LINKS DATA vetements */}
             {LinksData.map((lk, idx) => (
               <SheetClose asChild key={idx}>

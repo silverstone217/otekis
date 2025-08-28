@@ -78,7 +78,7 @@ const ShopHeader = ({
   return (
     <header
       className={`px-4 lg:px-6 xl:px-8 z-50
-        ${isOpen ? "md:h-96 h-[84svh]" : "h-20"} shadow
+        ${isOpen ? "md:h-96 h-[84svh]" : "h-14"} shadow
         fixed top-0 left-0 right-0 
         transition-all duration-500 ease-in-out
         ${getMyFont?.className}
@@ -94,7 +94,7 @@ const ShopHeader = ({
         {/* Top */}
         <div
           className={`flex items-center justify-between gap-4 w-full
-         h-20
+         h-14
             `}
         >
           {/* part 1 */}

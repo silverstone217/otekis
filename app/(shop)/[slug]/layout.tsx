@@ -151,11 +151,7 @@ const MyShopLayout = async (props: Props) => {
         className={cn(
           "overflow-x-hidden ",
           getMyFont?.className,
-          Number(Header) === 0
-            ? "pt-20"
-            : Number(Header) === 3
-            ? "pt-0"
-            : "pt-16"
+          Number(Header) === 3 ? "pt-0" : "pt-14"
         )}
         key={shop.id}
       >

@@ -416,7 +416,10 @@ const AddToCartButton = ({
           {/* total price */}
           <div className="w-full flex items-center justify-between py-4 gap-4 border-y mt-4">
             <Label className="capitalize font-medium">Prix total:</Label>
-            {productShop.promotion && productShop.promotion > 0 ? (
+            {productShop.promotion &&
+            productShop.promotion > 0 &&
+            productShop.price * exchange !==
+              totalPriceAfterDiscount * exchange ? (
               <div className="flex item-center gap-2 px-3 py-1">
                 <p
                   className="font-bold gap-1
@@ -427,11 +430,11 @@ const AddToCartButton = ({
                   <span className="text-xs"> {currency}</span>
                 </p>
                 <p
-                  className="opacity-75 line-through gap-1
+                  className="opacity-75 gap-1
                   flex items-center justify-center tabular-nums
                   "
                 >
-                  {totalPrice * exchange}{" "}
+                  <s>{totalPrice * exchange}</s>{" "}
                   <span className="text-xs"> {currency}</span>
                 </p>
               </div>

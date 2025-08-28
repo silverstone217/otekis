@@ -503,13 +503,15 @@ const CartItemProduct = ({
       </div>
       {/* infos */}
       <div
-        className="w-full flex flex-col capitalize transition-all duration-500 ease-in-out
+        className="w-full flex flex-col capitalize transition-all 
+        duration-500 ease-in-out
         "
       >
         <h3
           role="button"
           onClick={navigateToProduct}
-          className="line-clamp-2 capitalize font-bold text-pretty  transition-all duration-500 ease-in-out hover:opacity-70"
+          className="line-clamp-2 capitalize font-bold text-pretty  
+          transition-all duration-500 ease-in-out hover:opacity-70"
         >
           {product.name}
         </h3>
@@ -524,14 +526,20 @@ const CartItemProduct = ({
           </span>
         </p>
         {/* price */}
-        {productShop?.promotion && productShop.promotion > 0 ? (
-          <div className="w-full flex gap-2 item-center justify-start place-items-center">
+        {productShop?.promotion &&
+        productShop.promotion > 0 &&
+        totalTotalPriceAfterDiscount * exchange !==
+          productShop.price * exchange ? (
+          <div
+            className="w-full flex gap-2 item-center justify-start 
+          place-items-center"
+          >
             <p className="font-semibold opacity-75">
               {returnFormatedMoney(totalTotalPriceAfterDiscount * exchange)}{" "}
               <span className="text-xs"> {currency}</span>
             </p>
-            <p className="line-through opacity-75 text-xs">
-              {returnFormatedMoney(totalPrice * exchange)}{" "}
+            <p className=" opacity-75 text-xs">
+              <s> {returnFormatedMoney(totalPrice * exchange)}</s>{" "}
               <span className="text-xs"> {currency}</span>{" "}
             </p>
           </div>

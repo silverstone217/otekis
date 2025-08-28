@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  backgroundColors,
-  CartIcons,
-  MenuIcons,
-  textColorData,
-} from "@/utils/preferences";
+import { CartIcons, MenuIcons, textColorData } from "@/utils/preferences";
 import Image from "next/image";
 import { ShopAllDataLinks } from "@/utils/shopData";
 import { LucideProps, X } from "lucide-react";

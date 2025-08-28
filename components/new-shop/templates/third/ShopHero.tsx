@@ -144,15 +144,21 @@ const ShopHero = ({
   return (
     <div
       className={`relative w-full h-[87svh] lg:h-[80svh] xl:h-[85svh] 
-        overflow-hidden transition-all duration-500 ease-in-out  ${getMyFont?.className}`}
+        overflow-hidden transition-all duration-500 ease-in-out  
+        ${getMyFont?.className}`}
       aria-roledescription="carousel"
       aria-label="Produits en vedette"
+      style={{
+        borderRadius: preference.buttonRadius,
+      }}
     >
       {/* Slides */}
       <div
-        className="h-full w-full flex transition-transform duration-700 ease-in-out text-white"
+        className="h-full w-full flex transition-transform 
+        duration-700 ease-in-out text-white"
         style={{
           transform: `translateX(-${index * 100}%)`,
+          borderRadius: preference.buttonRadius,
         }}
       >
         {itemsSlides.map((item, idx) => (
@@ -163,6 +169,9 @@ const ShopHero = ({
             aria-roledescription="slide"
             aria-label={`${idx + 1} sur ${itemsSlides.length}`}
             aria-hidden={index !== idx}
+            style={{
+              borderRadius: preference.buttonRadius,
+            }}
           >
             <div className="relative w-full h-full overflow-hidden">
               <Image
@@ -178,12 +187,18 @@ const ShopHero = ({
               />
             </div>
             {/* Overlay infos */}
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/40 to-transparent">
+            <div
+              className="absolute inset-0 z-10 bg-gradient-to-t 
+            from-black/40 to-transparent"
+            >
               <div
                 className="flex flex-col justify-end px-8
               md:px-10 py-10 gap-8 w-full lg:w-[450px] h-full"
               >
-                <h2 className="text-pretty text-3xl lg:text-4xl xl:text-5xl font-bold line-clamp-3 tracking-wide">
+                <h2
+                  className="text-pretty text-3xl lg:text-4xl xl:text-5xl 
+                font-bold line-clamp-3 tracking-wide"
+                >
                   {item.name && capitalizeText(item.name)}
                 </h2>
                 <p className="text-sm opacity-80 line-clamp-3">
@@ -191,8 +206,10 @@ const ShopHero = ({
                 </p>
                 <Link
                   href={`/${shop.slug}/catalogues/${item.id}`}
-                  className="font-medium lg:px-10 md:px-8 px-6 py-2 shadow-md transition-all duration-500 
-                  ease-in-out hover:opacity-70 flex items-center justify-center gap-2
+                  className="font-medium lg:px-10 md:px-8 px-6 py-2 shadow-md 
+                  transition-all duration-500 
+                  ease-in-out hover:opacity-70 flex items-center justify-center 
+                  gap-2
                   text-sm lg:text-md
                   "
                   style={{
@@ -204,12 +221,17 @@ const ShopHero = ({
                 >
                   <span>Acheter</span>
 
-                  {productShop?.promotion && productShop?.promotion !== 0 ? (
+                  {productShop?.promotion &&
+                  productShop?.promotion !== 0 &&
+                  productShop.price * exchange !==
+                    totalPriceAfterDiscount * exchange ? (
                     <span>
-                      <s className="opacity-70">
-                        {returnFormatedMoney(productShop.price * exchange)}{" "}
+                      <span className="opacity-70 mr-2">
+                        <s>
+                          {returnFormatedMoney(productShop.price * exchange)}
+                        </s>{" "}
                         <span className="text-xs">{currency}</span>
-                      </s>
+                      </span>
                       {"  "}
                       {"  "}
                       {returnFormatedMoney(
@@ -250,7 +272,8 @@ const ShopHero = ({
       </button>
       <button
         onClick={nextSlide}
-        className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/70 hover:bg-white shadow rounded-full p-2"
+        className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/70 
+        hover:bg-white shadow rounded-full p-2"
         aria-label="Produit suivant"
       >
         <svg width="24" height="24" fill="none" aria-hidden="true">
@@ -265,16 +288,18 @@ const ShopHero = ({
       </button>
 
       {/* Pagination Dots */}
-      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+      <div
+        className="absolute bottom-3 left-1/2 transform -translate-x-1/2 
+      bg-white/30 backdrop-blur-md rounded-full px-2 py-1 flex space-x-1 shadow-md"
+      >
         {itemsSlides.map((_, i) => (
           <button
             key={i}
-            className={`w-3 h-3 rounded-full transition-all ${
-              index === i ? "bg-black" : "bg-gray-300"
-            }`}
             onClick={() => setIndex(i)}
             aria-label={`Aller à la slide ${i + 1}`}
             aria-current={index === i ? "true" : undefined}
+            className={`w-2 h-2 rounded-full transition-colors duration-300 outline-none focus:ring-2 focus:ring-primary
+        ${index === i ? "bg-primary" : "bg-gray-300 hover:bg-gray-400"}`}
           />
         ))}
       </div>

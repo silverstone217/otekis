@@ -156,18 +156,21 @@ export const ProductCard = ({
           }}
         />
 
-        {productShopPromotion && productShopPromotion > 0 && (
-          <span
-            className="absolute top-3 left-2 px-3 py-1 bg-black/20 text-xs
+        {productShopPromotion &&
+          productShopPromotion > 0 &&
+          productShopPrice * exchange !==
+            totalPriceAfterDiscount * exchange && (
+            <span
+              className="absolute top-3 left-2 px-3 py-1 bg-black/20 text-xs
           transition-all duration-500 ease-in-out
           "
-            style={{
-              borderRadius: preferences.buttonRadius,
-            }}
-          >
-            <strong>{discountPercentage}%</strong> de reduction
-          </span>
-        )}
+              style={{
+                borderRadius: preferences.buttonRadius,
+              }}
+            >
+              <strong>{discountPercentage}%</strong> de reduction
+            </span>
+          )}
       </div>
       {/* info */}
       <div className="w-full flex flex-col items-start justify-start gap-1 text-sm">
@@ -185,14 +188,16 @@ export const ProductCard = ({
           </span>
         )} */}
         <div className="w-full flex item-center justify-between">
-          {productShopPromotion && productShopPromotion > 0 ? (
+          {productShopPromotion &&
+          productShopPromotion > 0 &&
+          productShopPrice * exchange !== totalPriceAfterDiscount * exchange ? (
             <div className="w-full flex item-center justify-between">
               <span className="line-clamp-1 font-bold">
                 {returnFormatedMoney(totalPriceAfterDiscount * exchange)}{" "}
                 <span className="text-xs">{currency}</span>
               </span>
-              <span className="line-clamp-1 line-through opacity-75">
-                {returnFormatedMoney(productShopPrice * exchange)}{" "}
+              <span className="line-clamp-1 opacity-75">
+                <s>{returnFormatedMoney(productShopPrice * exchange)}</s>{" "}
                 <span className="text-xs">{currency}</span>
               </span>
             </div>
