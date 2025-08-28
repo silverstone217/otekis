@@ -1,4 +1,5 @@
 import { Product } from "@prisma/client";
+import React from "react";
 
 export type ProductWithArticle = Product & {
   Article: Article[];
@@ -13,3 +14,8 @@ export type ProductCategoryType =
   | "autres";
 
 export type AddProductType = "self" | "auto";
+
+export type IconLikeComponent = React.FC<{
+  className?: string;
+  style?: React.CSSProperties;
+}>;

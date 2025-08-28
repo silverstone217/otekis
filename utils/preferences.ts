@@ -9,6 +9,8 @@ import {
   ShoppingBag,
   ShoppingBasket,
   BaggageClaim,
+  RectangleEllipsis,
+  CircleEllipsis,
 } from "lucide-react";
 import { BsCart4 } from "react-icons/bs";
 import { FaBagShopping } from "react-icons/fa6";
@@ -37,6 +39,7 @@ import parfum1 from "@/public/images/parfum1.jpg";
 import parfum2 from "@/public/images/parfum2.jpg";
 import lipstic1 from "@/public/images/lipstic1.jpg";
 import lipstic2 from "@/public/images/lipstic2.jpg";
+import { MenuIconText, MenuIconTwoBarre } from "./MenuIcons";
 
 const DataCatClothes = [
   {
@@ -100,9 +103,13 @@ const DataCatsCosmetics = [
     link: "/catalogues?type=lipstick",
   },
 ];
-export type catShopType = "vetements" | "accessoires" | "cosmetiques" | "autres"
-export const returnDataByCatShop = (category: catShopType) =>{
-  switch(category){
+export type catShopType =
+  | "vetements"
+  | "accessoires"
+  | "cosmetiques"
+  | "autres";
+export const returnDataByCatShop = (category: catShopType) => {
+  switch (category) {
     case "vetements":
       return DataCatClothes;
     case "accessoires":
@@ -112,7 +119,7 @@ export const returnDataByCatShop = (category: catShopType) =>{
     default:
       return DataCatClothes;
   }
-}
+};
 
 // MENU ICONS
 export const MenuIcons = [
@@ -122,6 +129,10 @@ export const MenuIcons = [
   Logs,
   SquareChevronRight,
   SquareMenu,
+  MenuIconTwoBarre,
+  MenuIconText,
+  RectangleEllipsis,
+  CircleEllipsis,
 ];
 
 // cart icons

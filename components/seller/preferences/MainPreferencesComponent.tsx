@@ -419,7 +419,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                 value={menuIcon}
                 onValueChange={(val) => setMenuIcon(val)}
               >
-                <div className="flex gap-5 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
+                <div
+                  className="flex gap-5 flex-wrap item-center 
+                justify-start w-full transition-all duration-500 ease-in-out"
+                >
                   {MenuIcons.map((Mi, idx) => (
                     <div key={idx} className="flex item-center gap-2">
                       <RadioGroupItem

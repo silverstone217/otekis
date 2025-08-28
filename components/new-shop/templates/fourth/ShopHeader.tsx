@@ -20,6 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { IconLikeComponent } from "@/types/data";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -165,9 +166,7 @@ type SheetMenuNavType = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   shop: Shop;
   preferences: Preferences;
-  IconMenu: React.ForwardRefExoticComponent<
-    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
-  >;
+  IconMenu: IconLikeComponent;
 };
 
 const SheetMenuNav = ({
@@ -188,7 +187,17 @@ const SheetMenuNav = ({
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <button onClick={() => setIsOpen(!isOpen)} aria-label="Ouvrir le menu">
-          {isOpen ? <X /> : <IconMenu />}
+          {isOpen ? (
+            <X />
+          ) : (
+            <IconMenu
+              style={{
+                borderRadius: preferences.buttonRadius,
+                borderColor: preferences.textColor,
+                color: preferences.textColor,
+              }}
+            />
+          )}
         </button>
       </SheetTrigger>
       <SheetContent className="w-full h-svh overflow-y-auto overflow-x-hidden ">

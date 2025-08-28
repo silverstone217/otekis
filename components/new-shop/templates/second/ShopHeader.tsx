@@ -238,7 +238,14 @@ const SmallDevicesLinksPart = ({
   return (
     <Sheet>
       <SheetTrigger>
-        <IconMenu className="w-8 flex-shrink-0 lg:hidden" />
+        <IconMenu
+          className="min-w-8 flex-shrink-0 lg:hidden"
+          style={{
+            borderRadius: preferences.buttonRadius,
+            borderColor: preferences.textColor,
+            color: preferences.textColor,
+          }}
+        />
       </SheetTrigger>
       <SheetContent
         style={{

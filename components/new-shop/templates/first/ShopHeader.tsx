@@ -103,7 +103,17 @@ const ShopHeader = ({
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Ouvrir le menu"
             >
-              {isOpen ? <X /> : <IconMenu />}
+              {isOpen ? (
+                <X />
+              ) : (
+                <IconMenu
+                  style={{
+                    borderRadius: preference.buttonRadius,
+                    borderColor: preference.textColor,
+                    color: preference.textColor,
+                  }}
+                />
+              )}
             </button>
           </div>
 
