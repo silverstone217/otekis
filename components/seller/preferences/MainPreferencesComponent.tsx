@@ -461,7 +461,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
           {/* TYPE DE HEADER SECTION */}
           <BorderWrapper>
-            <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all 
+            duration-500 ease-in-out"
+            >
               <Label className="font-bold py-2">
                 Design du Menu de navigation (en tete)
               </Label>
@@ -471,7 +474,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                 value={Header}
                 onValueChange={(val) => setHeader(val)}
               >
-                <div className="flex gap-5 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
+                <div
+                  className="flex gap-5 flex-wrap item-center justify-start 
+                w-full transition-all duration-500 ease-in-out"
+                >
                   {HeaderTemplateData.map((ff, idx) => (
                     <div key={idx} className="flex item-center gap-2">
                       <RadioGroupItem value={ff.value} id={ff.label} />
@@ -485,13 +491,19 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
           {/*DESIGN HERO section shop */}
           <BorderWrapper>
-            <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all 
+            duration-500 ease-in-out"
+            >
               <Label className="font-bold py-2">
                 Partie superieure de presentation (DESIGN)
               </Label>
               {/* radio */}
               <RadioGroup value={Hero} onValueChange={(val) => setHero(val)}>
-                <div className="flex gap-5 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
+                <div
+                  className="flex gap-5 flex-wrap item-center 
+                justify-start w-full transition-all duration-500 ease-in-out"
+                >
                   {HeroTemplateData.map((hr, idx) => (
                     <div key={idx} className="flex item-center gap-2">
                       <RadioGroupItem value={hr.value} id={hr.label} />
@@ -573,7 +585,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
           {/* Category Shop */}
           <BorderWrapper>
-            <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all duration-500 
+            ease-in-out"
+            >
               <Label className="font-bold py-2">Section de Categorie</Label>
 
               {/* radio category */}
@@ -581,7 +596,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                 value={Category}
                 onValueChange={(val) => setCategory(val)}
               >
-                <div className="flex gap-5 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
+                <div
+                  className="flex gap-5 flex-wrap item-center justify-start 
+                w-full transition-all duration-500 ease-in-out"
+                >
                   {CategoryTemplateData.map((hr, idx) => (
                     <div key={idx} className="flex item-center gap-2">
                       <RadioGroupItem value={hr.value} id={hr.label} />
@@ -595,20 +613,37 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
           {/* Fonts family */}
           <BorderWrapper>
-            <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all 
+            duration-500 ease-in-out"
+            >
               <Label className="font-bold py-2">{`Polices d'écriture`}</Label>
               {/* radio */}
               <RadioGroup
                 value={fontFamily}
                 onValueChange={(val) => setFontFamily(val)}
               >
-                <div className="flex gap-5 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
-                  {fontOptions.map((ff, idx) => (
-                    <div key={idx} className="flex item-center gap-2">
-                      <RadioGroupItem value={ff.value} id={ff.label} />
-                      <Label htmlFor={ff.label}>{ff.label}</Label>
-                    </div>
-                  ))}
+                <div
+                  className="flex gap-5 flex-wrap item-center justify-start 
+                w-full transition-all duration-500 ease-in-out"
+                >
+                  {fontOptions.map((ff, idx) => {
+                    const font =
+                      FontsList.find((f) => f.name === ff.value) ??
+                      FontsList[0];
+
+                    return (
+                      <div key={idx} className="flex item-center gap-2">
+                        <RadioGroupItem value={ff.value} id={ff.label} />
+                        <Label
+                          htmlFor={ff.label}
+                          className={`${font.component.className}`}
+                        >
+                          {ff.label}
+                        </Label>
+                      </div>
+                    );
+                  })}
                 </div>
               </RadioGroup>
             </div>
@@ -616,7 +651,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
           {/* Background */}
           <BorderWrapper>
-            <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all 
+            duration-500 ease-in-out"
+            >
               <Label className="font-bold py-2">Couleur de fond</Label>
               <div className="flex gap-4 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
                 {bckColorsData.map((clr, idx) => (
@@ -648,11 +686,17 @@ const MainPreferencesComponent = ({ shops }: Props) => {
           {/* buttons */}
 
           <BorderWrapper>
-            <div className="w-full gap-4 flex flex-col transition-all duration-500 ease-in-out">
+            <div
+              className="w-full gap-4 flex flex-col transition-all 
+            duration-500 ease-in-out"
+            >
               <Label className="font-bold py-2">Bouton</Label>
               {/* color btn */}
               <BorderWrapper>
-                <div className="w-full gap-2.5 flex flex-col transition-all duration-500 ease-in-out">
+                <div
+                  className="w-full gap-2.5 flex flex-col transition-all 
+                duration-500 ease-in-out"
+                >
                   <Label>Couleur de button</Label>
                   <div className="flex gap-4 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
                     {ButtonColorsData.map((clr, idx) => (
@@ -673,7 +717,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                               : "transparent"
                           }`,
                         }}
-                        className="transition-all duration-500 ease-in-out hover:scale-110
+                        className="transition-all duration-500 ease-in-out 
+                        hover:scale-110
                   "
                       />
                     ))}

@@ -339,18 +339,24 @@ export const ListAddProductCard = ({
           {product.name}
         </span>
         <div className="flex items-center justify-between">
-          {promotion > 0 ? (
+          {promotion > 0 &&
+          totalPriceAfterDiscount * exchange !== isInShopProduct?.price ? (
             <>
               <span className="text-primary font-bold tabular-nums text-lg">
                 {returnFormatedMoney(totalPriceAfterDiscount * exchange)}{" "}
                 <span className="text-xs font-light">{currency}</span>
               </span>
-              <span className="line-through text-muted-foreground/70 text-xs">
-                {isInShopProduct
-                  ? returnFormatedMoney(isInShopProduct.price * exchange) +
-                    " " +
-                    currency
-                  : ""}
+              <span className="text-muted-foreground/70 text-xs">
+                {isInShopProduct ? (
+                  <span>
+                    <s className="mr-1">
+                      {returnFormatedMoney(isInShopProduct.price * exchange)}
+                    </s>
+                    {currency}
+                  </span>
+                ) : (
+                  ""
+                )}
               </span>
             </>
           ) : (

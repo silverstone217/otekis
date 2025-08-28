@@ -4,13 +4,14 @@ import {
   Nunito_Sans,
   Lato,
   Montserrat,
-  Open_Sans,
-  Source_Sans_3,
+  Alegreya_SC,
+  Quantico,
   Orbitron,
   Turret_Road,
   Atma,
   Hahmlet,
   BioRhyme,
+  Gwendolyn,
 } from "next/font/google";
 
 export const lato = Lato({
@@ -48,17 +49,17 @@ export const montserrat = Montserrat({
   display: "swap",
 });
 
-export const openSans = Open_Sans({
+export const alegreya = Alegreya_SC({
   subsets: ["latin"],
-  weight: ["300", "400", "700", "800", "500"],
-  variable: "--font-open-sans",
+  weight: ["400", "700", "500", "800", "900"],
+  variable: "--font-alegreya",
   display: "swap",
 });
 
-export const sourceSans = Source_Sans_3({
+export const quantico = Quantico({
   subsets: ["latin"],
-  weight: ["300", "400", "700", "800", "900", "200", "500"],
-  variable: "--font-source-sans",
+  weight: ["400", "700"],
+  variable: "--font-quantico",
   display: "swap",
 });
 
@@ -95,17 +96,25 @@ export const bioRhyme = BioRhyme({
   display: "swap",
 });
 
+export const gwendolyn = Gwendolyn({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-gwendolyn",
+  display: "swap",
+});
+
 export const FontsList = [
   { name: "Poppins", component: poppins },
   { name: "Merriweather", component: merriweather },
   { name: "Nunito", component: nunito },
   { name: "Lato", component: lato },
   { name: "Montserrat", component: montserrat },
-  { name: "Open Sans", component: openSans },
-  { name: "Source Sans", component: sourceSans },
+  { name: "Alegreya SC", component: alegreya },
+  { name: "Quantico", component: quantico },
   { name: "Orbitron", component: orbitron },
   { name: "Turret Road", component: turretRoad },
   { name: "Atma", component: atma },
   { name: "Hahmlet", component: hahmlet },
   { name: "BioRhyme", component: bioRhyme },
+  { name: "Gwendolyn", component: gwendolyn },
 ].sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
