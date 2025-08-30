@@ -26,7 +26,8 @@ type PrefsTypes = {
   Header: string;
   Hero: string;
   positionText: string;
-  Category : string;
+  Category: string;
+  showDescription: boolean;
 };
 // Add prefs
 export const addNewPrefs = async ({
@@ -46,7 +47,8 @@ export const addNewPrefs = async ({
   Header = "0",
   Hero = "0",
   positionText = "center",
-  Category = "0"
+  Category = "0",
+  showDescription = true,
 }: PrefsTypes) => {
   const user = await getUser();
   if (!user) {
@@ -93,6 +95,7 @@ export const addNewPrefs = async ({
       Hero,
       positionText,
       Category,
+      showDescription,
     },
   });
 
@@ -129,7 +132,8 @@ export const updatePrefs = async ({
   Header = "0",
   Hero = "0",
   positionText = "center",
-  Category = "0"
+  Category = "0",
+  showDescription = true,
 }: PrefsTypes) => {
   const user = await getUser();
   if (!user) {
@@ -176,6 +180,7 @@ export const updatePrefs = async ({
       Hero,
       positionText,
       Category,
+      showDescription,
     },
   });
 

@@ -189,19 +189,22 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         products={filteredProducts() as Product[]}
       /> */}
       {/* desc shop */}
-      <div
-        className="w-full lg:text-center p-4 py-8 text-pretty text-2xl 
+      <div className="p4-8"></div>
+      {preferences.showDescription && (
+        <div
+          className="w-full lg:text-center p-4  text-pretty text-2xl 
       font-bold min-h-[70dvh] md:min-h-[60dvh] xl:min-h-[50dvh] overflow-hidden 
       box-border flex items-center justify-center 
       line-clamp-6 xl:leading-[50px] md:leading-10
       "
-      >
-        <p>
-          {capitalizeText(shop.description.slice(0, 310))}
-          {shop.description.length > 313 && "..."}
-        </p>
-      </div>
-
+        >
+          <p>
+            {capitalizeText(shop.description.slice(0, 310))}
+            {shop.description.length > 313 && "..."}
+          </p>
+        </div>
+      )}
+      <div className="py-4"></div>
       {/* new arrivals */}
       <NewArrivalProductSection
         shop={shop}

@@ -11,6 +11,7 @@ import {
   buttonRadiusData,
   CartIcons,
   CategoryTemplateData,
+  HeaderPositions,
   HeaderTemplateData,
   // HeroSectionData,
   HeroTemplateData,
@@ -37,6 +38,7 @@ import { fontOptions } from "@/utils/shopData";
 import { toast } from "sonner";
 import { FontsList } from "@/utils/fontsData";
 import { ShopDefaultSelect } from "../SelectWIthOptionsDefaultShop";
+import { Switch } from "@/components/ui/switch";
 
 type Props = {
   shops: Shop[];
@@ -73,6 +75,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   const [logoTop, setLogoTop] = useState(preferences?.logo ?? "name");
   const [menuIcon, setMenuIcon] = useState(preferences?.menuIcon ?? "0");
   const [cartIcon, setCartIcon] = useState(preferences?.cartIcon ?? "0");
+
   // Added
   const [Header, setHeader] = useState(preferences?.Header ?? "0");
   const [Hero, setHero] = useState(preferences?.Hero ?? "0");
@@ -86,6 +89,9 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   );
   const [textPosition, setTextPosition] = useState(
     preferences?.positionText ?? "center"
+  );
+  const [showDescription, setShowDescription] = useState(
+    preferences?.showDescription ?? true
   );
 
   const [loading, setLoading] = useState(false);
@@ -186,7 +192,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         Header === preferences?.Header &&
         Hero === preferences.Hero &&
         textPosition === preferences.positionText &&
-        Category === preferences.Category)
+        Category === preferences.Category &&
+        showDescription === preferences.showDescription)
     );
   }, [
     loading,
@@ -205,6 +212,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     textPosition,
     preferences,
     Category,
+    showDescription,
   ]);
 
   if (!shop) {
@@ -259,6 +267,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         Hero,
         positionText: textPosition,
         Category,
+        showDescription,
       };
       const prefs = await addNewPrefs(newPreferences);
       if (prefs.error) {
@@ -322,6 +331,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         Hero,
         positionText: textPosition,
         Category,
+        showDescription,
       };
       const prefs = await updatePrefs(newPreferences);
       if (prefs.error) {
@@ -611,6 +621,17 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                   ))}
                 </div>
               </RadioGroup>
+            </div>
+          </BorderWrapper>
+
+          {/* DESCRIPTION SHOW */}
+          <BorderWrapper>
+            <div className="w-full space-y-1.5">
+              <Label>Afficher la description</Label>
+              <Switch
+                checked={showDescription}
+                onCheckedChange={setShowDescription}
+              />
             </div>
           </BorderWrapper>
 

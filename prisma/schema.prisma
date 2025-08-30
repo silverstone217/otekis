@@ -234,13 +234,14 @@ model Preferences {
   menuIcon        String @default("0")
   cartIcon        String @default("0")
 
-  Header       String @default("0")
-  Hero         String @default("0")
-  Category     String @default("0")
-  Popular      String @default("0")
-  Footer       String @default("0")
+  Header          String  @default("0")
+  Hero            String  @default("0")
+  Category        String  @default("0")
+  Popular         String  @default("0")
+  Footer          String  @default("0")
   // template desc-1
-  positionText String @default("center") // "center" / "top" / "hidden"
+  positionText    String  @default("center") // "center" / "top" / "hidden"
+  showDescription Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

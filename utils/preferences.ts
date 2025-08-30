@@ -270,6 +270,7 @@ export const preferenceDefaults = {
   Footer: "0",
   // template-1 desc
   positionText: "center", //| "top" | "hidden"
+  showDescription: true,
 };
 
 export const ShopPreferenceDefaults = {
@@ -292,7 +293,19 @@ export const ShopPreferenceDefaults = {
   Footer: "0",
   // template-1 desc
   positionText: "center", //| "top" | "hidden"
+  showDescription: true,
 };
+
+export const HeaderPositions = [
+  {
+    label: "Fixé en haut",
+    value: "fixed",
+  },
+  {
+    label: "Non fixé ou relatif",
+    value: "relative",
+  },
+];
 
 export const HeaderTemplateData = [
   {
@@ -310,6 +323,10 @@ export const HeaderTemplateData = [
   {
     label: "Template 4",
     value: "3",
+  },
+  {
+    label: "Template 5",
+    value: "4",
   },
 ];
 
