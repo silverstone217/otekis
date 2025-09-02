@@ -250,10 +250,10 @@ export const returnButtonradiusText = (label: string) => {
 };
 
 export const preferenceDefaults = {
-  background: "#ffffff",
+  background: "#f7fafc",
   buttonColor: "#000000",
   buttonRadius: "4px",
-  buttonTextColor: "#ffffff",
+  buttonTextColor: "#f9fafb",
   shopId: "",
   description: "Parcourez le catalogue et trouvez ce qui vous fait envie!",
   hero: "cover",
@@ -273,10 +273,10 @@ export const preferenceDefaults = {
 };
 
 export const ShopPreferenceDefaults = {
-  background: "#ffffff",
+  background: "#f7fafc",
   buttonColor: "#000000",
   buttonRadius: "4px",
-  buttonTextColor: "#ffffff",
+  buttonTextColor: "#f9fafb",
   shopId: "",
   description: "Parcourez le catalogue et trouvez ce qui vous fait envie!",
   template: "0",
