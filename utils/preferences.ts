@@ -147,21 +147,20 @@ export const CartIcons = [
 
 // BG COLORS
 export const backgroundColors = {
-  purple: "#8e44ad",
-  green: "#2ecc71",
-  sky_blue: "#3498db",
-  blue: "#0047AB",
+  purple: "#6b46c1", // violet doux et chaleureux
+  green: "#38a169", // vert sauge clair, apaisant
+  sky_blue: "#63b3ed", // bleu ciel pastel
+  blue: "#2b6cb0", // bleu moyen profond
 
-  red: "#C70039",
-  pink: "#e91e63",
-  orange: "#ffae00",
-  yellow: "#f1c40f",
+  red: "#e53e3e", // rouge clair, ton chaud et énergique
+  pink: "#d53f8c", // rose framboise doux
+  orange: "#ed8936", // orange brûlé, sophistiqué
+  yellow: "#f6e05e", // jaune doux, pas agressif
 
-  black: "#171717",
-  gray: "#848884",
-  white: "#ffffff",
+  black: "#171717", // noir profond
+  gray: "#a0aec0", // gris doux bleuté
+  white: "#f7fafc", // blanc cassé, très léger
 };
-
 // TEXT COLORS
 export const textColorData = {
   light: "#000000",
@@ -170,19 +169,19 @@ export const textColorData = {
 
 // BTNS COLORS
 export const buttonColors = {
-  purple: "#8e44ad",
-  green: "#2ecc71",
-  sky_blue: "#3498db",
-  blue: "#0047AB",
+  purple: "#7c3aed", // violet vibrant, modern
+  green: "#22c55e", // vert clair et frais (emerald)
+  sky_blue: "#3b82f6", // bleu lumineux et doux (sky blue)
+  blue: "#1e40af", // bleu royal plus profond
 
-  red: "#C70039",
-  pink: "#e91e63",
-  orange: "#ffae00",
-  yellow: "#f1c40f",
+  red: "#ef4444", // rouge vif mais non agressif (tomato)
+  pink: "#ec4899", // rose chaud (fuchsia)
+  orange: "#f97316", // orange éclatant (orange-500)
+  yellow: "#eab308", // jaune doré, chaleureux
 
-  black: "#000000",
-  gray: "#848884",
-  white: "#ffffff",
+  black: "#000000", // classique noir pur
+  gray: "#6b7280", // gris équilibré (gray-500)
+  white: "#f9fafb", // blanc très doux, presque cassé
 };
 
 // RADIUS

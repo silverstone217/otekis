@@ -1,97 +1,66 @@
 "use client";
-import googleIcon from "@/public/icons/googleIcon.svg";
-import facebookIcon from "@/public/icons/facebookIcon.svg";
-import appleIcon from "@/public/icons/appleIcon.svg";
-import Image from "next/image";
-import { signIn } from "next-auth/react";
+
 import React from "react";
 import { Preferences } from "@prisma/client";
+import { Button } from "@/components/ui/button"; // shadcn button
+import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import { SiApple } from "react-icons/si";
+import { signIn } from "next-auth/react";
 
 type Props = {
   preferences: Preferences;
 };
 
+const providers = [
+  { name: "Google", Icon: FaGoogle, enabled: true, id: "google" },
+  { name: "Apple", Icon: SiApple, enabled: false, id: "apple" },
+  { name: "Facebook", Icon: FaFacebookF, enabled: false, id: "facebook" },
+];
+
 const ShopCartLogin = ({ preferences }: Props) => {
-  const handleSubmitWithGoogle = async () => {
+  const handleSignIn = async (providerId: string) => {
     try {
-      await signIn("google", { redirect: false });
+      await signIn(providerId, { redirect: false });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   return (
-    <div className="flex flex-col gap-3 w-full items-center justify-center mt-6">
-      {/* continue with google */}
-      <p>Continuer avec</p>
-      <button
-        type="button"
-        className=" lg:w-3/4 w-4/5 justify-center flex gap-2 items-center py-3
-        hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-        onClick={handleSubmitWithGoogle}
-        style={{
-          backgroundColor: preferences.buttonColor,
-          color: preferences.buttonTextColor,
-          borderRadius: preferences.buttonRadius,
-        }}
+    <div
+      className="flex flex-col items-center justify-center 
+    space-y-6 w-full max-w-md mx-auto"
+    >
+      <p
+        className="text-sm font-semibold text-muted-foreground 
+      uppercase tracking-wide"
       >
-        <Image
-          src={googleIcon}
-          alt="google Icon"
-          width={500}
-          height={500}
-          priority
-          className="size-6 object-cover"
-        />
-        <span>Google</span>
-      </button>
-      {/* continue with apple */}
-      <button
-        type="button"
-        className="lg:w-3/4 w-4/5 justify-center flex gap-2 items-center py-3
-        hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-        // onClick={handleSubmitWithGoogle}
-        style={{
-          backgroundColor: "dimgray",
-          color: preferences.buttonTextColor,
-          borderRadius: preferences.buttonRadius,
-        }}
-        disabled
-      >
-        <Image
-          src={appleIcon}
-          alt="apple Icon"
-          width={500}
-          height={500}
-          priority
-          className="size-6 object-cover"
-        />
-        <span>Apple</span>
-      </button>
+        Continuer avec
+      </p>
 
-      {/* continue with facebook */}
-      <button
-        type="button"
-        className=" lg:w-3/4 w-4/5 justify-center flex gap-2 items-center py-3 
-        hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-        // onClick={handleSubmitWithGoogle}
-        style={{
-          backgroundColor: "dimgray",
-          color: preferences.buttonTextColor,
-          borderRadius: preferences.buttonRadius,
-        }}
-        disabled
-      >
-        <Image
-          src={facebookIcon}
-          alt="facebook Icon"
-          width={500}
-          height={500}
-          priority
-          className="size-6 object-cover"
-        />
-        <span>Facebook</span>
-      </button>
+      <div className="grid grid-cols-1 gap-4 w-full">
+        {providers.map(({ name, Icon, enabled, id }) => (
+          <Button
+            key={id}
+            variant={enabled ? "default" : "outline"}
+            disabled={!enabled}
+            className="flex gap-3 items-center justify-center py-3 
+            text-base font-semibold hover:scale-105 transition-transform"
+            onClick={() => enabled && handleSignIn(id)}
+            style={{
+              backgroundColor: enabled ? preferences.buttonColor : undefined,
+              color: enabled
+                ? preferences.buttonTextColor
+                : preferences.background,
+              borderRadius: preferences.buttonRadius,
+              opacity: enabled ? 1 : 0.3,
+            }}
+          >
+            <Icon className="w-6 h-6" aria-hidden="true" />
+            <span>{name}</span>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 };

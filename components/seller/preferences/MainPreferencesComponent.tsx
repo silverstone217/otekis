@@ -680,7 +680,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
             duration-500 ease-in-out"
             >
               <Label className="font-bold py-2">Couleur de fond</Label>
-              <div className="flex gap-4 flex-wrap item-center justify-start w-full transition-all duration-500 ease-in-out">
+              <div
+                className="flex gap-4 flex-wrap item-center justify-start 
+              w-full transition-all duration-500 ease-in-out"
+              >
                 {bckColorsData.map((clr, idx) => (
                   <span
                     role="button"
@@ -699,7 +702,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                           : "transparent"
                       }`,
                     }}
-                    className="transition-all duration-500 ease-in-out hover:scale-110
+                    className="transition-all duration-500 ease-in-out 
+                    hover:scale-110
                   "
                   />
                 ))}

@@ -77,15 +77,13 @@ const CartShopPage = async (props: Props) => {
 
   if (!user) {
     return (
-      <div className="w-full min-h-[70dvh] flex items-center justify-center">
-        <div className="flex flex-col gap-1 px-4">
-          <h2 className="text-2xl font-bold ">{`Vous n'etes pas connecté a votre compte.`}</h2>
-          <p className="text-xm opacity-75">
-            {`Connectez-vous afin d'ajouter des produits et voire votre panier`}
-          </p>
-          {/* login */}
-          <ShopCartLogin preferences={preferences} />
-        </div>
+      <div className="w-full min-h-[70dvh] flex flex-col items-center justify-center px-6 text-center space-y-6">
+        <h2 className="text-3xl font-extrabold">Vous n’êtes pas connecté</h2>
+        <p className="max-w-md text-lg opacity-70">
+          Connectez-vous pour ajouter des produits à votre boutique et accéder à
+          votre panier.
+        </p>
+        <ShopCartLogin preferences={preferences} />
       </div>
     );
   }
