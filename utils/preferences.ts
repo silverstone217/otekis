@@ -253,7 +253,7 @@ export const preferenceDefaults = {
   background: "#f7fafc",
   buttonColor: "#000000",
   buttonRadius: "4px",
-  buttonTextColor: "#f9fafb",
+  buttonTextColor: "#ffffff",
   shopId: "",
   description: "Parcourez le catalogue et trouvez ce qui vous fait envie!",
   hero: "cover",
@@ -276,7 +276,7 @@ export const ShopPreferenceDefaults = {
   background: "#f7fafc",
   buttonColor: "#000000",
   buttonRadius: "4px",
-  buttonTextColor: "#f9fafb",
+  buttonTextColor: "#ffffff",
   shopId: "",
   description: "Parcourez le catalogue et trouvez ce qui vous fait envie!",
   template: "0",
@@ -346,6 +346,10 @@ export const HeroTemplateData = [
     label: "Ne rien affiché",
     value: "3",
   },
+  {
+    label: "Template 5",
+    value: "4",
+  },
 ];
 
 export const CategoryTemplateData = [
@@ -364,5 +368,9 @@ export const CategoryTemplateData = [
   {
     label: "Ne rien affiché",
     value: "3",
+  },
+  {
+    label: "Template 5",
+    value: "4",
   },
 ];

@@ -1,4 +1,4 @@
-import { HeroShopBottomSectionByCat } from "@/components/shop/home/HeroShop";
+// import { HeroShopBottomSectionByCat } from "@/components/shop/home/HeroShop";
 import NewArrivalProductSection from "@/components/shop/home/NewArrivalProductSection";
 import { prisma } from "@/lib/prisma";
 import { FontsList } from "@/utils/fontsData";
@@ -8,24 +8,32 @@ import { Preferences, Product } from "@prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
+import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
+import { ProductsTypeWithArticles } from "@/types/shop";
+import { ProductWithArticle } from "@/types/data";
 
 // HEROS
 import ShopHeroOne from "@/components/new-shop/templates/first/ShopHero";
 import ShopHeroSecond from "@/components/new-shop/templates/second/ShopHero";
 import ShopHeroThird from "@/components/new-shop/templates/third/ShopHero";
 import ShopHeroFourth from "@/components/new-shop/templates/fourth/ShopHero";
+import ShopHeroFifth from "@/components/new-shop/templates/fifth/ShopHero";
 
 // CATEGORIES
 import ShopCategoryOne from "@/components/new-shop/templates/first/ShopCategorySection";
 import ShopCategorySecond from "@/components/new-shop/templates/second/ShopCategorySection";
 import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategorySection";
 import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
-import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
-import { ProductsTypeWithArticles } from "@/types/shop";
-import { ProductWithArticle } from "@/types/data";
+import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
 
 // HEADERS DATA
-const HEROS_DATA = [ShopHeroOne, ShopHeroSecond, ShopHeroThird, ShopHeroFourth];
+const HEROS_DATA = [
+  ShopHeroOne,
+  ShopHeroSecond,
+  ShopHeroThird,
+  ShopHeroFourth,
+  ShopHeroFifth,
+];
 
 // CATEGORIES DATA
 const CATEGORIES_DATA = [
@@ -33,6 +41,7 @@ const CATEGORIES_DATA = [
   ShopCategorySecond,
   ShopCategoryThird,
   ShopCategoryFourth,
+  ShopcategoryFifth,
 ];
 
 type Props = {

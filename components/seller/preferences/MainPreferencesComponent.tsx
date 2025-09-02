@@ -357,7 +357,10 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-10 transition-all duration-500 ease-in-out">
+    <div
+      className="w-full flex flex-col gap-10 transition-all 
+    duration-500 ease-in-out"
+    >
       <div
         className="w-full flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between 
   transition-all duration-500 ease-in-out"

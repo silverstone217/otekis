@@ -221,7 +221,7 @@ model ProductShop {
 model Preferences {
   id              String @id @default(cuid())
   shopId          String @unique
-  background      String @default("#ffffff")
+  background      String @default("#f7fafc")
   textColor       String @default("#000000")
   buttonColor     String @default("#000000")
   buttonTextColor String @default("#ffffff")

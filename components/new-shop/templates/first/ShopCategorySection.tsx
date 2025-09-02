@@ -22,7 +22,10 @@ const ShopCategorySection = ({
   const DataCat = returnDataByCatShop(shop.category as catShopType);
 
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-3 transition-all duration-500 ease-in-out">
+    <div
+      className="w-full grid grid-cols-1 md:grid-cols-3 transition-all 
+    duration-500 ease-in-out"
+    >
       {DataCat.map((item, idx) => (
         <div
           className="w-full h-[55dvh] xl:h-[70dvh]  group relative
