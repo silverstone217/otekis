@@ -121,7 +121,10 @@ const ShopHero = ({
         transition-all duration-500 ease-in-out text-white"
         >
           {/* big grid cols-4 on lg */}
-          <div className="lg:col-span-4 w-full h-[55svh] lg:h-[65svh] rounded-lg relative">
+          <div
+            className="lg:col-span-4 w-full h-[55svh] lg:h-[65svh] 
+          rounded-lg relative shadow-xl "
+          >
             {/* image */}
             <div className="relative w-full h-full overflow-hidden">
               <Image
@@ -191,7 +194,10 @@ const ShopHero = ({
           "
           >
             {/* sub grid 1 */}
-            <div className="w-full h-[25svh] lg:flex-1 relative transition-all duration-500 ease-in-out">
+            <div
+              className="w-full h-[25svh] lg:flex-1 relative transition-all 
+            shadow-xl duration-500 ease-in-out"
+            >
               {/* image */}
               <div className="relative w-full h-full overflow-hidden">
                 <Image
@@ -251,7 +257,10 @@ const ShopHero = ({
             </div>
 
             {/* sub grid 2 */}
-            <div className="w-full h-[25svh] lg:flex-1 relative transition-all duration-500 ease-in-out">
+            <div
+              className="w-full h-[25svh] lg:flex-1 relative 
+            shadow-xl transition-all duration-500 ease-in-out"
+            >
               {/* image */}
               <div className="relative w-full h-full overflow-hidden">
                 <Image

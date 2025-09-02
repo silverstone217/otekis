@@ -11,6 +11,7 @@ import {
   calculateDiscountPercentage,
   returnFormatedMoney,
 } from "@/utils/functions";
+import { ArrowRight } from "lucide-react";
 
 export type ShopHeroType = {
   shop: Shop;
@@ -84,7 +85,7 @@ const ShopHero = ({
   const shopUrl = `/${shop.slug}`;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 w-full mt-4">
       <div
         className="relative w-full h-[70svh] sm:h-[60svh] 
         lg:h-[50svh] overflow-hidden rounded-2xl shadow-xl"
@@ -187,14 +188,17 @@ const ShopHero = ({
                 <Link
                   href={`${shopUrl}/catalogues/${item.id}`}
                   className="px-6 py-2 text-sm font-medium shadow-md 
-                  transition-all hover:scale-105 hover:shadow-lg"
+                  transition-all hover:scale-105 hover:shadow-lg
+                  flex items-center justify-between
+                  "
                   style={{
                     color: preferences.buttonTextColor,
                     backgroundColor: preferences.buttonColor,
                     borderRadius: preferences.buttonRadius,
                   }}
                 >
-                  Voir le produit
+                  <span>Voir le produit</span>
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
 
                 {/* Dots Navigation placés dans le contenu */}

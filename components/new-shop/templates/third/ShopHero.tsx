@@ -144,7 +144,7 @@ const ShopHero = ({
   return (
     <div
       className={`relative w-full h-[87svh] lg:h-[80svh] xl:h-[85svh] 
-        overflow-hidden transition-all duration-500 ease-in-out  
+        overflow-hidden transition-all duration-500 ease-in-out shadow-xl  
         ${getMyFont?.className}`}
       aria-roledescription="carousel"
       aria-label="Produits en vedette"

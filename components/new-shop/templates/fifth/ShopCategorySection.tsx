@@ -23,7 +23,8 @@ const ShopCategorySection = ({
 
   return (
     <section
-      className={`pt-16 max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 ${getMyFont.className}`}
+      className={`pt-16 max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 
+        shadow-xl ${getMyFont.className}`}
     >
       <h2 className="text-5xl font-extrabold mb-8">Les catégories</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">

@@ -25,10 +25,10 @@ const ShopCategorySection = ({
   return (
     <div className="w-full pt-10">
       <div className="max-w-7xl mx-auto flex flex-col gap-2">
-        <h1 className="p-4 text-3xl font-bold">Les categories</h1>
+        <h1 className="p-4 text-5xl font-bold">Les categories</h1>
 
         {/* tables */}
-        <div className="border-2 w-full grid lg:grid-cols-4 ">
+        <div className="border-2 w-full grid lg:grid-cols-4 shadow-xl ">
           {DataCat.map((item, index) => (
             <div
               key={index}
