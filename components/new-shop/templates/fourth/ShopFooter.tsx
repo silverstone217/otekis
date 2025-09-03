@@ -26,11 +26,6 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
-  const theme = useMemo(
-    () => luminanceColor(preference.background),
-    [preference.background]
-  );
-
   const bgIsLightOrDark = useMemo(
     () => luminanceColor(preference.background),
     [preference.background]
