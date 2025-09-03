@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Product, ProductShop, Shop, Preferences } from "@prisma/client";
-import { luminanceColor } from "@/utils/shopFunctions";
+import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import {
   applyPromotionOnProfit,
   calculateDiscountPercentage,
@@ -138,9 +138,9 @@ const ShopHero = ({
                   src={item.image}
                   alt={item.name}
                   fill
-                  className={`object-cover  sm:rounded-l-2xl 
+                  className={`object-cover sm:rounded-l-2xl 
                   sm:rounded-tr-none transition-all duration-700
-                   rounded-t-[${preferences.buttonRadius}]`}
+                   `}
                   priority={isActive}
                   // style={{
                   //   borderTopLeftRadius: preferences.buttonRadius,
@@ -158,17 +158,20 @@ const ShopHero = ({
                   className={`text-3xl md:text-4xl font-bold line-clamp-2 
                   ${backdropStyles.textColor}`}
                 >
-                  {item.name}
+                  {capitalizeText(item.name)}
                 </h3>
                 <p
                   className={`text-sm opacity-80 line-clamp-3 
                   ${backdropStyles.textColor}`}
                 >
-                  {item.description}
+                  {capitalizeText(item.description)}
                 </p>
 
                 {/* Price */}
-                <div className="mt-4 flex items-center gap-4 w-full justify-between flex-wrap">
+                <div
+                  className="mt-4 flex items-center gap-4 w-full justify-between 
+                flex-wrap"
+                >
                   <span
                     className={`text-xl font-semibold ${backdropStyles.textColor}`}
                   >
@@ -178,7 +181,7 @@ const ShopHero = ({
 
                   {/* Promotion */}
                   {discountPercentage > 0 && (
-                    <span className={`text-xs font-semibold text-red-400`}>
+                    <span className={`text-sm font-semibold text-red-400`}>
                       -{discountPercentage}% offre spéciale
                     </span>
                   )}
@@ -207,7 +210,8 @@ const ShopHero = ({
                     <button
                       key={dotIdx}
                       onClick={() => setIndex(dotIdx)}
-                      className={`w-3 h-3 rounded-full transition-all duration-500 hover:scale-125
+                      className={`w-3 h-3 rounded-full transition-all 
+                        duration-500 hover:scale-125
                       ${dotIdx === index ? "w-6 bg-white/80" : "bg-white/40"}
                       `}
                       style={{
