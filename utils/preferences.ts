@@ -374,3 +374,22 @@ export const CategoryTemplateData = [
     value: "4",
   },
 ];
+
+export const FooterTemplateData = [
+  {
+    label: "Template 1",
+    value: "0",
+  },
+  {
+    label: "Template 2",
+    value: "1",
+  },
+  {
+    label: "Template 3",
+    value: "2",
+  },
+  {
+    label: "Template 4",
+    value: "3",
+  },
+];

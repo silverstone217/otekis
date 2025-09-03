@@ -356,18 +356,18 @@ const page = async (props: Props) => {
             {productShop.promotion && productShop.promotion > 0 ? (
               <div className="w-full flex item-center justify-start gap-6">
                 <p className="tabular-nums font-light text-xl">
-                  {returnFormatedMoney(totalPriceAfterDiscount * exchange)}{" "}
-                  <span className="text-xs">{currency}</span>
+                  {returnFormatedMoney(totalPriceAfterDiscount * exchange)}
+                  <span className="text-xs ml-1">{currency}</span>
                 </p>
-                <p className="tabular-nums font-light opacity-75 line-through">
-                  {returnFormatedMoney(productShop.price * exchange)}{" "}
-                  <span className="text-xs">{currency}</span>
+                <p className="tabular-nums font-light opacity-75">
+                  <s> {returnFormatedMoney(productShop.price * exchange)}</s>
+                  <span className="text-xs ml-1">{currency}</span>
                 </p>
               </div>
             ) : (
               <p className="tabular-nums font-light text-xl">
-                {returnFormatedMoney(productShop.price * exchange)}{" "}
-                <span className="text-xs">{currency}</span>
+                {returnFormatedMoney(productShop.price * exchange)}
+                <span className="text-xs ml-1">{currency}</span>
               </p>
             )}
           </div>

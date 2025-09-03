@@ -11,6 +11,7 @@ import {
   buttonRadiusData,
   CartIcons,
   CategoryTemplateData,
+  FooterTemplateData,
   HeaderPositions,
   HeaderTemplateData,
   // HeroSectionData,
@@ -80,6 +81,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   const [Header, setHeader] = useState(preferences?.Header ?? "0");
   const [Hero, setHero] = useState(preferences?.Hero ?? "0");
   const [Category, setCategory] = useState(preferences?.Category ?? "0");
+  const [Footer, setFooter] = useState(preferences?.Footer ?? "0");
 
   const [heroSection, setHeroSection] = useState(preferences?.hero ?? "random");
   //   const [displayHero, setDisplayHero] = useState(true);
@@ -193,7 +195,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         Hero === preferences.Hero &&
         textPosition === preferences.positionText &&
         Category === preferences.Category &&
-        showDescription === preferences.showDescription)
+        showDescription === preferences.showDescription &&
+        Footer === preferences.Footer)
     );
   }, [
     loading,
@@ -213,6 +216,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     preferences,
     Category,
     showDescription,
+    Footer,
   ]);
 
   if (!shop) {
@@ -268,6 +272,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         positionText: textPosition,
         Category,
         showDescription,
+        Footer,
       };
       const prefs = await addNewPrefs(newPreferences);
       if (prefs.error) {
@@ -332,6 +337,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         positionText: textPosition,
         Category,
         showDescription,
+        Footer,
       };
       const prefs = await updatePrefs(newPreferences);
       if (prefs.error) {
@@ -827,6 +833,38 @@ const MainPreferencesComponent = ({ shops }: Props) => {
               </Button>
             </div>
           )}
+
+          {/* Footer shop */}
+          <BorderWrapper>
+            <div
+              className="w-full gap-2.5 flex flex-col transition-all duration-500 
+            ease-in-out"
+            >
+              <Label className="font-bold py-2">
+                Section de Choix de Footer (Bas de page)
+              </Label>
+
+              {/* radio Footer shop */}
+              <RadioGroup
+                value={Footer}
+                onValueChange={(val) => setFooter(val)}
+              >
+                <div
+                  className="flex gap-5 flex-wrap item-center justify-start 
+                w-full transition-all duration-500 ease-in-out"
+                >
+                  {FooterTemplateData.map((hr, idx) => (
+                    <div key={idx} className="flex item-center gap-2">
+                      <RadioGroupItem value={hr.value} id={hr.label} />
+                      <Label htmlFor={hr.label}>{hr.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            </div>
+          </BorderWrapper>
+
+          {/* SUBMIT BTN */}
 
           {preferences && (
             <div className="w-full gap-4 flex flex-col transition-all duration-500 ease-in-out">

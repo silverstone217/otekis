@@ -7,7 +7,7 @@ import {
 } from "@/utils/preferences";
 import { Preferences } from "@prisma/client";
 import { redirect } from "next/navigation";
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Metadata } from "next";
@@ -166,7 +166,13 @@ const MyShopLayout = async (props: Props) => {
         <main className="min-h-[70dvh]">{children}</main>
         {/* separator */}
         <div className="py-10" />
-        <ShopFooter preference={preferences} shop={shop} contacts={contacts} />
+        <Suspense>
+          <ShopFooter
+            preference={preferences}
+            shop={shop}
+            contacts={contacts}
+          />
+        </Suspense>
       </div>
     </>
   );

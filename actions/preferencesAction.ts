@@ -28,6 +28,7 @@ type PrefsTypes = {
   positionText: string;
   Category: string;
   showDescription: boolean;
+  Footer: string;
 };
 // Add prefs
 export const addNewPrefs = async ({
@@ -49,6 +50,7 @@ export const addNewPrefs = async ({
   positionText = "center",
   Category = "0",
   showDescription = true,
+  Footer = "0",
 }: PrefsTypes) => {
   const user = await getUser();
   if (!user) {
@@ -96,6 +98,7 @@ export const addNewPrefs = async ({
       positionText,
       Category,
       showDescription,
+      Footer,
     },
   });
 
@@ -134,6 +137,7 @@ export const updatePrefs = async ({
   positionText = "center",
   Category = "0",
   showDescription = true,
+  Footer = "0",
 }: PrefsTypes) => {
   const user = await getUser();
   if (!user) {
@@ -181,6 +185,7 @@ export const updatePrefs = async ({
       positionText,
       Category,
       showDescription,
+      Footer,
     },
   });
 
