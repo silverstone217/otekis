@@ -31,12 +31,21 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
     [preference.background]
   );
 
-  const textColor = theme === "light" ? "#111" : "#f9f9f9";
-  const glassBg =
-    theme === "light"
-      ? "bg-white/20 border-white/30"
-      : "bg-black/30 border-black/40";
+  const bgIsLightOrDark = useMemo(
+    () => luminanceColor(preference.background),
+    [preference.background]
+  );
 
+  const backdropStyles = {
+    backgroundColor:
+      bgIsLightOrDark !== "light"
+        ? "rgba(255,255,255,0.1)"
+        : "rgba(0,0,0,0.35)",
+    borderColor:
+      bgIsLightOrDark !== "light" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+    textColor:
+      bgIsLightOrDark !== "light" ? "text-neutral-900" : "text-neutral-100",
+  };
   if (!isClient) return null;
 
   return (
@@ -48,7 +57,12 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
       <div
         className={`max-w-7xl mx-auto px-6 py-10 flex flex-col 
           md:flex-row items-start md:items-center justify-between 
-          gap-8 md:gap-16 rounded-3xl border ${glassBg} flex-wrap`}
+          gap-8 md:gap-16 rounded-3xl border  flex-wrap`}
+        style={{
+          borderRadius: preference.buttonRadius,
+          backgroundColor: backdropStyles.backgroundColor,
+          border: `1px solid ${backdropStyles.borderColor}`,
+        }}
       >
         {/* Logo + name */}
         <div className="flex items-center gap-4">
@@ -61,9 +75,7 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
             style={{ borderRadius: preference.buttonRadius }}
           />
           <div>
-            <h2 className="font-bold text-lg" style={{ color: textColor }}>
-              {shop.name}
-            </h2>
+            <h2 className="font-bold text-lg">{shop.name}</h2>
             <p className="text-xs opacity-70">
               {returnDataValue(shop.category, CategoriesData)}
             </p>
@@ -71,19 +83,13 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
         </div>
 
         {/* Desc */}
-        <p
-          className="text-sm max-w-md leading-relaxed opacity-80"
-          style={{ color: textColor }}
-        >
+        <p className="text-sm max-w-md leading-relaxed opacity-80">
           {capitalizeText(shop.description).slice(0, 160)}
           {shop.description.length > 160 && "..."}
         </p>
 
         {/* Contacts */}
-        <div
-          className="flex flex-col gap-3 text-sm"
-          style={{ color: textColor }}
-        >
+        <div className="flex flex-col gap-3 text-sm">
           {contacts?.email && (
             <Link
               href={`mailto:${contacts.email}`}
