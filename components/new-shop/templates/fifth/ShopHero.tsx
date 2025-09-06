@@ -94,6 +94,7 @@ const ShopHero = ({
           border: `1px solid ${backdropStyles.borderColor}`,
           background: backdropStyles.backgroundColor,
           backdropFilter: "blur(20px)",
+          marginTop: Number(preferences.Header) === 3 ? 80 : 0,
         }}
       >
         {/* Slides */}
