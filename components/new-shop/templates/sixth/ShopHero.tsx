@@ -97,8 +97,8 @@ const ShopHero = ({
     bgIsLightOrDark === "light" ? "bg-white/10" : "bg-black/20"
   } border border-white/30 dark:border-black/30 shadow-lg`;
 
-  const textColor =
-    bgIsLightOrDark !== "light" ? "text-neutral-900" : "text-neutral-100";
+  // const textColor =
+  //   bgIsLightOrDark !== "light" ? "text-neutral-900" : "text-neutral-100";
 
   return (
     <section
