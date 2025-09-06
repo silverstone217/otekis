@@ -157,7 +157,7 @@ const ShopHero = ({
           <div
             key={product.id}
             className="relative w-full h-96 lg:h-full rounded-3xl 
-            overflow-hidden shadow
+            overflow-hidden shadow 
             group"
             style={{
               borderRadius: preferences.buttonRadius,
@@ -171,7 +171,8 @@ const ShopHero = ({
                 priority
                 width={400}
                 height={600}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                className="w-full h-full object-cover group-hover:scale-105 
+                transition-transform duration-700 ease-in-out brightness-90"
                 style={{
                   borderRadius: preferences.buttonRadius,
                 }}
@@ -180,10 +181,13 @@ const ShopHero = ({
 
             {/* Glass info overlay */}
             <div
-              className={`${glassCard} absolute bottom-4 left-4 right-4 p-4 rounded-2xl`}
+              className={`${glassCard} absolute bottom-4 left-4 right-4 p-4 
+              rounded-2xl
+              
+              `}
               style={{
                 borderRadius: preferences.buttonRadius,
-                color: textColor,
+                color: preferences.buttonTextColor,
               }}
             >
               <h3 className="text-lg font-semibold line-clamp-1">
@@ -203,7 +207,8 @@ const ShopHero = ({
                 </span>
                 <Link
                   href={`${shopUrl}/catalogues/${product.id}`}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-all shadow"
+                  className="flex items-center gap-2 px-3 py-1.5 
+                  text-sm font-medium transition-all shadow"
                   style={{
                     borderRadius: preferences.buttonRadius,
                     backgroundColor: preferences.buttonColor,
