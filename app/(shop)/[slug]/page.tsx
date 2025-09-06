@@ -18,6 +18,7 @@ import ShopHeroSecond from "@/components/new-shop/templates/second/ShopHero";
 import ShopHeroThird from "@/components/new-shop/templates/third/ShopHero";
 import ShopHeroFourth from "@/components/new-shop/templates/fourth/ShopHero";
 import ShopHeroFifth from "@/components/new-shop/templates/fifth/ShopHero";
+import ShopHeroSixth from "@/components/new-shop/templates/sixth/ShopHero";
 
 // CATEGORIES
 import ShopCategoryOne from "@/components/new-shop/templates/first/ShopCategorySection";
@@ -26,13 +27,14 @@ import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategor
 import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
 import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
 
-// HEADERS DATA
+// HEROS DATA
 const HEROS_DATA = [
   ShopHeroOne,
   ShopHeroSecond,
   ShopHeroThird,
   ShopHeroFourth,
   ShopHeroFifth,
+  ShopHeroSixth,
 ];
 
 // CATEGORIES DATA
