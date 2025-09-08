@@ -16,7 +16,7 @@ import AvatarUser from "@/components/AvatarUser";
 import { Preferences, Shop } from "@prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Separator } from "@/components/ui/separator";
-import { capitalizeText } from "@/utils/shopFunctions";
+import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -37,7 +37,7 @@ const ShopHeader = ({
     setIsClient(true);
   }, []);
 
-  // update logo
+  // update favicon
   useEffect(() => {
     const updateFavicon = (iconURL: string): void => {
       let favicon = document.querySelector(
@@ -71,112 +71,119 @@ const ShopHeader = ({
       shop.category as "cosmetiques" | "vetements" | "accessoires"
     ] ?? ShopAllDataLinks["cosmetiques"];
 
-  //   MenuIcons
+  const bgIsLightOrDark = useMemo(
+    () => luminanceColor(preference.background),
+    [preference.background]
+  );
 
   if (!isClient) return null;
 
   return (
-    <header
-      className={`px-4 lg:px-6 xl:px-8 z-50
-        ${isOpen ? "md:h-96 h-[84svh]" : "h-14"} shadow
+    <>
+      {/* HEADER FIXE */}
+      <header
+        className={`px-4 lg:px-6 xl:px-8 z-50
+        h-14 shadow
         fixed top-0 left-0 right-0 
         transition-all duration-500 ease-in-out
         ${getMyFont?.className}
-        overflow-hidden 
-    `}
-      style={{
-        backgroundColor: preference?.background ?? backgroundColors.white,
-        color: preference?.textColor ?? textColorData.light,
-      }}
-    >
-      {/* container */}
-      <div className="flex flex-col w-full transition-all duration-500 ease-in-out">
-        {/* Top */}
-        <div
-          className={`flex items-center justify-between gap-4 w-full
-         h-14
-            `}
+        flex items-center justify-between`}
+        style={{
+          backgroundColor: preference?.background ?? backgroundColors.white,
+          color: preference?.textColor ?? textColorData.light,
+        }}
+      >
+        {/* bouton menu */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Ouvrir le menu"
+          className="flex items-center justify-center"
         >
-          {/* part 1 */}
-          <div>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Ouvrir le menu"
-            >
-              {isOpen ? (
-                <X />
-              ) : (
-                <IconMenu
-                  style={{
-                    borderRadius: preference.buttonRadius,
-                    borderColor: preference.textColor,
-                    color: preference.textColor,
-                  }}
-                />
-              )}
-            </button>
-          </div>
+          {isOpen ? (
+            <X className="w-7 h-7" />
+          ) : (
+            <IconMenu
+              className="w-7 h-7"
+              style={{
+                borderRadius: preference.buttonRadius,
+                color: preference.textColor,
+              }}
+            />
+          )}
+        </button>
 
-          {/* part 2 */}
-          <div>
-            <Link
-              href={`/${shop.slug}`}
-              className="flex item-center justify-center gap-2 h-full place-items-center"
+        {/* logo */}
+        <Link
+          href={`/${shop.slug}`}
+          className="flex items-center justify-center gap-2"
+        >
+          {preference.logo === "name" ? (
+            <h1
+              style={{
+                color: preference?.textColor ?? textColorData.light,
+              }}
+              className="text-xl font-semibold tracking-wide capitalize"
             >
-              {preference.logo === "name" ? (
-                <h1
-                  style={{
-                    color: preference?.textColor ?? textColorData.light,
-                  }}
-                  className="text-2xl font-light font-serif tracking-wide capitalize"
-                >
-                  {shop.name}
-                </h1>
-              ) : (
-                <Image
-                  src={shop.logo}
-                  alt={shop.name}
-                  width={800}
-                  height={800}
-                  priority
-                  className="w-8 h-8 object-cover"
-                  style={{
-                    borderRadius: preference.buttonRadius,
-                  }}
-                />
-              )}
-            </Link>
-          </div>
+              {shop.name}
+            </h1>
+          ) : (
+            <Image
+              src={shop.logo}
+              alt={shop.name}
+              width={800}
+              height={800}
+              priority
+              className="w-8 h-8 object-cover"
+              style={{
+                borderRadius: preference.buttonRadius,
+              }}
+            />
+          )}
+        </Link>
 
-          {/* part 3 */}
-          <div>
-            <Link
-              href={`/${shop.slug}/panier`}
-              className="flex items-center justify-center "
-            >
-              <IconCart className="w-8 flex-shrink-0  opacity-75" />
-            </Link>
-          </div>
-        </div>
+        {/* panier */}
+        <Link
+          href={`/${shop.slug}/panier`}
+          className="flex items-center justify-center"
+        >
+          <IconCart className="w-7 h-7 opacity-75" />
+        </Link>
+      </header>
 
-        {/* bottom */}
-        <div className="mt-4 flex md:flex-row flex-col md:gap-4 md:items-center justify-between">
-          {/* links */}
-          <div className="flex flex-col gap-2.5">
+      {/* MENU OVERLAY */}
+      <div
+        className={`fixed top-14 left-0 right-0 bottom-0 z-40
+        transition-all duration-500 ease-in-out
+        ${
+          isOpen
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "-translate-y-full opacity-0 pointer-events-none"
+        }
+        `}
+        style={{
+          backgroundColor: preference?.background ?? backgroundColors.white,
+          color: preference?.textColor ?? textColorData.light,
+        }}
+      >
+        <div className="p-4 flex flex-col gap-6 overflow-y-auto">
+          {/* liens */}
+          <div className="flex flex-col gap-3">
             {LinksData.map((lk, idx) => (
               <Link
                 href={`/${shop.slug}${lk.value}`}
                 key={idx}
                 onClick={() => setIsOpen(false)}
+                className="font-medium text-lg hover:opacity-80 transition"
               >
-                <span className="font-medium">{lk.label}</span>
+                {lk.label}
               </Link>
             ))}
           </div>
 
-          {/* image and title */}
-          <div className="py-4 md:px-4 w-full md:w-fit">
-            <Separator className="md:hidden my-4 bg-gray-500" />
+          <Separator className="bg-gray-500" />
+
+          {/* infos shop */}
+          <div className="flex flex-col gap-3">
             <div className="text-sm">
               Boutique <strong className="capitalize">{shop.name}</strong>
             </div>
@@ -186,37 +193,36 @@ const ShopHeader = ({
               width={600}
               height={600}
               priority
-              className={`w-full h-40 md:h-32 object-cover
-              transition-all duration-500 ease-in-out border
-              mt-1 border-gray-500
-              `}
+              className="w-full h-40 object-cover border border-gray-500"
               style={{
                 borderRadius: preference.buttonRadius,
               }}
             />
+          </div>
 
-            {/* auth and btn */}
-            <div className="mt-4 w-full flex flex-col ">
-              {user ? (
-                <div className="flex items-center gap-2.5 w-full">
-                  <AvatarUser />
-                  <div>
-                    <p className="font-medium line-clamp-1">
-                      {user?.name && capitalizeText(user?.name)}
-                    </p>
-                    <p className="opacity-75 text-xs line-clamp-1">
-                      {user?.email}
-                    </p>
-                  </div>
+          <Separator className="bg-gray-500" />
+
+          {/* auth */}
+          <div className="mt-2">
+            {user ? (
+              <div className="flex items-center gap-2.5">
+                <AvatarUser />
+                <div>
+                  <p className="font-medium line-clamp-1">
+                    {user?.name && capitalizeText(user?.name)}
+                  </p>
+                  <p className="opacity-75 text-xs line-clamp-1">
+                    {user?.email}
+                  </p>
                 </div>
-              ) : (
-                <AuthPopup />
-              )}
-            </div>
+              </div>
+            ) : (
+              <AuthPopup />
+            )}
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 };
 
