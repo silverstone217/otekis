@@ -285,7 +285,7 @@ const MainCatalogueComponent = ({
               borderRadius: preferences.buttonRadius,
               color: preferences.textColor,
               backgroundColor:
-                luminanceColor(preferences.background) === "light"
+                luminanceColor(preferences.background) === "dark"
                   ? "rgba(255, 255, 255, 0.3)"
                   : "rgba(19, 19, 19, 0.3)",
             }}

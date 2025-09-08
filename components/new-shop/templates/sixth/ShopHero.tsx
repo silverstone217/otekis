@@ -146,7 +146,7 @@ const ShopHero = ({
               <ArrowRight className="group-hover:translate-x-2 transition-transform duration-500 ease-in-out" />
             </Link>
             <p className="text-sm opacity-70 max-w-xs">
-              Plus de {filteredProducts.length} articles disponibles dans votre
+              Plus de {filteredProducts.length} articles disponibles dans notre
               catalogue.
             </p>
           </div>
