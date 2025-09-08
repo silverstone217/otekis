@@ -34,7 +34,7 @@ const ShopHeader = ({
   getMyFont,
   preferences: preference,
 }: ShopHeaderType) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const user = useCurrentUser();
 
@@ -66,10 +66,10 @@ const ShopHeader = ({
     [preference.cartIcon]
   );
 
-  const IconMenu = useMemo(
-    () => MenuIcons[preference.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference.menuIcon]
-  );
+  // const IconMenu = useMemo(
+  //   () => MenuIcons[preference.menuIcon ? parseInt(preference.menuIcon) : 0],
+  //   [preference.menuIcon]
+  // );
 
   const LinksData =
     ShopAllDataLinks[
@@ -92,7 +92,7 @@ const ShopHeader = ({
           className="flex item-center justify-center gap-4 h-full 
         place-items-center"
         >
-          <div className="lg:hidden flex items-center">
+          <div className="lg:hidden flex items-center justify-center">
             <SmallDevicesLinksPart shop={shop} preferences={preference} />
           </div>
 
@@ -197,6 +197,7 @@ type SmallDevicesLinksPartial = {
   shop: Shop;
   preferences: Preferences;
 };
+
 const SmallDevicesLinksPart = ({
   shop,
   preferences,
@@ -212,108 +213,108 @@ const SmallDevicesLinksPart = ({
       shop.category as "cosmetiques" | "vetements" | "accessoires"
     ] ?? ShopAllDataLinks["cosmetiques"];
 
-  // SIGN WITH GOOGLE
-  const handleSubmitWithGoogle = async () => {
-    try {
-      await signIn("google", { redirect: false });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // LOG OUT
   const LogUserOut = async () => {
     try {
-      await signOut({
-        redirect: false,
-      });
-
+      await signOut({ redirect: false });
       toast.success("Vous avez été déconnecté!");
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur survenue lors de la déconnexion!");
+      toast.error("Une erreur est survenue lors de la déconnexion!");
     }
   };
 
   return (
     <Sheet>
+      {/* Trigger bouton menu */}
       <SheetTrigger>
         <IconMenu
-          className="min-w-8 flex-shrink-0 lg:hidden"
+          className="w-8 h-8 lg:hidden cursor-pointer 
+          transition-transform hover:scale-110"
           style={{
             borderRadius: preferences.buttonRadius,
-            borderColor: preferences.textColor,
             color: preferences.textColor,
           }}
         />
       </SheetTrigger>
+
+      {/* Drawer content */}
       <SheetContent
+        side="left"
         style={{
           backgroundColor: preferences.background,
           color: preferences.textColor,
-          borderColor: preferences.background,
         }}
-        side={"left"}
-        className="h-dvh overflow-x-hidden overflow-y-auto px-4"
+        className="h-dvh overflow-y-auto px-6 py-6 flex flex-col gap-8"
       >
-        <SheetHeader>
-          <SheetTitle hidden>{capitalizeText(shop.name)}</SheetTitle>
-          <SheetDescription hidden>
-            {capitalizeText(shop.description)}
-          </SheetDescription>
-        </SheetHeader>
-        {/* contents and links */}
-        <div className="grid gap-4 py-4 grid-cols-1">
-          {/* links */}
-          <div
-            className="flex flex-col items-center justify-center 
-          gap-4 w-full py-4 border-b"
-          >
-            {/*LINKS DATA vetements */}
-            {LinksData.map((lk, idx) => (
-              <SheetClose asChild key={idx}>
-                <Link
-                  href={`/${shop.slug}${lk.value}`}
-                  key={idx}
-                  className="w-full hover:opacity-75 hover:underline transition-all duration-500 ease-in-out"
-                >
-                  <p className="text-[18px] font-bold tracking-wide">
-                    {lk.label}
-                  </p>
-                </Link>
-              </SheetClose>
-            ))}
+        <SheetTitle hidden />
+
+        {/* HEADER : Logo + Shop name */}
+        <div className="flex items-center gap-3 border-b pb-4">
+          <Image
+            src={shop.logo}
+            alt={shop.name}
+            width={56}
+            height={56}
+            className="object-cover rounded-full shadow-sm size-12 shrink-0"
+            // style={{ borderRadius: preferences.buttonRadius }}
+          />
+          <div>
+            <h2 className="text-lg font-bold capitalize leading-tight">
+              {capitalizeText(shop.name)}
+            </h2>
+            <p className="text-xs opacity-70 line-clamp-1">
+              {capitalizeText(shop.description)}
+            </p>
           </div>
-          {/* btns and user */}
-          <div className="flex flex-col items-center justify-center gap-4 w-full">
-            <div className="flex items-start gap-2 w-full">
-              {user && (
-                <Link href={"#"}>
-                  <UserAvatar />
-                </Link>
-              )}
-              {user && (
-                <div>
-                  <p className="font-medium line-clamp-1">
+        </div>
+
+        {/* NAV LINKS */}
+        <nav className="flex flex-col gap-3">
+          {LinksData.map((lk, idx) => (
+            <SheetClose asChild key={idx}>
+              <Link
+                href={`/${shop.slug}${lk.value}`}
+                className="px-3 py-2 rounded-lg font-medium tracking-wide transition-all
+                hover:bg-black/10 hover:opacity-80"
+                style={{
+                  borderRadius: preferences.buttonRadius,
+                }}
+              >
+                {lk.label}
+              </Link>
+            </SheetClose>
+          ))}
+        </nav>
+
+        {/* USER SECTION */}
+        <div className="mt-auto flex flex-col gap-4 pt-6 border-t">
+          {user ? (
+            <>
+              <div className="flex items-center gap-3">
+                <UserAvatar />
+                <div className="min-w-0">
+                  <p className="font-semibold line-clamp-1">
                     {user?.name && capitalizeText(user?.name)}
                   </p>
-                  <p className="opacity-75 text-xs line-clamp-1">
+                  <p className="text-xs opacity-70 line-clamp-1">
                     {user?.email}
                   </p>
                 </div>
-              )}
-            </div>
+              </div>
 
-            <SheetClose asChild className="w-full mt-2">
-              {user ? (
-                <Button variant={"destructive"} onClick={LogUserOut}>
-                  Deconnexion
+              <SheetClose asChild>
+                <Button
+                  variant="destructive"
+                  onClick={LogUserOut}
+                  className="w-full"
+                >
+                  Déconnexion
                 </Button>
-              ) : (
-                <AuthPopup />
-              )}
-            </SheetClose>
-          </div>
+              </SheetClose>
+            </>
+          ) : (
+            <AuthPopup />
+          )}
         </div>
       </SheetContent>
     </Sheet>
