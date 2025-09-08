@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getUser } from "@/actions/actions";
 import React from "react";
 import { ShopDefaultSelect } from "@/components/seller/SelectWIthOptionsDefaultShop";
+import OverviewMainComponent from "@/components/seller/overview/MainComponent";
 
 const getShopsByID = async (userId: string) => {
   const shops = await prisma.shop.findMany({
@@ -57,10 +58,7 @@ const DashboardSellerPage = async () => {
 
   return (
     <div>
-      Dashboard Seller Page for more infos.
-      <br />
-      <br></br>
-      <ShopDefaultSelect shops={shops} />
+      <OverviewMainComponent shops={shops} />
     </div>
   );
 };

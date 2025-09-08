@@ -63,7 +63,8 @@ export function ShopDefaultSelect({ shops }: ShopSelectProps) {
       <Select value={selected} onValueChange={handleSelect}>
         <SelectTrigger
           id="shop-select"
-          className="w-full h-12 bg-white border-gray-200 rounded-lg shadow-sm focus:ring-2 
+          className="w-full h-12 bg-white 
+          border-gray-200 rounded-lg shadow-sm focus:ring-2 
           focus:ring-indigo-500 transition"
           aria-label="Sélectionner une boutique"
         >
