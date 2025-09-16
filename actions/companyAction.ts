@@ -64,12 +64,16 @@ type ChangeCurrencyParams = {
   exchangeRate: number;
   prefId: string;
   cinetPayPercentage: number;
+  delayTransferableMoney: number;
+  delayRefund: number;
 };
 export const changeCurrencies = async ({
   productCurrency,
   exchangeRate,
   prefId,
   cinetPayPercentage,
+  delayRefund,
+  delayTransferableMoney,
 }: ChangeCurrencyParams) => {
   const user = await getUser();
   const isPermited = user ? PERMITED_ROLES.includes(user?.role) : false;
@@ -89,6 +93,8 @@ export const changeCurrencies = async ({
       currency: productCurrency,
       transfertCurrency: productCurrency,
       cinetPayPercentage: cinetPayPercentage.toString(),
+      delayRefund,
+      delayTransferableMoney,
     },
   });
 

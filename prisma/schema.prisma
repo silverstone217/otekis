@@ -509,12 +509,14 @@ model OtekisWithdrawalHistory {
 model OtekisPreferences {
   id String @id @default(cuid())
 
-  productCurrency    String @default("USD")
-  transfertCurrency  String @default("USD")
-  withdrawCurrency   String @default("USD")
-  exchangeRate       Float  @default(2900)
-  currency           String @default("USD")
-  cinetPayPercentage String @default("3") // 3%
+  productCurrency        String @default("USD")
+  transfertCurrency      String @default("USD")
+  withdrawCurrency       String @default("USD")
+  exchangeRate           Float  @default(2900)
+  currency               String @default("USD")
+  cinetPayPercentage     String @default("3") // 3%
+  delayRefund            Int    @default(2)
+  delayTransferableMoney Int    @default(4)
 
   socialEmail String @default("marketstore.oteki@gmail.com")
   socialPhone String @default("813350706")
