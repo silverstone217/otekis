@@ -155,7 +155,7 @@ export default function OverviewMainComponent({ shops }: Props) {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 ">
         {/* Line chart ventes */}
         {weekly_sales && (
           <Card>
