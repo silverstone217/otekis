@@ -10,26 +10,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, ShoppingBag, DollarSign, Users } from "lucide-react";
-import { Shop } from "@prisma/client";
 import { ProductsByCategoryType } from "@/actions/adminsActions";
-
-// const salesData = [
-//   { name: "Lun", sales: 120 },
-//   { name: "Mar", sales: 200 },
-//   { name: "Mer", sales: 150 },
-//   { name: "Jeu", sales: 300 },
-//   { name: "Ven", sales: 280 },
-//   { name: "Sam", sales: 500 },
-//   { name: "Dim", sales: 400 },
-// ];
-
-// const totalProducts = [
-//   { name: "Cosmétiques", value: 400 },
-//   { name: "Vêtements", value: 300 },
-//   { name: "Accessoires", value: 200 },
-// ];
 
 const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
 

@@ -17,6 +17,7 @@ import {
 } from "date-fns";
 import { formatMoney } from "@/app/(admin)/finances/retrait/WithdrawTable";
 import { returnFormatedMoney } from "@/utils/functions";
+import { fr } from "date-fns/locale";
 
 // AUTHORIZE ACTION
 export const isAuthorizedToContinue = async ({
@@ -454,16 +455,20 @@ export const get_sales_week = async () => {
       const start = startOfDay(day);
       const end = endOfDay(day);
 
-      const count = await prisma.otekisProfitWaited.count({
+      const count = await prisma.otekisProfitWaited.findMany({
         where: {
           isProcessed: true,
           createdAt: { gte: start, lte: end },
         },
       });
 
+      const totalCount = count.reduce((sum, arr) => {
+        return sum + arr.benefit;
+      }, 0);
+
       return {
-        name: format(day, "EEE"), // Lun, Mar, Mer ...
-        sales: count || 0, // assure 0 si pas de ventes
+        name: format(day, "EEE", { locale: fr }), // Lun, Mar, Mer ...
+        sales: totalCount || 0, // assure 0 si pas de ventes
       };
     })
   );

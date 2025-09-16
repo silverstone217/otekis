@@ -12,7 +12,6 @@ import {
   CartIcons,
   CategoryTemplateData,
   FooterTemplateData,
-  HeaderPositions,
   HeaderTemplateData,
   // HeroSectionData,
   HeroTemplateData,
