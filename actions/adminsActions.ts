@@ -12,6 +12,8 @@ import {
   startOfMonth,
   endOfMonth,
   subMonths,
+  eachDayOfInterval,
+  format,
 } from "date-fns";
 import { formatMoney } from "@/app/(admin)/finances/retrait/WithdrawTable";
 import { returnFormatedMoney } from "@/utils/functions";
@@ -345,4 +347,126 @@ export const get_total_users = async () => {
       change,
     },
   };
+};
+
+// Total Products by cats
+export type ProductsByCategoryType = {
+  name: string;
+  value: number;
+};
+
+export const get_total_product = async () => {
+  const user = await getUser();
+  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+
+  if (!isPermit) {
+    return {
+      accessoires: { count: 0, stock: 0 },
+      vetements: { count: 0, stock: 0 },
+      cosmetiques: { count: 0, stock: 0 },
+    };
+  }
+
+  const products = await prisma.product.findMany({
+    include: {
+      Article: {
+        select: {
+          stock: true,
+        },
+      },
+    },
+  });
+
+  // Calcul du stock total par produit
+  const productsWithStock = products.map((prod) => {
+    const stock = prod.Article.reduce((sum, art) => sum + art.stock, 0);
+
+    return {
+      id: prod.id,
+      category: prod.category,
+      stock,
+    };
+  });
+
+  // Agrégation par catégorie
+  const totalByCats = {
+    accessoires: {
+      count: productsWithStock.filter((p) => p.category === "accessoires")
+        .length,
+      stock: productsWithStock
+        .filter((p) => p.category === "accessoires")
+        .reduce((sum, p) => sum + p.stock, 0),
+    },
+    vetements: {
+      count: productsWithStock.filter((p) => p.category === "vetements").length,
+      stock: productsWithStock
+        .filter((p) => p.category === "vetements")
+        .reduce((sum, p) => sum + p.stock, 0),
+    },
+    cosmetiques: {
+      count: productsWithStock.filter((p) => p.category === "cosmetiques")
+        .length,
+      stock: productsWithStock
+        .filter((p) => p.category === "cosmetiques")
+        .reduce((sum, p) => sum + p.stock, 0),
+    },
+  };
+
+  const totalProducts = [
+    { name: "Cosmétiques", value: totalByCats.cosmetiques.stock },
+    { name: "Vêtements", value: totalByCats.vetements.stock },
+    { name: "Accessoires", value: totalByCats.accessoires.stock },
+  ];
+
+  return totalProducts;
+};
+
+// SALES BY DAY in the current week
+export const get_sales_week = async () => {
+  const user = await getUser();
+  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+
+  if (!isPermit) {
+    // Retour par défaut si pas de permission
+    return [
+      { name: "Lun", sales: 0 },
+      { name: "Mar", sales: 0 },
+      { name: "Mer", sales: 0 },
+      { name: "Jeu", sales: 0 },
+      { name: "Ven", sales: 0 },
+      { name: "Sam", sales: 0 },
+      { name: "Dim", sales: 0 },
+    ];
+  }
+
+  const now = new Date();
+
+  // Début et fin de la semaine (Lundi → Dimanche)
+  const startWeek = startOfWeek(now, { weekStartsOn: 1 });
+  const endWeek = endOfWeek(now, { weekStartsOn: 1 });
+
+  // Chaque jour de la semaine
+  const days = eachDayOfInterval({ start: startWeek, end: endWeek });
+
+  // Récupérer les ventes pour chaque jour
+  const salesData = await Promise.all(
+    days.map(async (day) => {
+      const start = startOfDay(day);
+      const end = endOfDay(day);
+
+      const count = await prisma.otekisProfitWaited.count({
+        where: {
+          isProcessed: true,
+          createdAt: { gte: start, lte: end },
+        },
+      });
+
+      return {
+        name: format(day, "EEE"), // Lun, Mar, Mer ...
+        sales: count || 0, // assure 0 si pas de ventes
+      };
+    })
+  );
+
+  return salesData;
 };

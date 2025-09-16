@@ -5,10 +5,13 @@ import React from "react";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
 import OverviewMainComponent from "@/components/admins/overview/MainComponent";
 import {
+  get_sales_week,
   get_today_sales,
+  get_total_product,
   get_total_sales,
   get_total_users,
   get_weekly_benefits,
+  ProductsByCategoryType,
 } from "@/actions/adminsActions";
 
 const OverviewPage = async () => {
@@ -27,6 +30,9 @@ const OverviewPage = async () => {
   const weekly_benefit = await get_weekly_benefits();
   const total_users = await get_total_users();
 
+  const total_product = (await get_total_product()) as ProductsByCategoryType[];
+  const sales_Week = await get_sales_week();
+
   return (
     <div>
       <OverviewMainComponent
@@ -34,6 +40,8 @@ const OverviewPage = async () => {
         today_sales={today_sales.today_sales}
         weekly_benefit={weekly_benefit.weekly_benefits}
         total_users={total_users.total_users}
+        total_product={total_product}
+        sales_Week={sales_Week}
       />
     </div>
   );

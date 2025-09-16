@@ -13,22 +13,23 @@ import {
 import { BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 import { TrendingUp, ShoppingBag, DollarSign, Users } from "lucide-react";
 import { Shop } from "@prisma/client";
+import { ProductsByCategoryType } from "@/actions/adminsActions";
 
-const salesData = [
-  { name: "Lun", sales: 120 },
-  { name: "Mar", sales: 200 },
-  { name: "Mer", sales: 150 },
-  { name: "Jeu", sales: 300 },
-  { name: "Ven", sales: 280 },
-  { name: "Sam", sales: 500 },
-  { name: "Dim", sales: 400 },
-];
+// const salesData = [
+//   { name: "Lun", sales: 120 },
+//   { name: "Mar", sales: 200 },
+//   { name: "Mer", sales: 150 },
+//   { name: "Jeu", sales: 300 },
+//   { name: "Ven", sales: 280 },
+//   { name: "Sam", sales: 500 },
+//   { name: "Dim", sales: 400 },
+// ];
 
-const revenueByCategory = [
-  { name: "Cosmétiques", value: 400 },
-  { name: "Vêtements", value: 300 },
-  { name: "Accessoires", value: 200 },
-];
+// const totalProducts = [
+//   { name: "Cosmétiques", value: 400 },
+//   { name: "Vêtements", value: 300 },
+//   { name: "Accessoires", value: 200 },
+// ];
 
 const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
 
@@ -46,6 +47,11 @@ interface OverViewProps {
     change: string;
   };
   total_users: { total: number; change: string };
+  total_product: ProductsByCategoryType[];
+  sales_Week: {
+    name: string;
+    sales: number;
+  }[];
 }
 
 export default function OverviewMainComponent({
@@ -53,6 +59,8 @@ export default function OverviewMainComponent({
   today_sales,
   weekly_benefit,
   total_users,
+  total_product,
+  sales_Week,
 }: OverViewProps) {
   return (
     <div className="p-6 space-y-8">
@@ -99,7 +107,7 @@ export default function OverviewMainComponent({
           </CardHeader>
           <CardContent className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={salesData}>
+              <LineChart data={sales_Week}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -123,7 +131,7 @@ export default function OverviewMainComponent({
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={revenueByCategory}
+                  data={total_product}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -132,7 +140,7 @@ export default function OverviewMainComponent({
                   dataKey="value"
                   label
                 >
-                  {revenueByCategory.map((entry, index) => (
+                  {total_product.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
