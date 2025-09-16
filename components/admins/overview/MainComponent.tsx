@@ -32,7 +32,28 @@ const revenueByCategory = [
 
 const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
 
-export default function OverviewMainComponent() {
+interface OverViewProps {
+  total_sales: {
+    total: number;
+    change: string;
+  };
+  today_sales: {
+    total: number;
+    change: string;
+  };
+  weekly_benefit: {
+    total: string;
+    change: string;
+  };
+  total_users: { total: number; change: string };
+}
+
+export default function OverviewMainComponent({
+  total_sales,
+  today_sales,
+  weekly_benefit,
+  total_users,
+}: OverViewProps) {
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
@@ -45,27 +66,27 @@ export default function OverviewMainComponent() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Ventes totales"
-          value="12,450"
+          value={total_sales.total.toString()}
           icon={<ShoppingBag />}
-          change="+12% cette semaine"
+          change={total_sales.change}
         />
         <StatCard
           title="Ventes aujourd'hui"
-          value="320"
+          value={today_sales.total.toString()}
           icon={<TrendingUp />}
-          change="+5% vs hier"
+          change={today_sales.change}
         />
         <StatCard
           title="Bénéfices (hebdo)"
-          value="4,500€"
+          value={weekly_benefit.total}
           icon={<DollarSign />}
-          change="+8% cette semaine"
+          change={weekly_benefit.change}
         />
         <StatCard
           title="Clients actifs"
-          value="1,240"
+          value={total_users.total.toString()}
           icon={<Users />}
-          change="+3% vs mois dernier"
+          change={total_users.change}
         />
       </div>
 
