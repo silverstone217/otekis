@@ -62,6 +62,9 @@ export default function OverviewMainComponent({
   total_product,
   sales_Week,
 }: OverViewProps) {
+  const totals = total_product.reduce((arr, prod) => {
+    return arr + prod.value;
+  }, 0);
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
@@ -125,9 +128,9 @@ export default function OverviewMainComponent({
         {/* Pie chart répartition */}
         <Card>
           <CardHeader>
-            <CardTitle>Répartition par catégorie</CardTitle>
+            <CardTitle>Produits par catégorie</CardTitle>
           </CardHeader>
-          <CardContent className="h-72 flex items-center justify-center">
+          <CardContent className="h-72 flex items-center justify-center flex-col">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -150,6 +153,13 @@ export default function OverviewMainComponent({
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
+
+            {totals > 0 && (
+              <h2 className="flex items-center gap-1 text-lg font-bold">
+                <span>{totals}</span>
+                <span>{totals > 1 ? "produits" : "produit"}</span>
+              </h2>
+            )}
           </CardContent>
         </Card>
       </div>
