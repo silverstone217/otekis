@@ -16,7 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { CreditCard } from "lucide-react";
+import { CreditCard, FileText } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import Image from "next/image";
 import { returnDataValue, returnFormatedMoney } from "@/utils/functions";
@@ -24,7 +24,9 @@ import { ColorsData } from "@/utils/dataAdd";
 import { PaiementCinetPay } from "./PayWithCinetPay";
 import DeliveryChoiceComponent from "./DeliveryChoiceComponent";
 import { deliveryPriceByDeliveryChoice } from "@/utils/delivery";
-
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { SmoothLink } from "@/components/SmoothLink";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -80,6 +82,10 @@ const PaymentSheetComponent = ({
   const [receiverPhone, setReceiverPhone] = useState(user?.tel ?? "");
   const [receiverAddress, setReceiverAddress] = useState(user?.address ?? "");
   const [description, setDescription] = useState("");
+  const [isBuyingGeneralTermsAccepted, setIsBuyingGeneralTermsAccepted] =
+    useState(user ? user.isBuyingGeneralTermsAccepted : false);
+  const [isBuyingTermsAccepted, setIsBuyingTermsAccepted] = useState(false);
+  useState(false);
 
   const [deliveryChoice, setDeliveryChoice] = useState("");
 
@@ -421,6 +427,92 @@ const PaymentSheetComponent = ({
             </p>
           </div>
 
+          {/* CGI Vente et Achat */}
+          {user && user.isBuyingGeneralTermsAccepted === false && (
+            <div
+              className="w-full grid gap-4 p-4 border-2"
+              style={{
+                borderRadius: preferences.buttonRadius,
+              }}
+            >
+              <div className="space-y-2 text-center md:text-left">
+                <Label className="text-lg font-semibold flex items-center gap-2 justify-center md:justify-start">
+                  <FileText
+                    size={18}
+                    className="text-muted-foreground shrink-0"
+                  />
+                  Accepter les termes et conditions d&apos;achat
+                  <span className="text-destructive">*</span>
+                </Label>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto md:mx-0">
+                  Vous devez accepter nos termes et conditions avant de procéder
+                  au paiement.
+                </p>
+                <SmoothLink href="/conditions-et-termes#boutique">
+                  <span
+                    className="font-medium hover:underline text-sm"
+                    style={{ color: preferences.textColor }}
+                  >
+                    Lire les termes et conditions sur l&apos;achat
+                  </span>
+                </SmoothLink>
+                <br />
+                <div className="flex items-center gap-2 mt-2">
+                  <Switch
+                    checked={isBuyingGeneralTermsAccepted}
+                    onCheckedChange={(checked) =>
+                      setIsBuyingGeneralTermsAccepted(checked)
+                    }
+                    // disabled={loading}
+                    aria-label="Accepter les termes et conditions"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CGI Vente */}
+          <div
+            className="w-full grid gap-4 p-4 border-2"
+            style={{
+              borderRadius: preferences.buttonRadius,
+            }}
+          >
+            <div className="space-y-2 text-center md:text-left">
+              <Label className="text-lg font-semibold flex items-center gap-2 justify-center md:justify-start">
+                <FileText
+                  size={18}
+                  className="text-muted-foreground shrink-0"
+                />
+                Accepter les termes et conditions sur la vente
+                <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto md:mx-0">
+                Vous devez accepter nos termes et conditions avant de procéder
+                au paiement.
+              </p>
+              <SmoothLink href="/conditions-et-termes#boutique">
+                <span
+                  className="font-medium hover:underline text-sm"
+                  style={{ color: preferences.textColor }}
+                >
+                  Lire les termes et conditions sur la vente
+                </span>
+              </SmoothLink>
+              <br />
+              <div className="flex items-center gap-2 mt-2">
+                <Switch
+                  checked={isBuyingTermsAccepted}
+                  onCheckedChange={(checked) =>
+                    setIsBuyingTermsAccepted(checked)
+                  }
+                  // disabled={loading}
+                  aria-label="Accepter les termes et conditions"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* payment btn  */}
           <PaiementCinetPay
             carts={carts}
@@ -442,6 +534,10 @@ const PaymentSheetComponent = ({
             setModalOpen={setModalOpen}
             deliveryChoiceId={deliveryChoiceId}
             currency={currency}
+            setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
+            setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
+            isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
+            isBuyingTermsAccepted={isBuyingTermsAccepted}
           />
         </div>
       </SheetContent>

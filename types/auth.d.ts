@@ -18,6 +18,7 @@ export type User = {
   emailVerified: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  isBuyingGeneralTermsAccepted: boolean;
 };
 
 import NextAuth from "next-auth";
@@ -36,6 +37,7 @@ declare module "next-auth" {
     emailVerified: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    isBuyingGeneralTermsAccepted: boolean;
   }
 
   interface Session {
@@ -52,6 +54,7 @@ declare module "next-auth" {
       emailVerified: Date | null;
       createdAt: Date;
       updatedAt: Date;
+      isBuyingGeneralTermsAccepted: boolean;
     };
     token: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

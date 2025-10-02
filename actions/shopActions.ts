@@ -718,3 +718,44 @@ export async function addTypeProducts({
     error: false,
   };
 }
+
+export const updateSellerTerms = async (shopId: string) => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      message: "Pas authorisé à faire ça!",
+      error: true,
+    };
+  }
+
+  const shop = await prisma.shop.findUnique({
+    where: { id: shopId },
+  });
+
+  if (!shop) {
+    return {
+      message: "Cette boutique n'existe pas!",
+      error: true,
+    };
+  }
+
+  const isHisShop = shop.userId === user.id;
+
+  if (!isHisShop) {
+    return {
+      message: "Pas authorisé à faire ça!",
+      error: true,
+    };
+  }
+
+  const updateShop = await prisma.shop.update({
+    where: { id: shopId },
+    data: { isSellerTermsAccepted: true },
+  });
+
+  return {
+    message: "Termes et conditions acceptés avec succès!",
+    error: false,
+    data: updateShop,
+  };
+};

@@ -10,6 +10,7 @@ import { Store } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
+import AcceptSellerTermes from "./AcceptSellerTermes";
 
 type Props = {
   params: Promise<{
@@ -110,6 +111,10 @@ const MyShopBySlugPage = async (props: Props) => {
           <Store className="flex-shrink-0 w-8" />
         </Link>
       </div>
+
+      {/* IsSellerTermsAccepted */}
+      <AcceptSellerTermes shop={shop} />
+
       {/* form */}
       <ModifyShopSellerForm shop={shop} />
 

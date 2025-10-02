@@ -39,6 +39,9 @@ export const OrderCinetPaySchema = z.object({
   receiverTel: z.string().min(9).max(10),
   description: z.string().max(400).optional(),
   deliveryChoiceId: z.string().optional(),
+  isBuyingGeneralTermsAccepted: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter les termes et conditions",
+  }),
 
   orderItems: z
     .object({

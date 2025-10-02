@@ -61,6 +61,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               createdAt: user.createdAt,
               updatedAt: user.updatedAt,
               isBanned: user.isBanned,
+              isBuyingGeneralTermsAccepted: user.isBuyingGeneralTermsAccepted,
             };
           }
         }

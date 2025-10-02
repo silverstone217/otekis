@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";
-import Link from "next/link";
+// import Link from "next/link";
 import { SmoothLink } from "@/components/SmoothLink";
 
 const AddNewShopForm = () => {

@@ -307,6 +307,13 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
     });
   }
 
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      isBuyingGeneralTermsAccepted: validated.isBuyingGeneralTermsAccepted,
+    },
+  });
+
   console.log("Order complete!");
   const count = await prisma.order.count({
     where: { status: "en cours de traitement" },

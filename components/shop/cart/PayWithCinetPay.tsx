@@ -48,6 +48,12 @@ type Props = {
   modalOpen: boolean;
   deliveryChoiceId: string | undefined;
   currency: "$" | "CDF";
+  setIsBuyingGeneralTermsAccepted: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  setIsBuyingTermsAccepted: React.Dispatch<React.SetStateAction<boolean>>;
+  isBuyingGeneralTermsAccepted: boolean;
+  isBuyingTermsAccepted: boolean;
 };
 
 export function PaiementCinetPay({
@@ -60,6 +66,10 @@ export function PaiementCinetPay({
   setModalOpen,
   deliveryChoiceId,
   currency,
+  isBuyingGeneralTermsAccepted,
+  isBuyingTermsAccepted,
+  setIsBuyingGeneralTermsAccepted,
+  setIsBuyingTermsAccepted,
 }: Props) {
   // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =
@@ -87,6 +97,18 @@ export function PaiementCinetPay({
 
   const handleCheckout = async () => {
     setLoading(true);
+
+    if (!isBuyingGeneralTermsAccepted) {
+      toast.error("Vous devez accepter les termes et conditions d'achat.");
+      setLoading(false);
+      return;
+    }
+
+    if (!isBuyingTermsAccepted) {
+      toast.error("Vous devez accepter les conditions de vente.");
+      setLoading(false);
+      return;
+    }
 
     const orderItems = ArticlesToBuy.map((item) => ({
       quantity: item.quantity,
@@ -210,6 +232,8 @@ export function PaiementCinetPay({
         description: receiverInfo.description,
         deliveryChoiceId: deliveryChoiceId ?? undefined,
 
+        isBuyingGeneralTermsAccepted,
+
         paymentMethod: "cinetpay",
         shopId: shop.id,
 
@@ -227,7 +251,8 @@ export function PaiementCinetPay({
         return;
       }
       toast.success(result.message);
-
+      setIsBuyingGeneralTermsAccepted(false);
+      setIsBuyingTermsAccepted(false);
       setModalOpen(true);
 
       // Optionnel : redirection ou mise à jour UI

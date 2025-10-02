@@ -6,9 +6,11 @@ import { MouseEvent } from "react";
 export function SmoothLink({
   href,
   children,
+  className,
 }: {
   href: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   const router = useRouter();
 
@@ -32,7 +34,7 @@ export function SmoothLink({
     <a
       href={href}
       onClick={handleClick}
-      className="text-blue-500 hover:underline"
+      className={`text-blue-500 hover:underline ${className} `}
     >
       {children}
     </a>

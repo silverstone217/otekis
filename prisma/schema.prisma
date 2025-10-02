@@ -52,7 +52,6 @@ model User {
   tel                          String?
   address                      String?
   isBanned                     Boolean   @default(false)
-  isBuyingTermsAccepted        Boolean   @default(false)
   isBuyingGeneralTermsAccepted Boolean   @default(false)
 
   createdAt DateTime @default(now())
@@ -294,6 +293,8 @@ model Order {
   refundReceiverName String?
   description        String?
   deliveryPrice      Float   @default(0)
+
+  // isBuyingTermsAccepted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
