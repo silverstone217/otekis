@@ -8,6 +8,9 @@ export const addShopBySellerSchema = z.object({
   cover: z.string().optional(),
   paymentName: z.string().min(3).max(40),
   paymentPhone: z.string().min(9).max(9),
+  isSellerTermsAccepted: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter les termes et conditions pour continuer.",
+  }),
 });
 
 export const modifyShopBySellerSchema = z.object({
@@ -17,4 +20,7 @@ export const modifyShopBySellerSchema = z.object({
   shopId: z.string(),
   paymentName: z.string().min(3).max(40),
   paymentPhone: z.string().min(9).max(9),
+  // isSellerTermsAccepted: z.boolean().refine((val) => val === true, {
+  //   message: "Vous devez accepter les termes et conditions pour continuer.",
+  // }),
 });

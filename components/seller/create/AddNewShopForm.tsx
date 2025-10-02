@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { storage } from "@/lib/firebase";
 import { CategoriesData } from "@/utils/data";
 import { isEmptyString } from "@/utils/functions";
+import { Switch } from "@/components/ui/switch";
 import {
   deleteObject,
   getDownloadURL,
@@ -20,6 +21,8 @@ import { useRouter } from "next/navigation";
 import React, { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";
+import Link from "next/link";
+import { SmoothLink } from "@/components/SmoothLink";
 
 const AddNewShopForm = () => {
   const [category, setCategory] = useState("");
@@ -29,6 +32,8 @@ const AddNewShopForm = () => {
   const [cover, setCover] = useState<File | null>(null);
   const [paymentName, setPaymentName] = useState("");
   const [paymentPhone, setPaymentPhone] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -92,6 +97,7 @@ const AddNewShopForm = () => {
         cover: coverUrl,
         paymentName,
         paymentPhone,
+        isSellerTermsAccepted: acceptTerms,
       };
 
       const response = await fetch("/api/seller/create", {
@@ -115,6 +121,8 @@ const AddNewShopForm = () => {
       setCover(null);
       setPaymentName("");
       setPaymentPhone("");
+      setAcceptTerms(false);
+      // Redirect to seller dashboard
       router.push(`/ma-boutique`);
     } catch (error) {
       // Cleanup uploaded files on error
@@ -391,6 +399,31 @@ const AddNewShopForm = () => {
           </div>
         </BorderWrapper>
 
+        {/* TERMS SWITCH */}
+        <BorderWrapper className="p-6 flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-lg font-semibold">
+                Accepter les termes et conditions{" "}
+                <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Vous devez accepter nos termes et conditions avant de créer une
+                boutique.
+              </p>
+              <SmoothLink href="/conditions-et-termes#boutique">
+                Lire les termes et conditions
+              </SmoothLink>
+            </div>
+            <Switch
+              checked={acceptTerms}
+              onCheckedChange={(checked) => setAcceptTerms(checked)}
+              disabled={loading}
+              aria-label="Accepter les termes et conditions"
+            />
+          </div>
+        </BorderWrapper>
+
         {/* SUBMIT BUTTON */}
         <Button
           disabled={
@@ -398,7 +431,8 @@ const AddNewShopForm = () => {
             isEmptyString(name) ||
             isEmptyString(category) ||
             isEmptyString(description) ||
-            !logo
+            !logo ||
+            !acceptTerms
           }
           onClick={handleSubmit}
           size="lg"

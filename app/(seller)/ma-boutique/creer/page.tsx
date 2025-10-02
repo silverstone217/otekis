@@ -25,7 +25,7 @@ const NewShopPage = async () => {
         </p>
         <div className="mt-2 text-gray-600 flex gap-4 flex-wrap item-center justify-start text-sm">
           <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
-            oteki@gmail.com
+            otekis@gmail.com
           </p>
           <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
             +243-894-785-585

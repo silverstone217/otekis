@@ -42,20 +42,24 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  password      String?
-  image         String?
-  role          String    @default("user")
-  tel           String?
-  address       String?
-  isBanned      Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  id                           String    @id @default(cuid())
+  name                         String?
+  email                        String?   @unique
+  emailVerified                DateTime? @map("email_verified")
+  password                     String?
+  image                        String?
+  role                         String    @default("user")
+  tel                          String?
+  address                      String?
+  isBanned                     Boolean   @default(false)
+  isBuyingTermsAccepted        Boolean   @default(false)
+  isBuyingGeneralTermsAccepted Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
 
   Shop   Shop[]
   Cart   Cart[]
@@ -162,10 +166,11 @@ model Shop {
   paymentPhone String @default("815555555")
   paymentName  String @default("N/A")
 
-  isBanned    Boolean  @default(false)
-  isPublished Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isBanned              Boolean  @default(false)
+  isPublished           Boolean  @default(true)
+  isSellerTermsAccepted Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   Contact Contact?
   userId  String
