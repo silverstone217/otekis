@@ -7,16 +7,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Shield, Store, ShoppingCart } from "lucide-react";
+import { Shield, Store, ShoppingCart, Download } from "lucide-react";
 
 function ConditionsAndTerms() {
   return (
     <div className="space-y-10 w-full max-w-4xl mx-auto">
       {/* SECTION 1 */}
       <Card id="ventes" className="border rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-2">
+        <CardHeader className="flex flex-row items-center gap-2 relative">
           <Shield className="text-primary" />
           <CardTitle>Conditions Générales de Vente (CGV) – Acheteurs</CardTitle>
+          <Link
+            href={"../../files/Conditions Générales de Vente.pdf"}
+            className="absolute right-4 top-2 flex items-center 
+            gap-1 text-muted-foreground hover:text-primary"
+            target="_blank"
+          >
+            <Download />
+            <span className="sr-only">Télécharger</span>
+          </Link>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
@@ -99,11 +108,22 @@ function ConditionsAndTerms() {
 
       {/* SECTION 2 */}
       <Card id="boutique" className="border rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-2">
+        <CardHeader className="flex flex-row items-center gap-2 relative">
           <Store className="text-primary" />
           <CardTitle>
             Contrat d’utilisateur – Propriétaire de boutique
           </CardTitle>
+          <Link
+            href={
+              "../../files/Contrat d’utilisateur – Propriétaire de boutique.pdf"
+            }
+            className="absolute right-4 top-2 flex items-center 
+            gap-1 text-muted-foreground hover:text-primary"
+            target="_blank"
+          >
+            <Download />
+            <span className="sr-only">Télécharger</span>
+          </Link>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible>
@@ -203,9 +223,18 @@ function ConditionsAndTerms() {
 
       {/* SECTION 3 */}
       <Card id="acheteurs" className="border rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-2">
+        <CardHeader className="flex flex-row items-center gap-2 relative">
           <ShoppingCart className="text-primary" />
           <CardTitle>Contrat d’utilisateur – Acheteur</CardTitle>
+          <Link
+            href={"../../files/Contrat d’utilisateur – Acheteur.pdf"}
+            className="absolute right-4 top-2 flex items-center 
+            gap-1 text-muted-foreground hover:text-primary"
+            target="_blank"
+          >
+            <Download />
+            <span className="sr-only">Télécharger</span>
+          </Link>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible>

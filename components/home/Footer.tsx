@@ -98,7 +98,7 @@ const Footer = () => {
             FAQ
           </Link>
           <Link
-            href={"#"}
+            href={"/conditions-et-termes"}
             className="font-medium transition-all duration-300 ease-in-out
           hover:underline hover:opacity-75"
           >
