@@ -178,9 +178,17 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
       </div>
 
       {/* COPYRIGHT */}
-      <div className="w-full border-t border-white/20 py-4 text-center text-xs opacity-80">
-        © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
-        réservés.
+      <div
+        className="w-full border-t border-white/20 py-4 
+      text-center text-xs opacity-80"
+      >
+        <Link href={"/conditions-et-termes"} className="underline opacity-70">
+          Confidentialité et CGI.
+        </Link>
+        <p className="font-medium mt-4">
+          © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
+          réservés.
+        </p>
       </div>
     </footer>
   );

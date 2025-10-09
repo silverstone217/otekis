@@ -167,14 +167,24 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
 
       {/* BOTTOM COPYRIGHT */}
       <div
-        className="border-t py-4 text-xs text-center"
+        className="border-t py-4 text-xs text-center flex
+        items-center justify-center gap-2 flex-col w-full"
         style={{
           borderColor: theme === "light" ? "#ddd" : "rgba(255,255,255,0.2)",
           color: textColor,
         }}
       >
-        © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
-        réservés.
+        <Link
+          href={"/conditions-et-termes"}
+          className="hover:underline opacity-70"
+        >
+          Confidentialité et CGI.
+        </Link>
+
+        <p className="text-xs font-medium">
+          © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
+          réservés.
+        </p>
       </div>
     </footer>
   );

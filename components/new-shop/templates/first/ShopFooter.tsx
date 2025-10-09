@@ -124,13 +124,25 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
             </div>
           </div>
 
-          <div className="bg-black/10 text-xs  w-full items-center justify-center px-4">
+          <div
+            className="bg-black/10 text-xs  w-full items-center 
+          justify-center px-4"
+          >
             {/* oteki sign */}
-            <div className=" text-xs flex gap-1.5 w-full items-center justify-center py-2 max-w-7xl mx-auto">
+            <div
+              className=" text-xs flex gap-1.5 w-full items-center justify-center 
+            py-2 max-w-7xl mx-auto flex-wrap"
+            >
               <p className="text-xs font-medium">
                 &copy; {`${new Date().getFullYear()}`}{" "}
                 <strong> {siteName}</strong> inc. Tous droits réservés. &nbsp;
               </p>
+              <Link
+                href={"/conditions-et-termes"}
+                className="hover:underline ml-2"
+              >
+                Confidentialité et CGI.
+              </Link>
             </div>
           </div>
         </div>

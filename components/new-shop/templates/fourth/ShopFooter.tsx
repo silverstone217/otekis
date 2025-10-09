@@ -147,7 +147,8 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
             <Link
               href={contacts.pinterest}
               target="_blank"
-              className="p-3 rounded-full backdrop-blur-md border bg-white/10 hover:scale-110 transition"
+              className="p-3 rounded-full backdrop-blur-md border 
+              bg-white/10 hover:scale-110 transition"
             >
               <FaPinterest />
             </Link>
@@ -156,10 +157,19 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
       </div>
 
       {/* COPYRIGHT */}
-      <div className={`w-full py-4  mt-4`}>
+      <div
+        className={`w-full py-4  mt-4 text-xs flex items-center justify-center gap-2 flex-col`}
+      >
+        <Link
+          href={"/conditions-et-termes"}
+          className="underline opacity-60"
+          style={{ color: preference.textColor }}
+        >
+          Confidentialité et CGI.
+        </Link>
         <p
-          className="text-xs opacity-70 text-center"
-          style={{ color: "dimgray" }}
+          className="text-xs opacity-80 text-center mt-2"
+          style={{ color: preference.textColor }}
         >
           © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
           réservés.
