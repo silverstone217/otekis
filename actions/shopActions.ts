@@ -759,3 +759,27 @@ export const updateSellerTerms = async (shopId: string) => {
     data: updateShop,
   };
 };
+
+// CAN USER CREATE A SHOP
+export const canUserCreateShop = async () => {
+  const user = await getUser();
+  if (!user) {
+    return {
+      message: "Pas authorisé à faire ça!",
+      error: true,
+    };
+  }
+
+  const shop = await prisma.shop.findFirst({
+    where: { userId: user.id },
+  });
+
+  if (shop) {
+    return {
+      message: "Vous avez déjà une boutique!",
+      error: true,
+    };
+  }
+
+  return true;
+};

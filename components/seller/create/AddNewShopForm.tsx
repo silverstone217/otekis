@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { v4 } from "uuid";
 // import Link from "next/link";
 import { SmoothLink } from "@/components/SmoothLink";
+import { canUserCreateShop } from "@/actions/shopActions";
 
 const AddNewShopForm = () => {
   const [category, setCategory] = useState("");
@@ -82,6 +83,14 @@ const AddNewShopForm = () => {
     let logoUrl = "";
     let coverUrl = "";
     try {
+      const canCreateShop = await canUserCreateShop();
+
+      if (canCreateShop !== true) {
+        throw new Error(canCreateShop.message);
+        // setLoading(false);
+        return;
+      }
+
       logoUrl = await uploadLogo();
       coverUrl = await uploadCover();
 

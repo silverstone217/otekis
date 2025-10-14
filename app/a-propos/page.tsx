@@ -1,73 +1,160 @@
-import React from "react";
+"use client";
 
-function AProps() {
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import {
+  Building2,
+  Globe2,
+  Truck,
+  Store,
+  Handshake,
+  Shield,
+} from "lucide-react";
+
+export default function APropos() {
   return (
-    <div>
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perferendis
-      obcaecati libero iste atque hic dolor, aperiam temporibus veritatis saepe
-      sapiente animi sit dolores mollitia soluta illo! Inventore exercitationem
-      rerum incidunt. Ipsa non ipsum odit, delectus dolor eaque eos voluptates
-      pariatur molestias earum unde ullam expedita quasi dolore autem! Nihil
-      aperiam neque laudantium. Magni dolore vitae consequuntur quam odio.
-      Recusandae, molestiae! Est placeat autem omnis, necessitatibus architecto
-      enim molestiae dolorem, mollitia ducimus cumque expedita. Sit commodi
-      placeat numquam debitis voluptates id dolor voluptatem aspernatur dolorum
-      delectus temporibus ipsa, adipisci doloribus. Ab? Repellendus soluta ea
-      non hic laudantium error recusandae excepturi magnam a deleniti
-      repudiandae iusto quis quae sit et exercitationem ad nulla similique
-      doloribus, architecto eveniet. Fugiat dolore magni culpa quibusdam. Vitae
-      quo blanditiis sint soluta impedit hic facere obcaecati aliquam eaque,
-      molestiae voluptatibus reprehenderit totam corporis ex id expedita et illo
-      aspernatur aperiam quibusdam tempora nam. Dolores sed enim fugiat! Earum
-      accusantium, quam, dolorem praesentium accusamus ducimus explicabo unde
-      perferendis magni omnis cupiditate adipisci a ullam dignissimos maxime
-      itaque quos! Accusantium pariatur laborum dignissimos neque iste tempore
-      sint et obcaecati? Voluptate eligendi sit non vero dignissimos repellendus
-      sed qui voluptatibus ipsum aspernatur? Libero, distinctio. Asperiores,
-      delectus accusantium! Vero veritatis optio beatae eius aliquid tenetur,
-      fugit aspernatur quam explicabo! Quia, ab. Esse, dolorum. Odit molestias
-      iusto doloribus a consequuntur numquam facilis dolore voluptatum. Omnis
-      eos, ipsam exercitationem est accusamus nostrum iusto? Doloremque
-      praesentium est eveniet dolorum ipsum harum fuga magni autem? Nostrum
-      impedit nesciunt numquam nemo iste quis odit ab officiis, recusandae error
-      nisi laudantium enim assumenda aut atque dicta cum. Ipsum ut, itaque
-      commodi minima quo repellat perspiciatis fugit deserunt? Quod quaerat
-      aliquid expedita tempora corporis! Magni voluptas odit earum facere
-      eveniet nihil reprehenderit, voluptatem doloremque eaque sunt dicta
-      ducimus cumque asperiores numquam at cum hic! Deserunt amet pariatur
-      dolor! A soluta, magni autem sit voluptates iure fuga deserunt, harum
-      illum sint culpa atque nesciunt odit consequuntur nobis quisquam quod
-      velit, aspernatur sapiente. Eius expedita distinctio deleniti, consectetur
-      nisi corrupti? Natus cupiditate vel beatae numquam voluptate, enim, sunt
-      dolore iste at unde, laudantium recusandae? Harum dignissimos error
-      reiciendis consequuntur optio illo expedita cupiditate, minus fugit illum
-      labore? Aspernatur, saepe ducimus? Quaerat quia veritatis, dolorem error
-      aut dignissimos quidem. Nobis, officia odio, illum molestias cupiditate,
-      natus consectetur libero numquam placeat ex quis explicabo? Laudantium
-      doloribus, veritatis optio magnam culpa sed quas. Eaque eius dolorem, ad
-      hic ab neque facilis possimus modi enim vitae, provident omnis rerum
-      velit, id vel numquam. Dolores deleniti omnis, odit amet labore ipsa
-      voluptatum delectus impedit incidunt? Deleniti nostrum rerum minus rem,
-      doloremque ducimus soluta id necessitatibus corrupti dolorem unde aut
-      quibusdam ea inventore! Distinctio sapiente eius debitis unde recusandae
-      voluptates voluptatum. Adipisci sit incidunt vero dolorum. Iure facilis
-      tempore illo iste, libero odit qui sunt amet et, laboriosam vitae ratione
-      quae voluptates nobis sint perspiciatis veniam vero eius nemo dolorem
-      saepe. Sapiente a exercitationem repellendus aspernatur? Facere explicabo
-      distinctio non molestiae obcaecati? Nihil placeat distinctio aliquam.
-      Magnam, optio id? Odit ipsum dolores officia quidem doloremque, omnis iure
-      quae animi impedit et voluptatem assumenda deleniti quia cum. Delectus
-      earum, perferendis mollitia ad omnis exercitationem iste est at ducimus
-      unde nesciunt esse neque autem dolorem nulla ut qui tenetur obcaecati illo
-      amet itaque? Facilis praesentium velit eos sed. Illum quia error provident
-      aspernatur consequuntur, sunt quam neque est beatae odio pariatur deleniti
-      atque delectus voluptatem quis! Officiis tenetur ut voluptatum modi nihil
-      nulla atque excepturi, sapiente qui architecto! Magni, ad iusto earum cum
-      accusantium incidunt et sunt ex accusamus harum ab unde voluptatibus est
-      exercitationem quis veritatis maxime nemo repellat tempora aspernatur
-      necessitatibus. Iure alias deserunt minima ab.
-    </div>
+    <main className="space-y-12 w-full max-w-4xl mx-auto py-6">
+      {/* Intro */}
+      <section className="text-center space-y-4">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+          Bienvenue sur <span className="text-blue-600">Otekis</span>
+        </h2>
+        <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+          Otekis est un service du groupe <strong>Servi Group</strong>, dédié à
+          la simplification du commerce en ligne. Nous offrons une plateforme
+          complète permettant à chacun de vendre, d’acheter et de gérer une
+          boutique en ligne — facilement, gratuitement, et sans contrainte
+          logistique.
+        </p>
+      </section>
+
+      <Separator />
+
+      {/* Notre mission */}
+      <section className="grid md:grid-cols-2 gap-6 items-center">
+        <Card className="shadow-sm">
+          <CardContent className="p-6 space-y-3">
+            <div className="flex items-center gap-3">
+              <Globe2 className="text-blue-600 h-6 w-6" />
+              <h3 className="text-xl font-semibold">Notre mission</h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              Nous croyons que tout le monde mérite l’opportunité d’entreprendre
+              en ligne. Notre mission est de rendre le e-commerce accessible à
+              tous, sans barrière technique ni financière, tout en garantissant
+              une expérience fluide et professionnelle pour les vendeurs comme
+              pour les clients.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardContent className="p-6 space-y-3">
+            <div className="flex items-center gap-3">
+              <Building2 className="text-blue-600 h-6 w-6" />
+              <h3 className="text-xl font-semibold">Notre vision</h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              Devenir la première plateforme e-commerce collaborative où chaque
+              vendeur peut créer son univers, partager ses produits et bâtir une
+              marque forte — le tout en bénéficiant du soutien logistique et
+              technologique d’Otekis.
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <Separator />
+
+      {/* Fonctionnement */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold flex items-center gap-2">
+          <Store className="text-blue-600 h-5 w-5" /> Comment ça fonctionne ?
+        </h3>
+        <p className="text-gray-600 leading-relaxed">
+          En quelques clics, vous pouvez créer votre propre boutique, choisir
+          parmi nos produits disponibles, fixer vos prix et commencer à vendre.
+          Chaque boutique est une entité indépendante, avec ses propres règles,
+          identité et stratégie — mais toutes bénéficient de l’infrastructure
+          d’Otekis.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-4 mt-6">
+          <Card className="border-blue-100 shadow-none">
+            <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
+              <Store className="h-8 w-8 text-blue-600" />
+              <h4 className="font-semibold">Créez votre boutique</h4>
+              <p className="text-sm text-gray-500">
+                Ouvrez votre espace de vente personnalisé en quelques minutes.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-100 shadow-none">
+            <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
+              <Handshake className="h-8 w-8 text-blue-600" />
+              <h4 className="font-semibold">Vendez librement</h4>
+              <p className="text-sm text-gray-500">
+                Fixez vos prix au-dessus du prix minimum et gagnez la différence
+                sur chaque vente.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-100 shadow-none">
+            <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
+              <Truck className="h-8 w-8 text-blue-600" />
+              <h4 className="font-semibold">Livraison simplifiée</h4>
+              <p className="text-sm text-gray-500">
+                La logistique est gérée par Otekis et ses partenaires pour une
+                expérience sans stress.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <Separator />
+
+      {/* Nos valeurs */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold flex items-center gap-2">
+          <Shield className="text-blue-600 h-5 w-5" /> Nos valeurs
+        </h3>
+        <ul className="list-disc pl-6 space-y-2 text-gray-600">
+          <li>
+            <strong>Transparence :</strong> des règles claires et un système
+            équitable pour chaque vendeur.
+          </li>
+          <li>
+            <strong>Innovation :</strong> une technologie pensée pour simplifier
+            le commerce.
+          </li>
+          <li>
+            <strong>Responsabilité :</strong> chaque boutique est libre mais
+            tenue de respecter nos CGU et notre contrat vendeur.
+          </li>
+          <li>
+            <strong>Proximité :</strong> un accompagnement humain à chaque
+            étape.
+          </li>
+        </ul>
+      </section>
+
+      <Separator />
+
+      {/* Conclusion */}
+      <section className="text-center space-y-3">
+        <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Rejoignez dès aujourd’hui <strong>Otekis</strong> et faites partie
+          d’une nouvelle génération de vendeurs en ligne. Créez, vendez, et
+          grandissez — nous nous occupons du reste.
+        </p>
+        <p className="text-sm text-gray-500">
+          © {new Date().getFullYear()} Servi Group — Tous droits réservés.
+        </p>
+      </section>
+    </main>
   );
 }
-
-export default AProps;

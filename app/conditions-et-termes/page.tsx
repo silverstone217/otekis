@@ -301,6 +301,18 @@ function ConditionsAndTerms() {
           </Accordion>
         </CardContent>
       </Card>
+
+      {/* Conclusion */}
+      <section className="text-center space-y-3 py-4 border-t">
+        <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Rejoignez dès aujourd’hui <strong>Otekis</strong> et faites partie
+          d’une nouvelle génération de vendeurs en ligne. Créez, vendez, et
+          grandissez — nous nous occupons du reste.
+        </p>
+        <p className="text-sm text-gray-500">
+          © {new Date().getFullYear()} Servi Group — Tous droits réservés.
+        </p>
+      </section>
     </div>
   );
 }
