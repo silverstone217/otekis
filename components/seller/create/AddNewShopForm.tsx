@@ -209,7 +209,7 @@ const AddNewShopForm = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                   minLength={3}
-                  maxLength={40}
+                  maxLength={60}
                   disabled={loading}
                   aria-label="Nom de la boutique"
                 />

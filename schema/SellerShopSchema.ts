@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const addShopBySellerSchema = z.object({
-  name: z.string().min(3).max(40),
+  name: z.string().min(3).max(60),
   description: z.string().min(10).max(5000),
   category: z.string().min(3).max(50),
   logo: z.string(),
@@ -14,7 +14,7 @@ export const addShopBySellerSchema = z.object({
 });
 
 export const modifyShopBySellerSchema = z.object({
-  name: z.string().min(3).max(40),
+  name: z.string().min(3).max(60),
   description: z.string().min(10).max(5000),
   category: z.string().min(3).max(50),
   shopId: z.string(),
