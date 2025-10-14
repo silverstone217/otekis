@@ -29,7 +29,7 @@ const Hero = () => {
           Nous vous aidons à lancer facilement votre business en ligne, un
           système mis en place pour que vous réalisiez vos rêves. Chez
           <strong className="text-blue-600"> Otekis</strong>, démarrez votre
-          business en quelques clics!
+          business en quelques clics et <strong>gratuitement</strong>!
         </p>
 
         {/* Boutons */}
