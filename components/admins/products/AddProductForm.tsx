@@ -234,7 +234,7 @@ const AddProductForm = () => {
                 onChange={(e) => setName(e.target.value)}
                 required
                 minLength={3}
-                maxLength={40}
+                maxLength={100}
                 disabled={loading}
               />
 
@@ -259,7 +259,7 @@ const AddProductForm = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 minLength={10}
-                maxLength={5000}
+                maxLength={10000}
                 disabled={loading}
                 className="max-h-96 min-h-36"
               />

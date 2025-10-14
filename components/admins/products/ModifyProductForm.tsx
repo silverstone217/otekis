@@ -3,13 +3,6 @@ import BorderWrapper from "@/components/BorderWrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { storage } from "@/lib/firebase";
 import { updateImagesProductImages } from "@/actions/actions";
@@ -387,7 +380,7 @@ const ModifyProductForm = ({ product }: Props) => {
                 onChange={(e) => setName(e.target.value)}
                 required
                 minLength={3}
-                maxLength={40}
+                maxLength={100}
                 disabled={loading}
               />
 
@@ -412,7 +405,7 @@ const ModifyProductForm = ({ product }: Props) => {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 minLength={10}
-                maxLength={1500}
+                maxLength={10000}
                 disabled={loading}
                 className="max-h-72 min-h-36"
               />

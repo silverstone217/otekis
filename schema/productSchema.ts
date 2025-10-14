@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const addProductByAdminSchema = z.object({
-  name: z.string().min(3).max(40),
+  name: z.string().min(3).max(100),
   price: z.number().min(0),
   stock: z.number().min(0).default(0),
   description: z.string().min(10).max(10000),
@@ -17,7 +17,7 @@ export const addProductByAdminSchema = z.object({
 });
 
 export const modifyProductByAdminSchema = z.object({
-  name: z.string().min(3).max(40),
+  name: z.string().min(3).max(100),
   price: z.number().min(0),
   stock: z.number().min(0),
   description: z.string().min(10).max(10000),
