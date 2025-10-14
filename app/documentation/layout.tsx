@@ -43,8 +43,8 @@ function layout({ children }: LayoutProps) {
       <footer className="bg-gray-100 mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()}{" "}
-            <strong>{capitalizeText(siteName!)}</strong>. Tous droits réservés.
+            © {new Date().getFullYear()} <strong>Servi Group</strong> — Tous
+            droits réservés.
           </p>
         </div>
       </footer>

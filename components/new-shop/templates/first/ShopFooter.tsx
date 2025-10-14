@@ -1,5 +1,5 @@
 "use client";
-import { CategoriesData, siteName } from "@/utils/data";
+import { CategoriesData } from "@/utils/data";
 import { returnDataValue } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Shop, Preferences, Contact } from "@prisma/client";
@@ -134,8 +134,8 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
             py-2 max-w-7xl mx-auto flex-wrap"
             >
               <p className="text-xs font-medium">
-                &copy; {`${new Date().getFullYear()}`}{" "}
-                <strong> {siteName}</strong> inc. Tous droits réservés. &nbsp;
+                © {new Date().getFullYear()} <strong>Servi Group</strong> — Tous
+                droits réservés.
               </p>
               <Link
                 href={"/conditions-et-termes"}

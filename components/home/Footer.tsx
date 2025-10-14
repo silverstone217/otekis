@@ -122,8 +122,8 @@ const Footer = () => {
 
       <div className="w-full text-center">
         <p className="text-sm font-medium">
-          &copy; {`${new Date().getFullYear()}`} <strong> {siteName}</strong>{" "}
-          inc. Tous droits réservés. &nbsp;
+          © {new Date().getFullYear()} <strong>Servi Group</strong> — Tous
+          droits réservés.
         </p>
       </div>
     </footer>

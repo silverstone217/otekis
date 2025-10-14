@@ -310,7 +310,8 @@ function ConditionsAndTerms() {
           grandissez — nous nous occupons du reste.
         </p>
         <p className="text-sm text-gray-500">
-          © {new Date().getFullYear()} Servi Group — Tous droits réservés.
+          © {new Date().getFullYear()} <strong>Servi Group</strong> — Tous
+          droits réservés.
         </p>
       </section>
     </div>

@@ -1,5 +1,5 @@
 "use client";
-import { CategoriesData, siteName } from "@/utils/data";
+import { CategoriesData } from "@/utils/data";
 import { returnDataValue } from "@/utils/functions";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { Shop, Preferences, Contact } from "@prisma/client";
@@ -171,8 +171,8 @@ const ShopFooter = ({ shop, preference, contacts }: Props) => {
           className="text-xs opacity-80 text-center mt-2"
           style={{ color: preference.textColor }}
         >
-          © {new Date().getFullYear()} <strong>{siteName}</strong>. Tous droits
-          réservés.
+          © {new Date().getFullYear()} <strong>Servi Group</strong> — Tous
+          droits réservés.
         </p>
       </div>
     </footer>
