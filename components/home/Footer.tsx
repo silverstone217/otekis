@@ -3,10 +3,13 @@ import { linksPage, siteName } from "@/utils/data";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { FaFacebookF } from "react-icons/fa6";
-import { FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { MdOutlineLocalPhone } from "react-icons/md";
+import { SlSocialFacebook } from "react-icons/sl";
+import { CiMail, CiYoutube } from "react-icons/ci";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { SocialLinks } from "./SocialLinks";
 
 const Footer = () => {
   const path = usePathname();
@@ -40,23 +43,7 @@ const Footer = () => {
             {`Nouvelle façon de créer un business, en ligne facilement et rapidement sans gerer les stocks de produits et la livraison vers le client.
             Otekis gere tout pour vous, configurer juste vos produits et boom vous pouvez debuter.`}
           </p>
-          <div className="flex item-center justify-start gap-4">
-            <FaFacebookF
-              size={25}
-              className="cursor-pointer hover:opacity-75
-          transition-all duration-300 ease-in-out"
-            />
-            <FaInstagram
-              size={25}
-              className="cursor-pointer hover:opacity-75
-          transition-all duration-300 ease-in-out"
-            />
-            <FaYoutube
-              size={25}
-              className="cursor-pointer hover:opacity-75
-          transition-all duration-300 ease-in-out"
-            />
-          </div>
+          <SocialLinks />
         </section>
 
         {/* links */}

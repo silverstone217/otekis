@@ -49,7 +49,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="py-12 px-4 md:px-8 bg-gray-50" id="contact">
+    <section className="pt-10 pb-2 px-4 md:px-8 bg-gray-50" id="contact">
       <div className="max-w-3xl mx-auto space-y-8 text-center">
         <div className="space-y-2">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
