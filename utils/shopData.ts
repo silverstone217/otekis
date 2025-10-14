@@ -82,4 +82,5 @@ export const fontOptions = [
   { label: "Hahmlet", value: "Hahmlet" },
   { label: "BioRhyme", value: "BioRhyme" },
   { label: "Gwendolyn", value: "Gwendolyn" },
+  { label: "Dancing Script", value: "Dancing Script" },
 ].sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base" }));

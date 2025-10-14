@@ -12,6 +12,7 @@ import {
   Hahmlet,
   BioRhyme,
   Gwendolyn,
+  Dancing_Script,
 } from "next/font/google";
 
 export const lato = Lato({
@@ -102,6 +103,12 @@ export const gwendolyn = Gwendolyn({
   variable: "--font-gwendolyn",
   display: "swap",
 });
+export const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "700", "500"],
+  variable: "--font-dancing-script",
+  display: "swap",
+});
 
 export const FontsList = [
   { name: "Poppins", component: poppins },
@@ -117,4 +124,5 @@ export const FontsList = [
   { name: "Hahmlet", component: hahmlet },
   { name: "BioRhyme", component: bioRhyme },
   { name: "Gwendolyn", component: gwendolyn },
+  { name: "Dancing Script", component: dancingScript },
 ].sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
