@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Mail, MessageSquare, User, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ContactSection() {
   const [form, setForm] = useState({
@@ -49,7 +50,14 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="pt-10 pb-2 px-4 md:px-8 bg-gray-50" id="contact">
+    <motion.section
+      id="contact"
+      className="pt-10 pb-2 px-4 md:px-8 bg-gray-50"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       <div className="max-w-3xl mx-auto space-y-8 text-center">
         <div className="space-y-2">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -161,6 +169,6 @@ export default function ContactSection() {
           </CardContent>
         </Card>
       </div>
-    </section>
+    </motion.section>
   );
 }
