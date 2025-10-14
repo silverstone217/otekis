@@ -25,6 +25,11 @@ const getShopBySlug = async (slug: string) => {
   return shop;
 };
 
+const otekisPrefs = async () => {
+  const otekisPref = await prisma.otekisPreferences.findFirst();
+  return otekisPref;
+};
+
 export async function generateMetadata(
   props: Props
 ): // parent: ResolvingMetadata
@@ -130,6 +135,7 @@ async function MyOrderPage(props: {
         currency={currency}
         exchange={exchange}
         deliveryInfo={deliveryInfo}
+        otekisPrefs={await otekisPrefs()}
       />
     </div>
   );

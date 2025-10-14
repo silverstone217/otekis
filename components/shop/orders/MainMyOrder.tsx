@@ -1,5 +1,5 @@
 "use client";
-import { Preferences, Shop } from "@prisma/client";
+import { OtekisPreferences, Preferences, Shop } from "@prisma/client";
 import {
   ChevronRight,
   House,
@@ -14,6 +14,10 @@ import {
   BanknoteArrowDown,
   Check,
   Copy,
+  Mail,
+  Phone,
+  AlertCircle,
+  Clock,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,6 +62,8 @@ interface MainOrderProps {
     phone: string | undefined;
     isOtekisDelivery: boolean;
   } | null;
+
+  otekisPrefs: OtekisPreferences | null;
 }
 
 const MainMyOrder = ({
@@ -67,6 +73,7 @@ const MainMyOrder = ({
   exchange,
   currency,
   deliveryInfo,
+  otekisPrefs,
 }: MainOrderProps) => {
   const Header = shopPreferences?.Header ?? "0";
   const shopUrl = `/${shop.slug}`;
@@ -428,6 +435,68 @@ const MainMyOrder = ({
             <span>Service client</span>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
+        </Card>
+      </section>
+
+      {/* Info */}
+      <section className="max-w-3xl mx-auto mt-12">
+        <h3 className="text-xl font-semibold mb-6 text-gray-800">
+          Informations additionnelles
+        </h3>
+
+        <Card
+          style={{ borderColor, borderRadius }}
+          className="border shadow-sm divide-y divide-gray-200 bg-white"
+        >
+          <div className="p-6 text-sm space-y-5 leading-relaxed text-gray-700">
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <p>
+                Les remboursements sont effectués selon la même méthode de
+                paiement, dans un délai moyen de{" "}
+                <strong className="text-gray-900">
+                  {otekisPrefs ? otekisPrefs.delayTransferableMoney : 4} jours
+                  ouvrables
+                </strong>{" "}
+                après validation du paiement du produit.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5 shrink-0" />
+              <p>
+                <strong>Important :</strong> Les produits livrés ne sont
+                actuellement{" "}
+                <strong className="text-gray-900">pas remboursables</strong>.
+                Veuillez vérifier votre commande avant confirmation.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Phone className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <p>
+                Pour toute question relative à votre commande, notre service
+                client est à votre disposition au : <br />
+                <strong className="text-gray-900 underline">
+                  {otekisPrefs
+                    ? `+243 ${otekisPrefs.socialPhone}`
+                    : `+243 831 718 338`}
+                </strong>
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <p>
+                Vous pouvez également nous contacter par email à : <br />
+                <strong className="text-gray-900 underline">
+                  {otekisPrefs
+                    ? `${otekisPrefs.socialEmail}`
+                    : `servigroup.social@gmail.com`}
+                </strong>
+              </p>
+            </div>
+          </div>
         </Card>
       </section>
     </div>
