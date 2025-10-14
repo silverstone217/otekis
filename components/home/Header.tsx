@@ -1,7 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { AlignJustify, BookText, Shield, Store, X } from "lucide-react";
+import {
+  AlignJustify,
+  BookText,
+  PhoneCall,
+  Shield,
+  Store,
+  X,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 // import { siteName } from "@/utils/data";
@@ -61,6 +68,7 @@ const Header = () => {
           <div className="flex items-center justify-end gap-4 flex-1">
             <LinkName href="/dashboard" title="Ma Boutique" />
             <LinkName href="/a-propos" title="A propos" />
+            <LinkName href="#contact" title="Nous Contacter" />
             <LinkName href="/overview" title="Administrateur" />
           </div>
 
@@ -114,6 +122,18 @@ const Header = () => {
               >
                 <BookText className="w-8 flex-shrink-0" />
                 <span>A Propos</span>
+              </Link>
+              <Link
+                href={"#contact"}
+                className="flex gap-4 items-center w-full"
+                onClick={() => {
+                  setTimeout(() => {
+                    setIsOpen(false);
+                  }, 300);
+                }}
+              >
+                <PhoneCall className="w-8 flex-shrink-0" />
+                <span>Nous Contacter</span>
               </Link>
               <Link
                 href={"/overview"}

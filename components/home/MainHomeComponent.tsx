@@ -4,6 +4,7 @@ import Header from "./Header";
 import Hero from "./Hero";
 import WhatWeDoSection from "./WhatWeDoSection";
 import HelpSection from "./HelpSection";
+import ContactUs from "./ContactUs";
 
 const MainHomeComponent = () => {
   return (
@@ -19,6 +20,9 @@ const MainHomeComponent = () => {
 
         {/* content section */}
         <HelpSection />
+
+        {/* contact us section */}
+        <ContactUs />
       </main>
     </div>
   );
