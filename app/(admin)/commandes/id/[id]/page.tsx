@@ -24,7 +24,7 @@ async function OrderPage(props: { params: Promise<{ id: string }> }) {
 
   if (!id)
     return (
-      <div>
+      <div className="min-h-[60dvh] flex flex-col items-center justify-center gap-4">
         <p>404</p>
         <p>Rien trouvé</p>
       </div>
