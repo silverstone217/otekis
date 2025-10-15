@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"; // shadcn button
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { SiApple } from "react-icons/si";
 import { signIn } from "next-auth/react";
+import { luminanceColor } from "@/utils/shopFunctions";
 
 type Props = {
   preferences: Preferences;
@@ -18,9 +19,11 @@ const providers = [
 ];
 
 const ShopCartLogin = ({ preferences }: Props) => {
+  const luminance = luminanceColor(preferences.background);
+
   const handleSignIn = async (providerId: string) => {
     try {
-      await signIn(providerId, { redirect: false });
+      await signIn(providerId);
     } catch (error) {
       console.error(error);
     }
@@ -46,14 +49,26 @@ const ShopCartLogin = ({ preferences }: Props) => {
             disabled={!enabled}
             className="flex gap-3 items-center justify-center py-3 
             text-base font-semibold hover:scale-105 transition-transform"
-            onClick={() => enabled && handleSignIn(id)}
+            onClick={() => {
+              if (enabled) {
+                handleSignIn(id);
+                console.log(`Sign in with ${name}`);
+              }
+            }}
             style={{
               backgroundColor: enabled ? preferences.buttonColor : undefined,
               color: enabled
                 ? preferences.buttonTextColor
-                : preferences.background,
+                : luminance === "dark"
+                ? "black"
+                : "white",
               borderRadius: preferences.buttonRadius,
               opacity: enabled ? 1 : 0.3,
+              borderColor: enabled
+                ? preferences.buttonColor
+                : luminance === "dark"
+                ? "black"
+                : "white",
             }}
           >
             <Icon className="w-6 h-6" aria-hidden="true" />

@@ -2,20 +2,25 @@
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
-import googleIcon from "@/public/icons/googleIcon.svg";
-import facebookIcon from "@/public/icons/facebookIcon.svg";
-import appleIcon from "@/public/icons/appleIcon.svg";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { siteName } from "@/utils/data";
 import logo from "@/public/images/oteki-logo.png";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { SiApple } from "react-icons/si";
+
+const providers = [
+  { name: "Google", Icon: FaGoogle, enabled: true, id: "google" },
+  { name: "Apple", Icon: SiApple, enabled: false, id: "apple" },
+  { name: "Facebook", Icon: FaFacebookF, enabled: false, id: "facebook" },
+];
 
 const AuthForm = () => {
-  const handleSubmitWithGoogle = async () => {
+  const handleSignIn = async (providerId: string) => {
     try {
-      await signIn("google");
+      await signIn(providerId);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -40,64 +45,38 @@ const AuthForm = () => {
       </div>
 
       {/* form */}
-      <div className="flex flex-col gap-6 w-full items-center justify-center">
-        {/* continue with google */}
-
-        <Button
-          type="button"
-          className="w-11/12 lg:w-3/4 flex gap-2 items-center py-5 "
-          onClick={handleSubmitWithGoogle}
-        >
-          <Image
-            src={googleIcon}
-            alt="google Icon"
-            width={500}
-            height={500}
-            priority
-            className="size-6 object-cover"
-          />
-          <span>Google</span>
-        </Button>
-        {/* continue with apple */}
-        <Button
-          type="button"
-          className="w-11/12 lg:w-3/4 flex gap-2 items-center py-5"
-          //onClick={handleSubmitWithGoogle}
-          disabled
-        >
-          <Image
-            src={appleIcon}
-            alt="apple Icon"
-            width={500}
-            height={500}
-            priority
-            className="size-6 object-cover"
-          />
-          <span>Apple</span>
-        </Button>
-
-        {/* continue with facebook */}
-        <Button
-          type="button"
-          className="w-11/12 lg:w-3/4 flex gap-2 items-center py-5"
-          disabled
-        >
-          <Image
-            src={facebookIcon}
-            alt="facebook Icon"
-            width={500}
-            height={500}
-            priority
-            className="size-6 object-cover"
-          />
-          <span>Facebook</span>
-        </Button>
+      <div className="grid grid-cols-1 gap-4 w-full">
+        {providers.map(({ name, Icon, enabled, id }) => (
+          <Button
+            key={id}
+            variant={enabled ? "default" : "outline"}
+            disabled={!enabled}
+            className="flex gap-3 items-center justify-center py-3 
+                  text-base font-semibold hover:scale-105 transition-transform"
+            onClick={() => {
+              if (enabled) {
+                handleSignIn(id);
+                console.log(`Sign in with ${name}`);
+              }
+            }}
+            style={{
+              opacity: enabled ? 1 : 0.3,
+              borderColor: enabled ? "black" : "grey",
+            }}
+          >
+            <Icon className="w-6 h-6" aria-hidden="true" />
+            <span>{name}</span>
+          </Button>
+        ))}
       </div>
 
       {/* terms */}
       <p className="text-sm">
         En cliquant, vous accetez nos{" "}
-        <Link href={"#"} className="font-semibold underline">
+        <Link
+          href={"/conditions-et-termes"}
+          className="font-semibold underline"
+        >
           {"conditions générales d'utilisation"}
         </Link>{" "}
         de notre plateforme.

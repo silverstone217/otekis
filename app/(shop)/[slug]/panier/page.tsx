@@ -77,7 +77,7 @@ const CartShopPage = async (props: Props) => {
 
   if (!user) {
     return (
-      <div className="w-full min-h-[70dvh] flex flex-col items-center justify-center px-6 text-center space-y-6">
+      <div className="w-full min-h-[95dvh] flex flex-col items-center justify-center px-6 text-center space-y-6">
         <h2 className="text-3xl font-extrabold">Vous n’êtes pas connecté</h2>
         <p className="max-w-md text-lg opacity-70">
           Connectez-vous pour ajouter des produits à votre boutique et accéder à

@@ -18,7 +18,7 @@ import {
   ProductShop,
   Shop,
 } from "@prisma/client";
-import { CreditCard, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

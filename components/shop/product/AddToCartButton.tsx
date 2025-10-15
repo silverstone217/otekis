@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import ImageSliderCarousel from "./ImageSliderCarousel";
 import { Label } from "@/components/ui/label";
-import { returnDataValue } from "@/utils/functions";
+import { returnDataValue, returnFormatedMoney } from "@/utils/functions";
 import { ColorsData } from "@/utils/dataAdd";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
@@ -27,11 +27,11 @@ import { cn } from "@/lib/utils";
 import { addToCart, deleteItemToCart } from "@/actions/shopActions";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import googleIcon from "@/public/icons/googleIcon.svg";
-import facebookIcon from "@/public/icons/facebookIcon.svg";
-import appleIcon from "@/public/icons/appleIcon.svg";
-import Image from "next/image";
 import { toast } from "sonner";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { SiApple } from "react-icons/si";
+import { luminanceColor } from "@/utils/shopFunctions";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   images: string[];
@@ -47,6 +47,12 @@ type Props = {
   currency: "$" | "CDF";
   exchange: number;
 };
+
+export const providers = [
+  { name: "Google", Icon: FaGoogle, enabled: true, id: "google" },
+  { name: "Apple", Icon: SiApple, enabled: false, id: "apple" },
+  { name: "Facebook", Icon: FaFacebookF, enabled: false, id: "facebook" },
+];
 
 const AddToCartButton = ({
   // images,
@@ -65,6 +71,7 @@ const AddToCartButton = ({
     articles.length > 0 ? articles[0].id : ""
   );
 
+  // CHECK IF THE ITEM IS IN THE CART
   const isInCartItem = useMemo(
     () =>
       carts.find(
@@ -85,6 +92,7 @@ const AddToCartButton = ({
 
   // console.log({ isInCartItem });
 
+  // ADD TO CART
   const handleAddToCart = async () => {
     setLoading(true);
 
@@ -120,6 +128,7 @@ const AddToCartButton = ({
     }
   };
 
+  // UPDATE TO CART
   const handleUpdateToCart = async () => {
     setLoading(true);
 
@@ -155,6 +164,7 @@ const AddToCartButton = ({
     }
   };
 
+  // REMOVE FROM CART
   const handleRemoveFromCart = async () => {
     setLoading(true);
 
@@ -178,27 +188,35 @@ const AddToCartButton = ({
     }
   };
 
+  // STOCK MAX
   const stockMax = useMemo(
     () => articles.find((art) => art.id === article)?.stock ?? 1,
     [article, articles]
   );
 
+  // TOTAL PRICE
   const totalPrice = useMemo(
     () => Number(productShop.price * quantity),
     [productShop.price, quantity]
   );
+
+  // TOTAL PRICE AFTER DISCOUNT
   const totalTotalPriceAfterDiscount = useMemo(
     () => Number(totalPriceAfterDiscount * quantity),
     [quantity, totalPriceAfterDiscount]
   );
 
-  const handleSubmitWithGoogle = async () => {
+  // HANDLE SIGN IN
+  const handleSignIn = async (providerId: string) => {
     try {
-      await signIn("google", { redirect: false });
+      await signIn(providerId);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  // LUMINANCE
+  const luminance = luminanceColor(preferences.background);
 
   return (
     <Sheet>
@@ -426,7 +444,7 @@ const AddToCartButton = ({
                   flex items-center justify-center tabular-nums
                   "
                 >
-                  {totalTotalPriceAfterDiscount * exchange}{" "}
+                  {returnFormatedMoney(totalTotalPriceAfterDiscount * exchange)}{" "}
                   <span className="text-xs"> {currency}</span>
                 </p>
                 <p
@@ -434,7 +452,7 @@ const AddToCartButton = ({
                   flex items-center justify-center tabular-nums
                   "
                 >
-                  <s>{totalPrice * exchange}</s>{" "}
+                  <s>{returnFormatedMoney(totalPrice * exchange)}</s>{" "}
                   <span className="text-xs"> {currency}</span>
                 </p>
               </div>
@@ -444,7 +462,7 @@ const AddToCartButton = ({
                   flex items-center justify-center tabular-nums
                   "
               >
-                {totalPrice * exchange}{" "}
+                {returnFormatedMoney(totalPrice * exchange)}{" "}
                 <span className="text-xs"> {currency}</span>
               </p>
             )}
@@ -488,75 +506,38 @@ const AddToCartButton = ({
               <p className="text-center text-sm mt-3">Continuer avec</p>
 
               {/* google */}
-              <button
-                type="button"
-                className=" w-full justify-center flex gap-2 items-center py-3
-          hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-                onClick={handleSubmitWithGoogle}
-                style={{
-                  backgroundColor: preferences.buttonColor,
-                  color: preferences.buttonTextColor,
-                  borderRadius: preferences.buttonRadius,
-                }}
-              >
-                <Image
-                  src={googleIcon}
-                  alt="google Icon"
-                  width={500}
-                  height={500}
-                  priority
-                  className="size-6 object-cover"
-                />
-                <span>Google</span>
-              </button>
-
-              {/* continue with apple */}
-              <button
-                type="button"
-                className="w-full justify-center flex gap-2 items-center py-3
-          hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-                // onClick={handleSubmitWithGoogle}
-                style={{
-                  backgroundColor: "dimgray",
-                  color: preferences.buttonTextColor,
-                  borderRadius: preferences.buttonRadius,
-                }}
-                disabled
-              >
-                <Image
-                  src={appleIcon}
-                  alt="apple Icon"
-                  width={500}
-                  height={500}
-                  priority
-                  className="size-6 object-cover"
-                />
-                <span>Apple</span>
-              </button>
-
-              {/* continue with facebook */}
-              <button
-                type="button"
-                className=" w-full justify-center flex gap-2 items-center py-3 
-          hover:scale-110 hover:shadow-2xl transition-all duration-500 ease-in-out"
-                // onClick={handleSubmitWithGoogle}
-                style={{
-                  backgroundColor: "dimgray",
-                  color: preferences.buttonTextColor,
-                  borderRadius: preferences.buttonRadius,
-                }}
-                disabled
-              >
-                <Image
-                  src={facebookIcon}
-                  alt="facebook Icon"
-                  width={500}
-                  height={500}
-                  priority
-                  className="size-6 object-cover"
-                />
-                <span>Facebook</span>
-              </button>
+              <div className="grid grid-cols-1 gap-4 w-full">
+                {providers.map(({ name, Icon, enabled, id }) => (
+                  <Button
+                    key={id}
+                    variant={enabled ? "default" : "outline"}
+                    disabled={!enabled}
+                    className="flex gap-3 items-center justify-center py-3 
+            text-base font-semibold hover:scale-105 transition-transform"
+                    onClick={() => enabled && handleSignIn(id)}
+                    style={{
+                      backgroundColor: enabled
+                        ? preferences.buttonColor
+                        : undefined,
+                      color: enabled
+                        ? preferences.buttonTextColor
+                        : luminance === "dark"
+                        ? "black"
+                        : "white",
+                      borderRadius: preferences.buttonRadius,
+                      opacity: enabled ? 1 : 0.3,
+                      borderColor: enabled
+                        ? preferences.buttonColor
+                        : luminance === "dark"
+                        ? "black"
+                        : "white",
+                    }}
+                  >
+                    <Icon className="w-6 h-6" aria-hidden="true" />
+                    <span>{name}</span>
+                  </Button>
+                ))}
+              </div>
             </div>
           ) : null}
 

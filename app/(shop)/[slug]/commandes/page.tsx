@@ -129,7 +129,7 @@ async function CommandesPage(props: { params: Promise<{ slug: string }> }) {
 
   if (!user) {
     return (
-      <div className="w-full min-h-[70dvh] flex items-center justify-center">
+      <div className="w-full min-h-[95dvh] flex items-center justify-center">
         <div className="flex flex-col gap-1 px-4">
           <h2 className="text-2xl font-bold ">{`Vous n'etes pas connecté a votre compte.`}</h2>
           <p className="text-xm opacity-75">
