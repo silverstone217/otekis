@@ -440,7 +440,7 @@ const MainMyOrder = ({
 
       {/* Info */}
       <section className="max-w-3xl mx-auto mt-12">
-        <h3 className="text-xl font-semibold mb-6 text-gray-800">
+        <h3 className="text-xl font-semibold mb-6 ">
           Informations additionnelles
         </h3>
 

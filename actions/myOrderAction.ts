@@ -404,6 +404,15 @@ export const updateCancelOrderByUser = async (data: CancelOderType) => {
       };
     }
 
+    // Can order be cancelled ( only in status === "en cours de traitement")
+    if (order.status !== "en cours de traitement") {
+      return {
+        error: true,
+        message: "Cette commande ne peut plus etre annulée à cette etape!",
+        data: null,
+      };
+    }
+
     // Vérifier si des profits en attente existent pour suppression
     const shopProfitWaitedExist = await prisma.shopProfitWaited.findUnique({
       where: { orderId: validated.orderId },

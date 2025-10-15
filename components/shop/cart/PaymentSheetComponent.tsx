@@ -27,6 +27,7 @@ import { deliveryPriceByDeliveryChoice } from "@/utils/delivery";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SmoothLink } from "@/components/SmoothLink";
+import { luminanceColor } from "@/utils/shopFunctions";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -120,6 +121,12 @@ const PaymentSheetComponent = ({
     [deliveryChoice, deliveryService]
   );
 
+  // LUMINANCE
+  const luminance = useMemo(
+    () => luminanceColor(preferences.background),
+    [preferences.background]
+  );
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -195,48 +202,70 @@ const PaymentSheetComponent = ({
                 style={{
                   color: preferences.textColor,
                   backgroundColor:
-                    preferences.background === "#ffffff"
-                      ? "transparent"
+                    luminance === "dark"
+                      ? "rgba(256, 256, 256, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
               />
             </div>
 
-            {/* Client Name */}
+            {/* Client Telephone */}
             <div className="w-full flex flex-col text-sm">
               <label
                 htmlFor="recTel"
-                className=" text-gray-700 opacity-80 font-medium"
+                className="text-gray-700 opacity-80 font-medium"
               >
-                Telephone du receiveur *{" "}
-                <span className="text-xs text-gray-500 font-normal">
-                  +(243)
-                </span>
+                Téléphone du receveur *
               </label>
-              <input
-                type="tel"
-                id="recTel"
-                name="recTel"
-                placeholder="817596369"
-                className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors"
-                defaultValue={receiverPhone}
-                onChange={(e) => setReceiverPhone(e.target.value)}
-                required
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                aria-describedby="recTelHelp"
-                minLength={9}
-                maxLength={9}
-                style={{
-                  color: preferences.textColor,
-                  backgroundColor:
-                    preferences.background === "#ffffff"
-                      ? "transparent"
-                      : "rgba(19, 19, 19, 0.3)",
-                }}
-              />
+
+              <div className="w-full relative mt-1">
+                {/* Préfixe fixe */}
+                <span
+                  className="absolute left-0 top-1/2 -translate-y-1/2 
+      text-gray-100 font-semibold tracking-wide text-sm 
+      px-3 py-1 rounded-l-md border-r border-gray-300 select-none"
+                  style={{
+                    backgroundColor:
+                      luminance === "light" ? "#3b3b3b" : "#e5e7eb",
+                    color: luminance === "light" ? "white" : "#1f2937",
+                  }}
+                >
+                  +243
+                </span>
+
+                {/* Champ de saisie */}
+                <input
+                  type="tel"
+                  id="recTel"
+                  name="recTel"
+                  placeholder="817596369"
+                  className="w-full border-b-2 border-gray-300 
+      focus:border-blue-600 focus:outline-none py-2 pl-16
+      transition-colors"
+                  defaultValue={receiverPhone}
+                  onChange={(e) => setReceiverPhone(e.target.value)}
+                  required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  aria-describedby="recTelHelp"
+                  minLength={9}
+                  maxLength={9}
+                  style={{
+                    color: preferences.textColor,
+                    backgroundColor:
+                      luminance === "dark"
+                        ? "rgba(255, 255, 255, 0.15)"
+                        : "rgba(19, 19, 19, 0.05)",
+                  }}
+                />
+              </div>
+
+              {/* Texte d’aide clair */}
+              <p id="recTelHelp" className="text-xs text-gray-500 mt-1">
+                Entrez uniquement les 9 chiffres après <strong>+243</strong>
+                &nbsp;(ex. <span className="font-mono">817596369</span>).
+              </p>
             </div>
 
             {/* Client address */}
@@ -267,8 +296,8 @@ const PaymentSheetComponent = ({
                 style={{
                   color: preferences.textColor,
                   backgroundColor:
-                    preferences.background === "#ffffff"
-                      ? "transparent"
+                    luminance === "dark"
+                      ? "rgba(256, 256, 256, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
               />
@@ -306,8 +335,8 @@ const PaymentSheetComponent = ({
                 style={{
                   color: preferences.textColor,
                   backgroundColor:
-                    preferences.background === "#ffffff"
-                      ? "transparent"
+                    luminance === "dark"
+                      ? "rgba(256, 256, 256, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
                 maxLength={400}
