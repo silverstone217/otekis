@@ -48,8 +48,6 @@ export const transfertShop = async (data: TransfertShopType) => {
       };
     }
 
-    const validated = validationResult.data;
-
     const prefs = await prisma.otekisPreferences.findFirst();
     if (!prefs) {
       return {
@@ -58,6 +56,14 @@ export const transfertShop = async (data: TransfertShopType) => {
           "Aucune préférence de devise n'a été configurée pour l'instant",
       };
     }
+
+    const validated = validationResult.data.map((itm) => {
+      return {
+        ...itm,
+        exchange: prefs.exchangeRate,
+      };
+    });
+
     const currency = prefs.currency;
 
     const companyPrefs = await prisma.otekisBenefitAmount.findFirst();

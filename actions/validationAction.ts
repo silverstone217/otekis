@@ -26,6 +26,15 @@ export const validationOrder = async (data: ValidationOrderType) => {
     const validated = validationResult.data;
     const { orderId, secret } = validated;
 
+    const prefs = await prisma.otekisPreferences.findFirst();
+    if (!prefs) {
+      return {
+        error: true,
+        message:
+          "Aucune préférence de devise n'a été configurée pour l'instant",
+      };
+    }
+
     // Vérifier que la commande existe
     const order = await prisma.order.findUnique({
       where: { id: orderId },
@@ -93,6 +102,7 @@ export const validationOrder = async (data: ValidationOrderType) => {
           orderId: order.id,
           deliverBy: deliveryAgentName ?? "N/A",
           factureId: factureOrder ? factureOrder.id : "N/A",
+          exchange: prefs.exchangeRate,
         },
       });
     }

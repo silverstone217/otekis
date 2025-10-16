@@ -283,7 +283,7 @@ model Order {
   paymentMethodRefund String  @default("mpesa")
   paymentStatus       String  @default("en attente de paiement")
   currency            String  @default("USD")
-  exchange            Float   @default(2900)
+  exchange            Float
 
   receiverAddress String
   receiverTel     String
@@ -334,8 +334,8 @@ model Facture {
   orderId            String
   type               String @default("paiement") //remboursement
   currency           String @default("USD")
-  cinetPayPercentage String @default("3") // 3%
-  exchange           Float  @default(2900)
+  cinetPayPercentage String
+  exchange           Float
 
   totalAmount       Float
   deliveryPrice     Float   @default(0)
@@ -359,7 +359,7 @@ model ProductFacture {
   quantity    Int
   price       Float
   currency    String   @default("USD")
-  exchange    Float    @default(2900)
+  exchange    Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   facture     Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
@@ -376,7 +376,7 @@ model DeliveryOrder {
   deliveryDate  DateTime?
   deliveryPrice Float     @default(0)
   currency      String    @default("USD")
-  exchange      Float     @default(2900)
+  exchange      Float
   percentage    String    @default("0")
 
   clientId        String
@@ -428,7 +428,7 @@ model FactureDeliverOrder {
   id         String @id @default(cuid())
   amount     Float
   currency   String @default("USD")
-  exchange   Float  @default(2900)
+  exchange   Float
   percentage String
 
   deliverBy       String
@@ -448,7 +448,7 @@ model ShopProfitWaited {
   shopId      String
   amount      Float
   currency    String  @default("USD")
-  exchange    Float   @default(2900)
+  exchange    Float
   orderId     String  @unique
   isProcessed Boolean @default(false)
 
@@ -464,7 +464,7 @@ model OtekisProfitWaited {
   amount        Float
   benefit       Float   @default(0)
   currency      String  @default("USD")
-  exchange      Float   @default(2900)
+  exchange      Float
   deliveryPrice Float
   orderId       String  @unique
   isProcessed   Boolean @default(false)
@@ -480,7 +480,7 @@ model WithdrawalHistory {
   shopId       String
   amount       Float
   currency     String   @default("USD")
-  exchange     Float    @default(2900)
+  exchange     Float
   date         DateTime @default(now())
   status       String   @default("non-traité") // non-traité, traité, annulé
   paymentPhone String
@@ -504,7 +504,7 @@ model OtekisWithdrawalHistory {
   id           String   @id @default(cuid())
   amount       Float
   currency     String   @default("USD")
-  exchange     Float    @default(2900)
+  exchange     Float
   date         DateTime @default(now())
   status       String   @default("non-traité") // non-traité, traité, annulé
   paymentPhone String?
@@ -519,7 +519,7 @@ model OtekisPreferences {
   productCurrency        String @default("USD")
   transfertCurrency      String @default("USD")
   withdrawCurrency       String @default("USD")
-  exchangeRate           Float  @default(2900)
+  exchangeRate           Float  @default(2300)
   currency               String @default("USD")
   cinetPayPercentage     String @default("3") // 3%
   delayRefund            Int    @default(2)

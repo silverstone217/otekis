@@ -6,6 +6,7 @@ import { returnDataValue } from "@/utils/functions";
 import { ColorsData, PERMITED_ROLES } from "@/utils/dataAdd";
 import { AllProductsTypes } from "@/utils/data";
 import { pusher } from "@/lib/pusher-server";
+import { getCompanyPreference } from "./companyAction";
 
 export const getAllOrdersByStatus = async (status: string) => {
   const user = await getUser();
@@ -432,6 +433,16 @@ export async function refundOrderStatus(
     };
   }
 
+  const prefs = await getCompanyPreference();
+
+  if (!prefs) {
+    return {
+      error: true,
+      message: "Mauvaise configuration. reessayer plus tard!",
+      data: null,
+    };
+  }
+
   const idOrderExist = await prisma.order.findUnique({
     where: { id: orderId },
   });
@@ -492,6 +503,8 @@ export async function refundOrderStatus(
       deliveryPrice: order.deliveryPrice,
       type: "remboursement",
       refundPhoneNumber: order.refundPhoneNumber,
+      exchange: prefs.exchangeRate,
+      cinetPayPercentage: prefs.cinetPayPercentage,
     },
   });
 

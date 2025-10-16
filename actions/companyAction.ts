@@ -14,7 +14,7 @@ export const setupCompanyPrefs = async () => {
         data: {
           cinetPayPercentage: "3",
           socialEmail: "marketstore.oteki@gmail.com",
-          exchangeRate: 2900,
+          exchangeRate: 2300,
           socialPhone: "813350706",
         },
       });
@@ -250,6 +250,15 @@ export const makeTransactionCompanyBenefit = async ({
       };
     }
 
+    const companyPrefs = await getCompanyPreference();
+
+    if (!companyPrefs) {
+      return {
+        error: true,
+        message: "Probleme de configuration",
+      };
+    }
+
     const isPermited = user.role === "super_admin";
     if (!isPermited) {
       return {
@@ -289,6 +298,7 @@ export const makeTransactionCompanyBenefit = async ({
         transfertID: generatedTransfertID,
         paymentPhone: "813350706",
         paymentName: "Otekis",
+        exchange: companyPrefs.exchangeRate,
       },
     });
 

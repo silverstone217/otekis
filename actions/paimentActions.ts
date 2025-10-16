@@ -10,7 +10,11 @@ import {
 } from "@/utils/functions";
 import { ColorsData } from "@/utils/dataAdd";
 import { pusher } from "@/lib/pusher-server";
-import { exChangeRate, getCurrencySymbol } from "./companyAction";
+import {
+  exChangeRate,
+  getCompanyPreference,
+  getCurrencySymbol,
+} from "./companyAction";
 
 type ItemTypeToBuy = {
   productId: string;
@@ -69,6 +73,16 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
     return {
       message: "Pas authorisé à faire ça!",
       error: true,
+      data: null,
+    };
+  }
+
+  const prefs = await getCompanyPreference();
+
+  if (!prefs) {
+    return {
+      error: true,
+      message: "Mauvaise configuration. reessayer plus tard!",
       data: null,
     };
   }
@@ -280,6 +294,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
       paymentMethod: validated.paymentMethod,
       currency,
       exchange: currency === "USD" ? 1 : exChange,
+      cinetPayPercentage: prefs.cinetPayPercentage,
     },
   });
   // create invoice items
@@ -297,6 +312,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
         price: item.price,
         quantity: item.quantity,
         currency,
+        exchange: prefs.exchangeRate,
         productName: product?.name ?? "produit indisponible",
         productInfo: `${
           article &&
