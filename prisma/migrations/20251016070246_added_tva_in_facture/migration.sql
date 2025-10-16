@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "public"."Facture" ADD COLUMN     "TVA" DOUBLE PRECISION NOT NULL DEFAULT 15;

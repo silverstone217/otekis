@@ -1,5 +1,6 @@
 import { getUser } from "@/actions/actions";
 import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
+import { getFactureOrderById } from "@/actions/factureActions";
 import {
   getDeliveryOrderWithClientOrder,
   getMyOrderById,
@@ -126,6 +127,8 @@ async function MyOrderPage(props: {
 
   const deliveryInfo = await getDeliveryOrderWithClientOrder(myOrder.id);
 
+  const factureOrder = await getFactureOrderById(myOrder.id);
+
   return (
     <div>
       <MainMyOrder
@@ -136,6 +139,7 @@ async function MyOrderPage(props: {
         exchange={exchange}
         deliveryInfo={deliveryInfo}
         otekisPrefs={await otekisPrefs()}
+        factureOrder={factureOrder}
       />
     </div>
   );

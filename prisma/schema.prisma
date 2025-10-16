@@ -341,6 +341,7 @@ model Facture {
   deliveryPrice     Float   @default(0)
   address           String?
   refundPhoneNumber String?
+  TVA               Float   @default(15)
 
   paymentDate DateTime @default(now())
   createdAt   DateTime @default(now())

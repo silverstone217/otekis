@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,8 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import GenerateSecret from "./OrderSecretComponent";
+import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
+import FactureOrderView from "./FactureOrderView";
 
 interface MainOrderProps {
   myOrder: OrderWithProductDetails;
@@ -64,6 +66,7 @@ interface MainOrderProps {
   } | null;
 
   otekisPrefs: OtekisPreferences | null;
+  factureOrder: FactureOrderWithProductsDetailsType | null;
 }
 
 const MainMyOrder = ({
@@ -74,7 +77,10 @@ const MainMyOrder = ({
   currency,
   deliveryInfo,
   otekisPrefs,
+  factureOrder,
 }: MainOrderProps) => {
+  const [isCLient, setIsClient] = useState(false);
+
   const Header = shopPreferences?.Header ?? "0";
   const shopUrl = `/${shop.slug}`;
   const router = useRouter();
@@ -137,6 +143,12 @@ const MainMyOrder = ({
   };
 
   const currencyOrder = myOrder.currency === "USD" ? "$" : "CDF";
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isCLient) return null;
 
   return (
     <div
@@ -315,7 +327,11 @@ const MainMyOrder = ({
             </h3>
             <div className="w-full  flex flex-col gap-4 capitalize">
               <p>
-                Livré par <strong>{deliveryInfo.delivery}</strong>
+                Livré par{" "}
+                <strong>
+                  {deliveryInfo.isOtekisDelivery && "Otekis delivery"} - agent{" "}
+                  {deliveryInfo.delivery}
+                </strong>
               </p>
               <p>
                 Téléphone :{" "}
@@ -385,14 +401,18 @@ const MainMyOrder = ({
           style={{ borderColor, borderRadius }}
           className="border shadow-sm flex flex-col divide-y divide-gray-200"
         >
-          <button
-            type="button"
-            className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition rounded-t-md"
-          >
-            <FileText className="w-5 h-5 text-muted-foreground" />
-            <span>Facture</span>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
+          {/* FACTURE */}
+          <FactureOrderView
+            currency={currency}
+            deliveryInfo={deliveryInfo}
+            exchange={exchange}
+            factureOrder={factureOrder}
+            myOrder={myOrder}
+            shop={shop}
+            shopPreferences={shopPreferences}
+          />
+
+          {/* DELIVERY DOC */}
           <button
             type="button"
             className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
@@ -401,6 +421,8 @@ const MainMyOrder = ({
             <span>Document sur la livraison</span>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
+
+          {/* PRODUCTS DOC */}
           <button
             type="button"
             className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
@@ -409,6 +431,8 @@ const MainMyOrder = ({
             <span>Document sur les produits</span>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
+
+          {/* REFUND DOC */}
           <button
             type="button"
             className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition rounded-b-md"
