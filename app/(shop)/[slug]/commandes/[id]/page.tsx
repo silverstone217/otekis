@@ -1,6 +1,9 @@
 import { getUser } from "@/actions/actions";
 import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
-import { getFactureOrderById } from "@/actions/factureActions";
+import {
+  getFactureDeliveryOrderById,
+  getFactureOrderById,
+} from "@/actions/factureActions";
 import {
   getDeliveryOrderWithClientOrder,
   getMyOrderById,
@@ -127,7 +130,11 @@ async function MyOrderPage(props: {
 
   const deliveryInfo = await getDeliveryOrderWithClientOrder(myOrder.id);
 
+  // FACTURE ORDER
   const factureOrder = await getFactureOrderById(myOrder.id);
+
+  // FACTURE DELIVERY
+  const factureDelivery = await getFactureDeliveryOrderById(myOrder.id);
 
   return (
     <div>
@@ -140,6 +147,7 @@ async function MyOrderPage(props: {
         deliveryInfo={deliveryInfo}
         otekisPrefs={await otekisPrefs()}
         factureOrder={factureOrder}
+        factureDelivery={factureDelivery}
       />
     </div>
   );

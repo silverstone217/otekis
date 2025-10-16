@@ -28,3 +28,21 @@ export const getFactureOrderById = async (orderId: string) => {
     return null;
   }
 };
+
+export const getFactureDeliveryOrderById = async (orderId: string) => {
+  try {
+    const user = await getUser();
+    if (!user) return null;
+
+    const facture = await prisma.factureDeliverOrder.findFirst({
+      where: {
+        orderId,
+      },
+    });
+
+    return facture ?? null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

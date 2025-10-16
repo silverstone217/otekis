@@ -204,12 +204,11 @@ const FactureOrderView = ({
       <DialogTrigger asChild disabled={!factureOrder}>
         <button
           type="button"
-          className="flex items-center justify-between p-4 text-sm hover:bg-muted transition rounded-md w-full"
+          className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
         >
-          <div className="flex items-center gap-3">
-            <FileText className="w-5 h-5 text-muted-foreground" />
-            <span className="font-medium">Facture</span>
-          </div>
+          <FileText className="w-5 h-5 text-muted-foreground" />
+          <span className="font-medium">Facture</span>
+
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </button>
       </DialogTrigger>

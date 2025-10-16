@@ -1,5 +1,10 @@
 "use client";
-import { OtekisPreferences, Preferences, Shop } from "@prisma/client";
+import {
+  FactureDeliverOrder,
+  OtekisPreferences,
+  Preferences,
+  Shop,
+} from "@prisma/client";
 import {
   ChevronRight,
   House,
@@ -52,6 +57,7 @@ import { Input } from "@/components/ui/input";
 import GenerateSecret from "./OrderSecretComponent";
 import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import FactureOrderView from "./FactureOrderView";
+import FactureDeliveryView from "./FactureDeliveryView";
 
 interface MainOrderProps {
   myOrder: OrderWithProductDetails;
@@ -67,6 +73,7 @@ interface MainOrderProps {
 
   otekisPrefs: OtekisPreferences | null;
   factureOrder: FactureOrderWithProductsDetailsType | null;
+  factureDelivery: FactureDeliverOrder | null;
 }
 
 const MainMyOrder = ({
@@ -78,6 +85,7 @@ const MainMyOrder = ({
   deliveryInfo,
   otekisPrefs,
   factureOrder,
+  factureDelivery,
 }: MainOrderProps) => {
   const [isCLient, setIsClient] = useState(false);
 
@@ -383,7 +391,7 @@ const MainMyOrder = ({
                         {item.quantity > 1 ? "pièces" : "pièce"}
                       </span>
                       <span>
-                        {item.price * exchange}{" "}
+                        {returnFormatedMoney(item.price * exchange)}{" "}
                         <span className="text-xs">{currency}</span>
                       </span>
                     </div>
@@ -413,14 +421,15 @@ const MainMyOrder = ({
           />
 
           {/* DELIVERY DOC */}
-          <button
-            type="button"
-            className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
-          >
-            <Truck className="w-5 h-5 text-muted-foreground" />
-            <span>Document sur la livraison</span>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
+          <FactureDeliveryView
+            currency={currency}
+            deliveryInfo={deliveryInfo}
+            exchange={exchange}
+            factureDelivery={factureDelivery}
+            myOrder={myOrder}
+            shop={shop}
+            shopPreferences={shopPreferences}
+          />
 
           {/* PRODUCTS DOC */}
           <button
