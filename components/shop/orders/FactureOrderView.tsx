@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Dialog,
   DialogClose,
@@ -21,6 +21,7 @@ import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
 import { Preferences, Shop } from "@prisma/client";
 import { returnFormatedMoney } from "@/utils/functions";
+import { capitalizeText } from "@/utils/shopFunctions";
 
 interface FactureProps {
   myOrder: OrderWithProductDetails;
@@ -36,13 +37,32 @@ interface FactureProps {
   } | null;
 }
 
+const PERMIT_STATUS = [
+  "livré",
+  //   "annulé",
+  // "refusé",
+  //   "reporté",
+  //   "en cours d'annulation",
+  "en attente de livraison",
+  "en cours de livraison",
+  // "en attente de retour",
+  // "en cours de retour",
+  // "retourné",
+];
+
 const FactureOrderView = ({
   factureOrder,
   currency,
-  exchange,
   shop,
   myOrder,
 }: FactureProps) => {
+  const canDownloadFacture = useMemo(() => {
+    if (!factureOrder) return false;
+    if (!PERMIT_STATUS.includes(myOrder.status)) return false;
+
+    return true;
+  }, [factureOrder, myOrder.status]);
+
   // DOwnload pdf
   const handleDownloadPdf = async () => {
     if (!factureOrder) return;
@@ -96,7 +116,7 @@ const FactureOrderView = ({
     doc.setFont("helvetica", "bold");
     doc.text("Vendeur :", leftX, y);
     doc.setFont("helvetica", "normal");
-    doc.text(shop.name, leftX + 70, y);
+    doc.text(capitalizeText(shop.name), leftX + 70, y);
     y += 14;
 
     if (myOrder.receiverName) {
@@ -201,7 +221,7 @@ const FactureOrderView = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild disabled={!factureOrder}>
+      <DialogTrigger asChild disabled={!canDownloadFacture}>
         <button
           type="button"
           className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
@@ -310,7 +330,7 @@ const FactureOrderView = ({
 
           <Button
             className=""
-            disabled={!factureOrder}
+            disabled={!canDownloadFacture}
             onClick={handleDownloadPdf}
           >
             <Download className="w-5 h-5 mr-2" />

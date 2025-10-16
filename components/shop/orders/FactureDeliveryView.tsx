@@ -2,7 +2,7 @@
 "use client";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
 import { FactureDeliverOrder, Preferences, Shop } from "@prisma/client";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Dialog,
   DialogClose,
@@ -32,7 +32,18 @@ interface FactureProps {
   } | null;
 }
 
-const PERMIT_STATUS = [""];
+const PERMIT_STATUS = [
+  "livré",
+  //   "annulé",
+  // "refusé",
+  //   "reporté",
+  //   "en cours d'annulation",
+  "en attente de livraison",
+  "en cours de livraison",
+  // "en attente de retour",
+  // "en cours de retour",
+  // "retourné",
+];
 
 const FactureDeliveryView = ({
   deliveryInfo,
@@ -40,6 +51,13 @@ const FactureDeliveryView = ({
   myOrder,
   shop,
 }: FactureProps) => {
+  const canDownloadFacture = useMemo(() => {
+    if (!factureDelivery) return false;
+    if (!PERMIT_STATUS.includes(myOrder.status)) return false;
+
+    return true;
+  }, [factureDelivery, myOrder.status]);
+
   const handleDownloadPdf = async () => {
     if (!factureDelivery) return;
 
@@ -190,7 +208,7 @@ const FactureDeliveryView = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={!canDownloadFacture}>
         <button
           type="button"
           className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
@@ -251,7 +269,7 @@ const FactureDeliveryView = ({
 
           <Button
             className="bg-primary text-white"
-            disabled={!factureDelivery}
+            disabled={!canDownloadFacture}
             onClick={handleDownloadPdf}
           >
             <Download className="w-5 h-5 mr-2" />
