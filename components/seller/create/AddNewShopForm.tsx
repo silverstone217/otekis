@@ -245,7 +245,8 @@ const AddNewShopForm = () => {
             {/* PAYMENT INFO */}
             <div>
               <Label className="text-lg font-semibold mb-3 block">
-                Informations de paiement
+                Informations de paiement{" "}
+                <span className="text-destructive">*</span>
               </Label>
               <div className="flex flex-col space-y-4">
                 <Input

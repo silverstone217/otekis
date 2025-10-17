@@ -20,6 +20,9 @@ import { FaPinterestP } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ShopDefaultSelect } from "../SelectWIthOptionsDefaultShop";
+import { isEmptyString } from "@/utils/functions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 type Props = {
   shops: Shop[];
@@ -44,6 +47,12 @@ const MainContactsComponent = ({ shops }: Props) => {
     () => shops.find((i) => i.id === defaultShopId),
     [shops, defaultShopId]
   );
+
+  const isAllFieldsShort = useMemo(() => {
+    const fields = [email, phone, facebook, twitter, youtube, pinterest];
+    // On retourne TRUE si un champ non vide est plus court que 3
+    return fields.some((field) => !isEmptyString(field) && field.length < 3);
+  }, [email, phone, facebook, twitter, youtube, pinterest]);
 
   useEffect(() => {
     const getPrefs = async (shopId: string | undefined) => {
@@ -322,6 +331,18 @@ const MainContactsComponent = ({ shops }: Props) => {
             />
           </div>
 
+          {/* NB */}
+          {isAllFieldsShort && (
+            <Alert variant="destructive">
+              <Info />
+              <AlertTitle>Suggestions</AlertTitle>
+              <AlertDescription>
+                Les champs remplis(uniquement) doivent avoir au moins 3
+                caractères pour soumettre.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* submit */}
           <div className="w-full flex py-2">
             <Button
@@ -334,7 +355,8 @@ const MainContactsComponent = ({ shops }: Props) => {
                   twitter === contacts?.twitter &&
                   pinterest === contacts?.pinterest &&
                   phone === contacts?.phone &&
-                  instagram === contacts?.instagram)
+                  instagram === contacts?.instagram) ||
+                isAllFieldsShort
               }
               onClick={handleSaveContacts}
             >
