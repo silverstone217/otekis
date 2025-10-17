@@ -18,7 +18,7 @@ function ConditionsAndTerms() {
           <Shield className="text-primary" />
           <CardTitle>Conditions Générales de Vente (CGV) – Acheteurs</CardTitle>
           <Link
-            href={"../../files/Conditions Générales de Vente.pdf"}
+            href={"/files/conditions-generales-de-vente.pdf"}
             className="absolute right-4 top-2 flex items-center 
             gap-1 text-muted-foreground hover:text-primary"
             target="_blank"
@@ -114,9 +114,7 @@ function ConditionsAndTerms() {
             Contrat d’utilisateur – Propriétaire de boutique
           </CardTitle>
           <Link
-            href={
-              "../../files/Contrat d’utilisateur – Propriétaire de boutique.pdf"
-            }
+            href={"/files/contrat-d-utilisateur-proprietaire-de-boutique.pdf"}
             className="absolute right-4 top-2 flex items-center 
             gap-1 text-muted-foreground hover:text-primary"
             target="_blank"
@@ -227,7 +225,7 @@ function ConditionsAndTerms() {
           <ShoppingCart className="text-primary" />
           <CardTitle>Contrat d’utilisateur – Acheteur</CardTitle>
           <Link
-            href={"../../files/Contrat d’utilisateur – Acheteur.pdf"}
+            href={"/files/contrat-d-utilisateur-acheteur.pdf"}
             className="absolute right-4 top-2 flex items-center 
             gap-1 text-muted-foreground hover:text-primary"
             target="_blank"
