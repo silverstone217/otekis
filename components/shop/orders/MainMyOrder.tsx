@@ -58,6 +58,7 @@ import GenerateSecret from "./OrderSecretComponent";
 import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import FactureOrderView from "./FactureOrderView";
 import FactureDeliveryView from "./FactureDeliveryView";
+import FactureRefundOrder from "./FactureRefundOrder";
 
 interface MainOrderProps {
   myOrder: OrderWithProductDetails;
@@ -372,7 +373,7 @@ const MainMyOrder = ({
                     alt={item.productName}
                     width={200}
                     height={200}
-                    className="rounded-lg object-cover shadow-sm 
+                    className="rounded-lg object-contain shadow-sm 
                    h-32 w-24
                     group-hover:brightness-90 transition"
                     priority
@@ -442,14 +443,15 @@ const MainMyOrder = ({
           </button>
 
           {/* REFUND DOC */}
-          <button
-            type="button"
-            className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition rounded-b-md"
-          >
-            <DollarSign className="w-5 h-5 text-muted-foreground" />
-            <span>Document sur le remboursement</span>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
+          <FactureRefundOrder
+            currency={currency}
+            deliveryInfo={deliveryInfo}
+            exchange={exchange}
+            factureOrder={factureOrder}
+            myOrder={myOrder}
+            shop={shop}
+            shopPreferences={shopPreferences}
+          />
         </Card>
       </section>
 
