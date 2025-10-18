@@ -5,7 +5,7 @@ import {
   calculateDiscountPercentage,
   returnFormatedMoney,
 } from "@/utils/functions";
-import { capitalizeText } from "@/utils/shopFunctions";
+import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { Article, Preferences, ProductShop, Shop } from "@prisma/client";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
@@ -129,6 +129,17 @@ export const ProductCard = ({
 
   // if (!productShopPrice) return null;
 
+  // LUMINANCE
+  const LUMINANCE = luminanceColor(preferences.buttonColor);
+
+  const bgImage = useMemo(
+    () =>
+      LUMINANCE !== "dark"
+        ? "rgba(12, 12, 12, 0.1)"
+        : "rgba(256, 256, 256, 0.4)",
+    [LUMINANCE]
+  );
+
   return (
     <Link
       href={`/${shop.slug}/catalogues/${product.id}`}
@@ -138,9 +149,12 @@ export const ProductCard = ({
       }}
     >
       <div
-        className="object-cover h-80 lg:h-96 w-full overflow-hidden relative
+        className=" h-54 sm:h-72 w-full overflow-hidden relative
             transition-all duration-500 ease-in-out group-hover:brightness-75
             "
+        style={{
+          backgroundColor: bgImage,
+        }}
       >
         <Image
           src={product.image}
@@ -148,7 +162,7 @@ export const ProductCard = ({
           width={1500}
           height={1500}
           priority
-          className="object-cover h-full w-full group-hover:scale-110
+          className="object-contain h-full w-full group-hover:scale-110
             transition-all duration-500 ease-in-out group-hover:brightness-75
             "
           style={{
@@ -187,7 +201,14 @@ export const ProductCard = ({
               capitalizeText(returnDataValue(product.type, TypeClothesData))}
           </span>
         )} */}
-        <div className="w-full flex item-center justify-between">
+        <div
+          className="w-full flex item-center justify-between"
+          style={
+            {
+              // color: preferences.buttonColor,
+            }
+          }
+        >
           {productShopPromotion &&
           productShopPromotion > 0 &&
           productShopPrice * exchange !== totalPriceAfterDiscount * exchange ? (

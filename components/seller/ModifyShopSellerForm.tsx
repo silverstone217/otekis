@@ -277,6 +277,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
             <div>
               <Label className="text-lg font-semibold mb-4">
                 Informations de paiement
+                <span className="text-destructive">*</span>
               </Label>
               <div className="space-y-4">
                 <Input
