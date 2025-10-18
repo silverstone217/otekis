@@ -279,20 +279,29 @@ const MainCartComponent = ({
             style={{ backgroundColor: "dimgray" }}
             className="h-[0.5px] w-full opacity-50"
           ></div>
-          {/* total price */}
-          <div className="w-full flex item-center justify-between">
-            <Label className="opacity-75">Prix total</Label>
+
+          {/* TVA */}
+          <div className="w-full flex item-center justify-between text-sm">
+            <Label className="opacity-75">TVA</Label>
+            <p className="opacity-75 font-semibold tabular-nums ">
+              15% de tva appliquée
+            </p>
+          </div>
+
+          {/* delivery price */}
+          <div className="w-full flex item-center justify-between text-sm">
+            <Label className="opacity-75">Frais de livraison</Label>
             <p className="opacity-75 font-semibold tabular-nums">
-              {returnFormatedMoney(totalPrice)}{" "}
+              {returnFormatedMoney(deliveryPrice)}{" "}
               <span className="text-xs"> {currency}</span>
             </p>
           </div>
 
           {/* total price */}
           <div className="w-full flex item-center justify-between">
-            <Label className="opacity-75">Frais de livraison</Label>
+            <Label className="opacity-75">Prix total</Label>
             <p className="opacity-75 font-semibold tabular-nums">
-              {returnFormatedMoney(deliveryPrice)}{" "}
+              {returnFormatedMoney(totalPrice)}{" "}
               <span className="text-xs"> {currency}</span>
             </p>
           </div>
