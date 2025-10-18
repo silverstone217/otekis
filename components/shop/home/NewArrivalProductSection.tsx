@@ -134,9 +134,7 @@ export const ProductCard = ({
 
   const bgImage = useMemo(
     () =>
-      LUMINANCE !== "dark"
-        ? "rgba(12, 12, 12, 0.1)"
-        : "rgba(256, 256, 256, 0.4)",
+      LUMINANCE !== "dark" ? "rgba(0, 0, 0, 0.2)" : "rgba(256, 256, 256, 0.4)",
     [LUMINANCE]
   );
 
