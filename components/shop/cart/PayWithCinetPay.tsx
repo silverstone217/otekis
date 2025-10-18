@@ -203,12 +203,12 @@ export function PaiementCinetPay({
       }
 
       // check if the address is a correct format
-      const isAddressCorrect = verifyAddressFormat(receiverInfo.address);
-      if (!isAddressCorrect) {
-        // setLoading(false);
-        toast.error(isAddressCorrect);
-        return;
-      }
+      // const isAddressCorrect = verifyAddressFormat(receiverInfo.address);
+      // if (!isAddressCorrect) {
+      //   // setLoading(false);
+      //   toast.error(isAddressCorrect);
+      //   return;
+      // }
 
       // const paymentResult = await paymentPromise;
 

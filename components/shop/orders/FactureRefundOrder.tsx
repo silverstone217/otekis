@@ -199,10 +199,10 @@ const FactureRefundOrder = ({
                   >
                     <div className="flex flex-col">
                       <span className="font-medium text-gray-800">
-                        {prod.productName}
+                        {capitalizeText(prod.productName)}
                       </span>
                       {prod.productInfo && (
-                        <span className="text-xs opacity-70">
+                        <span className="text-xs opacity-70 capitalize">
                           {prod.productInfo}
                         </span>
                       )}

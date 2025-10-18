@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { FileText, ChevronRight, Download } from "lucide-react";
+import { FileText, ChevronRight, Download, BadgeInfo } from "lucide-react";
 import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
 import { Preferences, Shop } from "@prisma/client";
@@ -169,43 +169,42 @@ const FactureOrderView = ({
     const deliveryAmount =
       (factureOrder.deliveryPrice ?? 0) * (factureOrder.exchange ?? 1);
     const sumProducts = factureOrder.totalAmount;
-
     const tvaAmount = factureOrder.TVA;
     const grandTotal = sumProducts + deliveryAmount;
 
-    const labelX = pageWidth - 240;
-    const valueX = pageWidth - 40;
-
+    // ✅ Aligner les totaux sur toute la largeur
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(11);
 
-    doc.text("Sous-total :", labelX, totalsY);
-    doc.text(`${sumProducts} ${factureOrder.currency}`, valueX, totalsY, {
-      align: "right",
-    });
-    totalsY += 14;
-
-    doc.text("Livraison :", labelX, totalsY);
-    doc.text(`${deliveryAmount} ${factureOrder.currency}`, valueX, totalsY, {
-      align: "right",
-    });
-    totalsY += 14;
-
-    doc.text(`TVA :`, labelX, totalsY);
-    doc.text(`${tvaAmount}%`, valueX, totalsY, { align: "right" });
+    doc.text(
+      `Sous-total : ${sumProducts} ${factureOrder.currency}`,
+      40,
+      totalsY
+    );
     totalsY += 16;
 
-    doc.line(labelX, totalsY, valueX, totalsY);
-    totalsY += 10;
+    doc.text(
+      `Livraison : ${deliveryAmount} ${factureOrder.currency}`,
+      40,
+      totalsY
+    );
+    totalsY += 16;
+
+    doc.text(`TVA : ${tvaAmount}%`, 40, totalsY);
+    totalsY += 20;
+
+    doc.setDrawColor(180);
+    doc.line(40, totalsY, pageWidth - 40, totalsY);
+    totalsY += 14;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Total à payer :", labelX, totalsY);
-    doc.text(`${grandTotal} ${factureOrder.currency}`, valueX, totalsY, {
-      align: "right",
-    });
-
-    totalsY += 24;
+    doc.setFontSize(13);
+    doc.text(
+      `Total à payer : ${grandTotal} ${factureOrder.currency}`,
+      40,
+      totalsY
+    );
+    totalsY += 30;
 
     // --- PIED DE PAGE ---
     doc.setFontSize(9);
@@ -224,31 +223,32 @@ const FactureOrderView = ({
       <DialogTrigger asChild disabled={!canDownloadFacture}>
         <button
           type="button"
-          className="flex items-center justify-between p-4 text-sm hover:bg-gray-50 transition"
+          className="flex items-center justify-between p-4 text-sm hover:bg-muted/50 transition rounded-b-md"
         >
-          <FileText className="w-5 h-5 text-muted-foreground" />
-          <span className="font-medium">Facture</span>
-
+          <FileText className="w-5 h-5 text-primary" />
+          <span>Facture</span>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-bold text-xl text-center">
-            🧾 Détail de la facture
+      <DialogContent className="max-w-2xl border-2 border-primary/20 shadow-lg">
+        <DialogHeader className="text-center space-y-1">
+          <DialogTitle className="font-extrabold text-2xl text-primary flex justify-center items-center gap-2">
+            <FileText className="w-6 h-6 text-primary" />
+            Facture d’achat
           </DialogTitle>
-          <DialogDescription className="text-center text-sm text-muted-foreground">
-            Résumé complet de votre commande. Vous pouvez télécharger la facture
-            ou la présenter en cas de litige.
+          <DialogDescription className="text-sm text-muted-foreground">
+            Détails complets de votre commande. Vous pouvez la télécharger ou la
+            conserver comme preuve d’achat.
           </DialogDescription>
         </DialogHeader>
 
         {factureOrder ? (
           <ScrollArea className="max-h-[65vh] mt-4 pr-2">
-            <Card className="border-none shadow-none bg-transparent">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-muted-foreground">
+            {/* Produits */}
+            <Card className="border-primary/10 shadow-sm bg-primary/5">
+              <CardHeader className="pb-1">
+                <CardTitle className="text-sm font-semibold text-primary">
                   Produits achetés
                 </CardTitle>
               </CardHeader>
@@ -256,36 +256,33 @@ const FactureOrderView = ({
                 {factureOrder.productFactures.map((prod) => (
                   <div
                     key={prod.id}
-                    className="flex items-center justify-between text-sm capitalize"
+                    className="flex items-center justify-between text-sm"
                   >
                     <div className="flex flex-col">
                       <span className="font-medium text-gray-800">
-                        {prod.productName}
+                        {capitalizeText(prod.productName)}
                       </span>
-                      <span className="text-xs opacity-70">
-                        {prod.productInfo}
-                      </span>
+                      {prod.productInfo && (
+                        <span className="text-xs opacity-70 capitalize">
+                          {prod.productInfo}
+                        </span>
+                      )}
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs opacity-70">
-                        Q/{prod.quantity}
-                      </span>
-                      <span className="font-semibold tabular-nums">
+                    <div className="text-right">
+                      <p className="text-xs opacity-70">x{prod.quantity}</p>
+                      <p className="font-semibold text-primary">
                         {returnFormatedMoney(prod.price * prod.exchange)}{" "}
                         <span className="text-xs">{currency}</span>
-                      </span>
+                      </p>
                     </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
 
-            <Separator className="my-4" />
-
-            {/* Détails financiers */}
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center justify-between">
+            {/* Totaux */}
+            <div className="mt-4 p-3 bg-white border rounded-md space-y-2 text-sm">
+              <div className="flex justify-between">
                 <span className="font-medium text-muted-foreground">
                   Livraison
                 </span>
@@ -293,26 +290,34 @@ const FactureOrderView = ({
                   {returnFormatedMoney(
                     factureOrder.deliveryPrice * factureOrder.exchange
                   )}{" "}
-                  <span className="text-xs">{factureOrder.currency}</span>
+                  {factureOrder.currency}
                 </span>
               </div>
-
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between">
                 <span className="font-medium text-muted-foreground">TVA</span>
-                <span className="font-medium">
-                  {factureOrder.TVA} <span className="text-xs">%</span>
-                </span>
+                <span className="font-medium">{factureOrder.TVA}%</span>
               </div>
 
               <Separator className="my-2" />
 
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-base">Prix total</span>
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-base text-primary">
+                  Prix total
+                </span>
                 <span className="font-bold text-base text-primary">
                   {returnFormatedMoney(factureOrder.totalAmount)}{" "}
                   <span className="text-xs">{factureOrder.currency}</span>
                 </span>
               </div>
+            </div>
+
+            {/* Note bas */}
+            <div className="mt-4 flex items-start gap-2 text-xs text-muted-foreground">
+              <BadgeInfo className="w-4 h-4 text-primary flex-shrink-0 mt-[2px]" />
+              <p>
+                Cette facture confirme votre achat. Conservez-la comme preuve de
+                transaction ou de garantie.
+              </p>
             </div>
           </ScrollArea>
         ) : (
@@ -323,13 +328,11 @@ const FactureOrderView = ({
 
         <DialogFooter className="pt-6 flex justify-between gap-4 w-full">
           <DialogClose asChild>
-            <Button variant="outline" className="">
-              Annuler
-            </Button>
+            <Button variant="outline">Fermer</Button>
           </DialogClose>
 
           <Button
-            className=""
+            className="bg-primary hover:bg-primary/90 text-white"
             disabled={!canDownloadFacture}
             onClick={handleDownloadPdf}
           >
