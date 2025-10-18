@@ -35,9 +35,13 @@ const ImageSliderCarousel = ({ images, preferences, custom_height }: Props) => {
     >
       {/* images */}
       <div className="relative w-full h-full overflow-hidden">
-        <div className="w-full h-full flex items-center justify-center transition-all duration-500 ease-in-out">
+        <div
+          className="w-full h-full flex items-center justify-center 
+        transition-all duration-500 ease-in-out"
+        >
           <Image
-            className="object-cover w-full h-full transition-all duration-500 ease-in-out"
+            className="object-contain w-full h-full transition-all 
+            duration-500 ease-in-out"
             src={images[index]}
             alt={"Product article" + (index + 1)}
             key={index}
