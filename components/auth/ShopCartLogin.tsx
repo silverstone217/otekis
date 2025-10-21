@@ -59,16 +59,16 @@ const ShopCartLogin = ({ preferences }: Props) => {
               backgroundColor: enabled ? preferences.buttonColor : undefined,
               color: enabled
                 ? preferences.buttonTextColor
-                : luminance === "dark"
-                ? "black"
-                : "white",
+                : luminance !== "dark"
+                  ? "black"
+                  : "white",
               borderRadius: preferences.buttonRadius,
               opacity: enabled ? 1 : 0.3,
               borderColor: enabled
                 ? preferences.buttonColor
                 : luminance === "dark"
-                ? "black"
-                : "white",
+                  ? "black"
+                  : "white",
             }}
           >
             <Icon className="w-6 h-6" aria-hidden="true" />

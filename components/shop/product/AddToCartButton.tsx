@@ -321,8 +321,8 @@ const AddToCartButton = ({
                       {art.stock > 1
                         ? "disponibles"
                         : art.stock === 1
-                        ? "disponible"
-                        : "rupture-de-stock"}{" "}
+                          ? "disponible"
+                          : "rupture-de-stock"}{" "}
                     </span>
                   </span>
                 </div>
@@ -374,8 +374,8 @@ const AddToCartButton = ({
                       {art.stock > 1
                         ? "disponibles"
                         : art.stock === 1
-                        ? "disponible"
-                        : "rupture-de-stock"}{" "}
+                          ? "disponible"
+                          : "rupture-de-stock"}{" "}
                     </span>
                   </span>
                 </div>
@@ -521,16 +521,16 @@ const AddToCartButton = ({
                         : undefined,
                       color: enabled
                         ? preferences.buttonTextColor
-                        : luminance === "dark"
-                        ? "black"
-                        : "white",
+                        : luminance !== "dark"
+                          ? "black"
+                          : "white",
                       borderRadius: preferences.buttonRadius,
                       opacity: enabled ? 1 : 0.3,
                       borderColor: enabled
                         ? preferences.buttonColor
                         : luminance === "dark"
-                        ? "black"
-                        : "white",
+                          ? "black"
+                          : "white",
                     }}
                   >
                     <Icon className="w-6 h-6" aria-hidden="true" />
