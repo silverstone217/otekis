@@ -1,5 +1,5 @@
 "use client";
-import { Article, Product, ProductShop, Shop } from "@prisma/client";
+import { Product, ProductShop, Shop } from "@prisma/client";
 // import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import noProduct from "@/public/images/noproduct.jpg";
@@ -476,7 +476,7 @@ export function AddProductToShopSheet({
       );
       router.refresh();
     } catch (error) {
-      const err = error as Error;
+      console.log(error);
       toast.error("Erreur", {
         description:
           "Une erreur est survenue lors de la modification du produit",
@@ -493,6 +493,7 @@ export function AddProductToShopSheet({
     try {
       const deleteItem = await deleteItemToShop({
         productShopId: isInShopProduct.id,
+        shopId: shop.id,
       });
       if (!deleteItem) {
         toast.error("Erreur survenue!", {
@@ -571,8 +572,8 @@ export function AddProductToShopSheet({
                   product?.category === "vetements"
                     ? returnDataValue(product?.type, TypeClothesData)
                     : product?.category === "accessoires"
-                    ? returnDataValue(product?.type, AccessoriesData)
-                    : ""
+                      ? returnDataValue(product?.type, AccessoriesData)
+                      : ""
                 }
               />
             )}

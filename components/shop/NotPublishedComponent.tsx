@@ -10,11 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import { Shop } from "@prisma/client";
-
-interface Props {
-  shop?: Shop;
-}
 
 export default function NotShopStatusFind() {
   return (
@@ -34,7 +29,7 @@ export default function NotShopStatusFind() {
           </CardDescription>
         </CardHeader>
         <CardContent className="mt-6">
-          <Link href="/" passHref legacyBehavior>
+          <Link href="/" passHref>
             <Button variant="outline" className="w-full">
               {`  Retourner à l'accueil`}
             </Button>
