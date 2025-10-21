@@ -158,15 +158,35 @@ export const addItemToShop = async ({
 // product shop delete
 type deleteItemShopType = {
   productShopId: string;
+  shopId: string;
 };
 
 export const deleteItemToShop = async ({
   productShopId,
+  shopId,
 }: deleteItemShopType) => {
   const user = await getUser();
   if (!user) {
     return {
       message: "Pas authorisé à faire ça!",
+      error: true,
+    };
+  }
+
+  const isShopExist = await prisma.shop.findUnique({
+    where: { id: shopId },
+  });
+
+  if (!isShopExist) {
+    return {
+      message: "Cette boutique n'existe pas ou a ete suspendue!",
+      error: true,
+    };
+  }
+
+  if (user.id !== isShopExist.userId) {
+    return {
+      message: "Impossible de continuer, vous n'etes pas authorisé!",
       error: true,
     };
   }

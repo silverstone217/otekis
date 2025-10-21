@@ -369,9 +369,9 @@ export function AddProductToShopSheet({
         price: totalPrice,
       };
       const addNewItem = await addItemToShop({ ...newProductShop });
-      if (!addNewItem) {
+      if (addNewItem.error) {
         toast.error("Erreur", {
-          description: "Une erreur est survenue lors de l'ajout du produit",
+          description: addNewItem.message,
         });
         return;
       }
@@ -394,11 +394,12 @@ export function AddProductToShopSheet({
     try {
       const deleteItem = await deleteItemToShop({
         productShopId: isInShopProduct.id,
+        shopId: shop.id,
       });
-      if (!deleteItem) {
+
+      if (deleteItem.error) {
         toast.error("Erreur", {
-          description:
-            "Une erreur est survenue lors de la suppression du produit",
+          description: deleteItem.message,
         });
         return;
       }
@@ -456,8 +457,8 @@ export function AddProductToShopSheet({
                   product?.category === "vetements"
                     ? returnDataValue(product.type, TypeClothesData)
                     : product?.category === "accessoires"
-                    ? returnDataValue(product.type, AccessoriesData)
-                    : ""
+                      ? returnDataValue(product.type, AccessoriesData)
+                      : ""
                 }
               />
             )}
