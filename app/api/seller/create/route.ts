@@ -4,6 +4,8 @@ import { getUser } from "@/actions/actions";
 import { generateSlug, normalizeProductName } from "@/utils/functions";
 import { NextResponse } from "next/server";
 
+const PERMIT_ROLES = ["employe", "employee", , "admin", "super_admin"];
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -58,7 +60,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const role = user.role.includes("admin") ? user.role : "seller";
+    const role = PERMIT_ROLES.includes(user.role) ? user.role : "seller";
 
     const shop = await prisma.shop.create({
       data: {

@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Mail, MessageSquare, User, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import { sendContactEmail } from "@/actions/sendMailAction";
 
 export default function ContactSection() {
   const [form, setForm] = useState({
@@ -26,6 +27,7 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.name || !form.email || !form.message) {
       toast.error("Veuillez remplir tous les champs requis.");
       return;
@@ -38,12 +40,21 @@ export default function ContactSection() {
     setLoading(true);
 
     try {
-      // 📨 Ici tu pourras intégrer ton server action ou API d’envoi de mail
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      const res = await sendContactEmail({
+        name: form.name,
+        email: form.email,
+        message: form.message,
+      });
+
+      if (res.error) {
+        toast.error("Une erreur est survenue. Réessayez plus tard.");
+        return;
+      }
       toast.success("Message envoyé avec succès !");
       setForm({ name: "", email: "", message: "", consent: false });
-    } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Erreur lors de l’envoi du message.");
     } finally {
       setLoading(false);
     }

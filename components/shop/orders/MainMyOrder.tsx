@@ -216,7 +216,10 @@ const MainMyOrder = ({
             </div>
             <Separator />
             {/* buttons and action */}
-            <div className="grid grid-cols-2 items-center justify-between gap-2 flex-wrap">
+            <div
+              className="grid grid-cols-2 items-center justify-between 
+            gap-2 flex-wrap"
+            >
               {/* modify order */}
               <ModifyOrderUserInfo
                 myOrder={myOrder}

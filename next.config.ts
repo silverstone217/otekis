@@ -12,15 +12,24 @@ const nextConfig = {
     // next-auth and db api keys
     SECRET_KEY: process.env.SECRET_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
+    SITE_NAME: process.env.SITE_NAME,
+
+    // GOOGLE API AUTH KEYS
     CLIENT_ID: process.env.CLIENT_ID,
     CLIENT_SECRET: process.env.CLIENT_SECRET,
-    SITE_NAME: process.env.SITE_NAME,
+
+    // EMAIL SERVICES AND KEYS
     EMAIL_FROM: process.env.EMAIL_FROM,
     EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
     EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
     EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
     EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
     AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
+
+    // RESEND API KEY
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+
+    // APPLE AUTH KEYS
     APPLE_ID: process.env.APPLE_ID,
     APPLE_KEY_SECRET: process.env.APPLE_KEY_SECRET,
 

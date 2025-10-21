@@ -487,7 +487,7 @@ export const OtekisDescData = [
     title: "Support et assistance",
     icon: Headset,
     description:
-      "Nous savons qu'il est crucial d'avoir du soutien lors du lancement d'une nouvelle entreprise. C'est pourquoi notre équipe est disponible pour répondre à toutes vos questions et vous guider tout au long du processus. Que ce soit pour des conseils sur la personnalisation de votre boutique ou des stratégies marketing, nous sommes là pour vous aider à réussir. Ce texte présente les fonctionnalités clés d'Otekis tout en mettant l'accent sur les avantages pour l'utilisateur, ce qui devrait aider à attirer et informer les particuliers intéressés par la création de leur propre boutique en ligne.",
+      "Nous savons qu'il est crucial d'avoir du soutien lors du lancement d'une nouvelle entreprise. C'est pourquoi notre équipe est disponible pour répondre à toutes vos questions et vous guider tout au long du processus. Que ce soit pour des conseils sur la personnalisation de votre boutique ou des stratégies marketing, nous sommes là pour vous aider à réussir.",
   },
 ];
 

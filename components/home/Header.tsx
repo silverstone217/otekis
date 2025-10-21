@@ -18,6 +18,8 @@ import { Button } from "../ui/button";
 import logo from "@/public/images/oteki-logo.png";
 import Image from "next/image";
 
+const PERMIT_ROLES = ["employe", "employee", , "admin", "super_admin"];
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
@@ -69,7 +71,9 @@ const Header = () => {
             <LinkName href="/dashboard" title="Ma Boutique" />
             <LinkName href="/a-propos" title="A propos" />
             <LinkName href="#contact" title="Nous Contacter" />
-            <LinkName href="/overview" title="Administrateur" />
+            {user && PERMIT_ROLES.includes(user.role) && (
+              <LinkName href="/overview" title="Administrateur" />
+            )}
           </div>
 
           {/* buttons */}
@@ -135,13 +139,15 @@ const Header = () => {
                 <PhoneCall className="w-8 flex-shrink-0" />
                 <span>Nous Contacter</span>
               </Link>
-              <Link
-                href={"/overview"}
-                className="flex gap-4 items-center w-full"
-              >
-                <Shield className="w-8 flex-shrink-0" />
-                <span>Staff*</span>
-              </Link>
+              {user && PERMIT_ROLES.includes(user.role) && (
+                <Link
+                  href={"/overview"}
+                  className="flex gap-4 items-center w-full"
+                >
+                  <Shield className="w-8 flex-shrink-0" />
+                  <span>Staff*</span>
+                </Link>
+              )}
             </div>
             {/* separators */}
             <span className="w-full h-0.5 bg-gray-200" />
