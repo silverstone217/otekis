@@ -47,7 +47,7 @@ export default function ContactSection() {
       });
 
       if (res.error) {
-        toast.error("Une erreur est survenue. Réessayez plus tard.");
+        toast.error(res.message);
         return;
       }
       toast.success("Message envoyé avec succès !");
