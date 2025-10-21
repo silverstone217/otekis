@@ -152,6 +152,7 @@ export const ProductCard = ({
             "
         style={{
           backgroundColor: bgImage,
+          borderRadius: preferences.buttonRadius,
         }}
       >
         <Image
