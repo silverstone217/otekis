@@ -11,6 +11,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 import AcceptSellerTermes from "./AcceptSellerTermes";
+import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 
 type Props = {
   params: Promise<{
@@ -61,6 +62,10 @@ const MyShopBySlugPage = async (props: Props) => {
   const shop = await getShopBySlug(slug);
   if (!shop) {
     return <div>pas de boutique trouvée.</div>;
+  }
+
+  if (shop.userId !== user.id) {
+    return <NotAuthorizedComponent />;
   }
 
   return (

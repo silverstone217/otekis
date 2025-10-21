@@ -41,6 +41,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Shop } from "@prisma/client";
+import { useCurrentUser } from "@/hooks/UserAuth";
 
 type Props = {
   shop: Shop;
@@ -65,6 +66,8 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
+  const user = useCurrentUser();
+
   // handle file drop
   const handleDrop = useCallback(
     (
@@ -87,7 +90,10 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
 
   // update shop logo
   const uploadLogo = async () => {
-    if (!logo) return;
+    if (!logo || !user) return;
+
+    if (user.id !== shop.userId) return;
+
     setLoading(true);
     try {
       const storageRef = ref(
@@ -113,6 +119,10 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
   const uploadCover = async () => {
     setLoading(true);
     try {
+      if (!user) return;
+
+      if (user.id !== shop.userId) return;
+
       if (!cover) {
         if (shop.cover) {
           await deleteObject(ref(storage, shop.cover));
@@ -163,8 +173,8 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
     setLoading(true);
     try {
       const formData = {
-        name,
-        description,
+        name: name.toLocaleLowerCase().trim(),
+        description: description.trim(),
         category,
         shopId: shop.id,
         paymentName,

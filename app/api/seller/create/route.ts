@@ -4,28 +4,29 @@ import { getUser } from "@/actions/actions";
 import { generateSlug, normalizeProductName } from "@/utils/functions";
 import { NextResponse } from "next/server";
 
-const PERMIT_ROLES = ["employe", "employee", , "admin", "super_admin"];
+const PERMIT_ROLES = ["employe", "employee", "admin", "super_admin"];
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // 🧩 Authentification
     const user = await getUser();
     if (!user) {
       return NextResponse.json(
-        { message: "Unauthorized", error: true },
+        { message: "Non autorisé. Veuillez vous connecter.", error: true },
         { status: 401 }
       );
     }
 
     if (user.isBanned) {
       return NextResponse.json(
-        { message: "Votre compte est banni", error: true },
+        { message: "Votre compte est banni.", error: true },
         { status: 403 }
       );
     }
 
-    // ✅ Validation avec safeParse
+    // ✅ Validation avec Zod
     const validation = addShopBySellerSchema.safeParse(body);
     if (!validation.success) {
       const formattedErrors = validation.error.issues.map((err) => ({
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
         {
           error: true,
           message:
-            "Erreur de validation des données, respectez les formats de chaque champ.",
+            "Erreur de validation des données. Veuillez vérifier les champs.",
           details: formattedErrors,
         },
         { status: 400 }
@@ -46,22 +47,43 @@ export async function POST(request: Request) {
 
     const revalidated = validation.data;
 
+    // 🧠 Normalisation et slugification
     const name = normalizeProductName(revalidated.name.trim().toLowerCase());
-    const slug = generateSlug(revalidated.name);
 
-    const isShopWithThatNameExists = await prisma.shop.findUnique({
+    // 🔍 Vérification si une boutique existe déjà avec ce nom
+    const existingShop = await prisma.shop.findFirst({
       where: { name },
     });
 
-    if (isShopWithThatNameExists) {
+    if (existingShop) {
       return NextResponse.json(
-        { message: "Le nom du magasin existe déjà", error: true },
+        { message: "Le nom du magasin existe déjà.", error: true },
         { status: 409 }
       );
     }
 
+    // 🔁 Assurer un slug unique
+    const slug = generateSlug(name);
+    const existingSlug = await prisma.shop.findFirst({
+      where: {
+        slug,
+      },
+    });
+
+    if (existingSlug) {
+      return NextResponse.json(
+        {
+          message: "probleme de configuration, utliser un autre nom.",
+          error: true,
+        },
+        { status: 409 }
+      );
+    }
+
+    // 🎭 Déterminer le rôle
     const role = PERMIT_ROLES.includes(user.role) ? user.role : "seller";
 
+    // 🏪 Création de la boutique
     const shop = await prisma.shop.create({
       data: {
         name,
@@ -79,22 +101,25 @@ export async function POST(request: Request) {
       },
     });
 
+    // 🔄 Mise à jour du rôle utilisateur si nécessaire
     await prisma.user.update({
       where: { id: user.id },
       data: { role },
     });
 
     return NextResponse.json({
-      message: "Boutique créée avec succès",
+      message: "Boutique créée avec succès 🎉",
       data: shop,
       error: false,
     });
   } catch (error) {
     const err = error as Error;
+    console.error("Erreur lors de la création de la boutique :", err);
+
     return NextResponse.json(
       {
         error: true,
-        message: err.message || "Erreur interne du serveur",
+        message: err.message || "Erreur interne du serveur.",
       },
       { status: 500 }
     );

@@ -9,6 +9,7 @@ import { capitalizeText } from "@/utils/shopFunctions";
 import { redirect } from "next/navigation";
 import React from "react";
 import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
+import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 
 type Props = {
   params: Promise<{
@@ -76,6 +77,11 @@ const AddShopProductPage = async (props: Props) => {
   if (!shop) {
     return <div>pas de boutique trouvée.</div>;
   }
+
+  if (shop.userId !== user.id) {
+    return <NotAuthorizedComponent />;
+  }
+
   const products = await getProductsByCategory(shop.category);
   const productsShop = await getProductShopsByShopId(shop.id);
 
