@@ -266,6 +266,8 @@ const MainMyOrder = ({
                     setRefundReceiverName={setRefundReceiverName}
                     myOrder={myOrder}
                   />
+
+                  {/*  */}
                 </div>
               </Card>
             </section>
@@ -1012,6 +1014,8 @@ export function CancelOrderDialogMadeByAdmin({
     }
   };
 
+  const isRefunded = !!myOrder.paymentRefRefund || myOrder.status === "annulé";
+
   return (
     <Dialog>
       <DialogTrigger asChild disabled={disabled}>
@@ -1034,83 +1038,137 @@ export function CancelOrderDialogMadeByAdmin({
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">
-            Les donnees de remboursement
+        <DialogHeader className="text-center space-y-1">
+          <DialogTitle className="text-2xl font-bold text-green-700">
+            {isRefunded
+              ? "Remboursement effectué ✅"
+              : "Données de remboursement"}
           </DialogTitle>
-          <DialogDescription>
-            Entrer le numéro de téléphone et le nom du destinataire pour le
-            remboursement
-            <br />
-            <strong>
-              Pour l{`'`}instant la methode de remboursement se fait uniquement
-              par MPESA.
-            </strong>
+          <DialogDescription className="text-sm text-muted-foreground">
+            {isRefunded ? (
+              <>
+                Cette commande a été annulée et le remboursement a été
+                <strong> confirmé</strong>.
+              </>
+            ) : (
+              <>
+                Entrez le numéro de téléphone et le nom du destinataire pour le
+                remboursement.
+                <br />
+                <strong>
+                  Pour l{`'`}instant, la méthode de remboursement se fait
+                  uniquement par MPESA.
+                </strong>
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex w-full gap-1 items-center flex-wrap">
-          <span className="text-gray-500 text-sm">Methode de paiment: </span>
-          <span className="font-bold capitalize">{paymentMethodRefund}</span>
+        {/* Informations de méthode */}
+        <div className="flex w-full gap-1 items-center flex-wrap text-sm">
+          <span className="text-gray-500">Méthode de paiement : </span>
+          <span className="font-bold capitalize text-green-700">
+            {paymentMethodRefund}
+          </span>
         </div>
 
-        <div className="w-full grid gap-1.5">
-          <Label className="text-gray-500 text-sm">Nom du destinataire</Label>
-          <Input
-            type="text"
-            defaultValue={refundReceiverName}
-            onChange={(e) => setRefundReceiverName(e.target.value)}
-            autoCapitalize="off"
-            autoCorrect="off"
-            className="w-full"
-            placeholder="ex: john doe"
-            minLength={3}
-            maxLength={60}
-          />
-        </div>
+        {/* ✅ Cas remboursé : on affiche les infos en lecture seule */}
+        {isRefunded ? (
+          <div className="mt-4 space-y-3 p-3 bg-green-50 border border-green-100 rounded-md text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Nom du destinataire :</span>
+              <span className="font-semibold text-green-800">
+                {myOrder.refundReceiverName || "—"}
+              </span>
+            </div>
 
-        <div className="w-full grid gap-1.5">
-          <Label className="text-gray-500 text-sm">
-            Telephone du destinataire
-          </Label>
-          <Input
-            type="tel"
-            defaultValue={refundPhoneNumber}
-            onChange={(e) => setRefundPhoneNumber(e.target.value)}
-            autoCapitalize="off"
-            autoCorrect="off"
-            className="w-full"
-            placeholder="ex: 817545966"
-            minLength={9}
-            maxLength={9}
-          />
-        </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Téléphone du destinataire :</span>
+              <span className="font-semibold text-green-800">
+                {myOrder.refundPhoneNumber || "—"}
+              </span>
+            </div>
 
-        <DialogFooter className="flex gap-4 justify-end">
-          {/* cancel */}
-          <DialogClose asChild>
-            <Button variant="outline" disabled={loading}>
-              Annuler
-            </Button>
-          </DialogClose>
-          {/* confirm */}
-          <DialogClose asChild>
-            <Button
-              variant="destructive"
-              onClick={handleConfirm}
-              disabled={
-                loading ||
-                isEmptyString(refundReceiverName) ||
-                isEmptyString(refundPhoneNumber) ||
-                (refundPhoneNumber === myOrder.refundPhoneNumber &&
-                  refundReceiverName === myOrder.refundReceiverName) ||
-                myOrder.status !== `en cours d'annulation`
-              }
-            >
-              {loading ? "en cours..." : "Confirmer"}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
+            {myOrder.paymentRefRefund && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Référence de paiement :</span>
+                <span className="font-semibold text-green-800">
+                  {myOrder.paymentRefRefund}
+                </span>
+              </div>
+            )}
+
+            <Separator className="my-2" />
+
+            <p className="text-xs text-muted-foreground italic">
+              Le remboursement a été traité avec succès. La commande est
+              maintenant <strong>annulée</strong>.
+            </p>
+          </div>
+        ) : (
+          /* 🧾 Cas en cours d’annulation : champs d’édition + boutons */
+          <>
+            <div className="w-full grid gap-1.5">
+              <Label className="text-gray-500 text-sm">
+                Nom du destinataire
+              </Label>
+              <Input
+                type="text"
+                defaultValue={refundReceiverName}
+                onChange={(e) => setRefundReceiverName(e.target.value)}
+                autoCapitalize="off"
+                autoCorrect="off"
+                className="w-full"
+                placeholder="ex: John Doe"
+                minLength={3}
+                maxLength={60}
+              />
+            </div>
+
+            <div className="w-full grid gap-1.5">
+              <Label className="text-gray-500 text-sm">
+                Téléphone du destinataire
+              </Label>
+              <Input
+                type="tel"
+                defaultValue={refundPhoneNumber}
+                onChange={(e) => setRefundPhoneNumber(e.target.value)}
+                autoCapitalize="off"
+                autoCorrect="off"
+                className="w-full"
+                placeholder="ex: 817545966"
+                minLength={9}
+                maxLength={9}
+              />
+            </div>
+
+            {myOrder.status === "en cours d'annulation" && (
+              <DialogFooter className="flex gap-4 justify-end mt-4">
+                <DialogClose asChild>
+                  <Button variant="outline" disabled={loading}>
+                    Annuler
+                  </Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button
+                    variant="destructive"
+                    onClick={handleConfirm}
+                    disabled={
+                      loading ||
+                      isEmptyString(refundReceiverName) ||
+                      isEmptyString(refundPhoneNumber) ||
+                      (refundPhoneNumber === myOrder.refundPhoneNumber &&
+                        refundReceiverName === myOrder.refundReceiverName) ||
+                      myOrder.status !== `en cours d'annulation`
+                    }
+                  >
+                    {loading ? "En cours..." : "Confirmer"}
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            )}
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
