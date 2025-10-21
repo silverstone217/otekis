@@ -501,7 +501,7 @@ export function AddProductToShopSheet({
             <InfoLine
               label="Description"
               value={
-                <span>
+                <span className="lowercase">
                   {capitalizeText(product.description.slice(0, 135))}
                   {product.description.length > 138 ? "..." : ""}
                 </span>
@@ -597,9 +597,11 @@ const InfoLine = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between gap-2">
-    <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
-    <span className="font-medium">{value}</span>
+  <div className="flex items-center justify-between gap-4">
+    <Label className="text-xs font-medium text-muted-foreground">
+      {capitalizeText(label)}
+    </Label>
+    <span className="font-medium capitalize">{value}</span>
   </div>
 );
 

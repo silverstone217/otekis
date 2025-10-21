@@ -21,17 +21,17 @@ export function SocialLinks() {
     {
       icon: <SlSocialFacebook size={22} />,
       label: "Facebook",
-      href: "https://facebook.com/otekis",
+      href: "https://www.facebook.com/share/1ASu5V2mD6/",
     },
     {
       icon: <FaInstagram size={22} />,
       label: "Instagram",
-      href: "https://instagram.com/otekis",
+      href: "https://www.instagram.com/servigroups?igsh=bzlxcWZ3OTRiaHpm",
     },
     {
       icon: <CiYoutube size={22} />,
       label: "YouTube",
-      href: "https://youtube.com/@otekis",
+      href: "https://youtube.com/@servigroupsocial?si=JqMvcjcldJpWiJgn",
     },
   ];
 

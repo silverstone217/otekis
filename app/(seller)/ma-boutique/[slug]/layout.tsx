@@ -22,7 +22,7 @@ export default async function ShopLayout({
 
   // 2️⃣ Récupération du shop via le slug
   const shop = await prisma.shop.findUnique({
-    where: { slug },
+    where: { slug, userId: user.id },
   });
 
   // 3️⃣ Vérifications d’accès
