@@ -404,8 +404,10 @@ export const updateCancelOrderByUser = async (data: CancelOderType) => {
       };
     }
 
+    const PERMIT_STATUS = ["en cours de traitement", "en cours d'annulation"];
+
     // Can order be cancelled ( only in status === "en cours de traitement")
-    if (order.status !== "en cours de traitement") {
+    if (!PERMIT_STATUS.includes(order.status)) {
       return {
         error: true,
         message: "Cette commande ne peut plus etre annulée à cette etape!",

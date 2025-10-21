@@ -12,13 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
-  Printer,
-  X,
-} from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,12 +34,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  isEmptyString,
-  returnDataValue,
-  returnFormatedMoney,
-} from "@/utils/functions";
-import { capitalizeText } from "@/utils/shopFunctions";
+import { returnFormatedMoney } from "@/utils/functions";
+
 import { toast } from "sonner";
 import { Order, OrderItem } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
@@ -96,10 +86,8 @@ export const columns: ColumnDef<OrderstableType>[] = [
     header: () => <div className="">Status paiement</div>,
     cell: ({ row }) => {
       const data = row.original;
-      const refNumber = data["paymentRefRefund"];
-      const paymentStatus = refNumber
-        ? "remboursé"
-        : (row.getValue("paymentStatus") as string);
+      // const refNumber = data["paymentRefRefund"];
+      const paymentStatus = data.status;
 
       return (
         <Badge
@@ -107,11 +95,12 @@ export const columns: ColumnDef<OrderstableType>[] = [
           variant={
             paymentStatus === "annulé"
               ? "destructive"
-              : paymentStatus === "remboursé"
-              ? "outline"
-              : paymentStatus === "payé"
-              ? "default"
-              : "secondary"
+              : paymentStatus.includes("en cours") ||
+                  paymentStatus.includes("en attente")
+                ? "outline"
+                : paymentStatus === "livré"
+                  ? "default"
+                  : "secondary"
           }
         >
           {paymentStatus}
