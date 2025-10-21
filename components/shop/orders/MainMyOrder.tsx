@@ -240,6 +240,37 @@ const MainMyOrder = ({
           </CardContent>
         </Card>
 
+        {(myOrder.status === "en cours d'annulation" ||
+          myOrder.status === "annulé") &&
+          myOrder.paymentRef && (
+            <section className="max-w-3xl mx-auto mb-10">
+              {/* <h3 className="text-lg font-semibold mb-6">Remboursement</h3> */}
+              <Card
+                style={{ borderColor, borderRadius }}
+                className="border shadow-sm flex flex-col divide-y divide-gray-200"
+              >
+                <div className="w-full p-4 flex flex-col gap-4">
+                  <p>
+                    Votre commande a été annulée, veuilez fournir une des
+                    informations pour vous faire rembourser.
+                  </p>
+                  <CancelOrderDialogMadeByAdmin
+                    disabled={false}
+                    onConfirm={handleUpdateCancelOrder}
+                    borderColor={borderColor}
+                    borderRadius={borderRadius}
+                    paymentMethodRefund={paymentMethodRefund}
+                    refundPhoneNumber={refundPhoneNumber}
+                    refundReceiverName={refundReceiverName}
+                    setRefundPhoneNumber={setRefundPhoneNumber}
+                    setRefundReceiverName={setRefundReceiverName}
+                    myOrder={myOrder}
+                  />
+                </div>
+              </Card>
+            </section>
+          )}
+
         {/* Résumé commande */}
         <Card
           style={{ borderColor, borderRadius }}
@@ -293,37 +324,6 @@ const MainMyOrder = ({
           <GenerateSecret orderId={myOrder.id} myOrder={myOrder} />
         </section>
       )}
-
-      {(myOrder.status === "en cours d'annulation" ||
-        myOrder.status === "annulé") &&
-        myOrder.paymentRef && (
-          <section className="max-w-3xl mx-auto mb-10">
-            {/* <h3 className="text-lg font-semibold mb-6">Remboursement</h3> */}
-            <Card
-              style={{ borderColor, borderRadius }}
-              className="border shadow-sm flex flex-col divide-y divide-gray-200"
-            >
-              <div className="w-full p-4 flex flex-col gap-4">
-                <p>
-                  Votre commande a été annulée, veuilez fournir une des
-                  informations pour vous faire rembourser.
-                </p>
-                <CancelOrderDialogMadeByAdmin
-                  disabled={false}
-                  onConfirm={handleUpdateCancelOrder}
-                  borderColor={borderColor}
-                  borderRadius={borderRadius}
-                  paymentMethodRefund={paymentMethodRefund}
-                  refundPhoneNumber={refundPhoneNumber}
-                  refundReceiverName={refundReceiverName}
-                  setRefundPhoneNumber={setRefundPhoneNumber}
-                  setRefundReceiverName={setRefundReceiverName}
-                  myOrder={myOrder}
-                />
-              </div>
-            </Card>
-          </section>
-        )}
 
       {deliveryInfo && (
         <section className="max-w-3xl mx-auto mb-10">
