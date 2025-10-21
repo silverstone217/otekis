@@ -12,7 +12,7 @@ export async function sendContactEmail(formData: {
 }) {
   try {
     await resend.emails.send({
-      from: "Otekis <contact@otekis.com>", // ton domaine validé
+      from: "otekis.com", // ton domaine validé
       to: "servigroup.social@gmail.com", // où tu veux recevoir le mail
       subject: `Nouveau message de ${formData.name}`,
       replyTo: formData.email,

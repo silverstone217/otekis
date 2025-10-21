@@ -37,7 +37,7 @@ export const linksPage = [
   },
   {
     name: "A propos",
-    path: "/apropos",
+    path: "/a-propos",
     icon: ShieldEllipsis,
   },
 ];

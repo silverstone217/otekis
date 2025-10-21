@@ -101,6 +101,7 @@ export default function ContactSection() {
                   onChange={(e) => handleChange("name", e.target.value)}
                   disabled={loading}
                   required
+                  autoComplete="name"
                 />
               </div>
 
@@ -117,6 +118,7 @@ export default function ContactSection() {
                   onChange={(e) => handleChange("email", e.target.value)}
                   disabled={loading}
                   required
+                  autoComplete="email"
                 />
               </div>
 
