@@ -98,11 +98,14 @@ export async function GET(req: Request) {
 
     console.log(`✅ ${validContents.length} produits préparés.`);
 
-    return NextResponse.json({ CONTENTS: validContents }, { status: 200 });
+    return NextResponse.json(
+      { CONTENTS: validContents, message: "Donnees recuperees avec succes" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("❌ Erreur GET /products/get :", error);
     return NextResponse.json(
-      { error: "Erreur interne du serveur" },
+      { message: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
