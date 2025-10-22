@@ -78,8 +78,9 @@ export async function GET(req: Request) {
             type: product.type ?? "standard",
             price: Number(
               (
-                (discountPercentage && discountPercentage > 0 ? 4 : ps.price) *
-                exchangeRate
+                (discountPercentage && discountPercentage > 0
+                  ? totalPriceAfterDiscount
+                  : ps.price) * exchangeRate
               ).toFixed(2)
             ),
             stock: product.stock ?? 0,
@@ -87,7 +88,7 @@ export async function GET(req: Request) {
             discountPercentage:
               discountPercentage && discountPercentage > 0
                 ? discountPercentage
-                : 1,
+                : undefined,
             currency,
             target:
               (product.target?.toLowerCase() as
