@@ -84,7 +84,7 @@ export async function GET(req: Request) {
               ).toFixed(2)
             ),
             stock: product.stock ?? 0,
-            brand: product.brand ?? "",
+            brand: product.brand ? product.brand.replace(/ /g, "-") : "",
             discountPercentage:
               discountPercentage && discountPercentage > 0
                 ? discountPercentage
