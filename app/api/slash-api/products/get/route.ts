@@ -59,7 +59,7 @@ export async function GET(req: Request) {
         // Construction du format ContentType attendu
         return {
           product: {
-            id: product.id,
+            id: ps.id,
             title: product.name ?? "Produit sans nom",
             description: product.description ?? "",
             images: [product.image, ...(product.images || [])].filter(Boolean),
