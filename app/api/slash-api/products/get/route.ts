@@ -52,17 +52,14 @@ export async function GET(req: Request) {
         // Si produit ou boutique manquants → ignorer
         if (!product || !shop) return null;
 
-        const discountPercentage = ps.promotion
-          ? calculateDiscountPercentage(product.price, ps.price)
-          : undefined;
+        const discountPercentage = ps.promotion ?? 0;
 
-        const promotion = ps?.promotion || 0;
         const benefit = ps?.percentage
           ? Math.round((ps.percentage * product.price) / 100)
           : 0;
         const beneficeAfterDiscount = applyPromotionOnProfit(
           benefit,
-          promotion
+          discountPercentage
         );
 
         const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
