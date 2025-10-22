@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCompanyPreference } from "@/actions/companyAction";
-import { calculateDiscountPercentage } from "@/utils/functions";
+import {
+  applyPromotionOnProfit,
+  calculateDiscountPercentage,
+} from "@/utils/functions";
 
 export async function GET(req: Request) {
   try {
@@ -53,6 +56,17 @@ export async function GET(req: Request) {
           ? calculateDiscountPercentage(product.price, ps.price)
           : undefined;
 
+        const promotion = ps?.promotion || 0;
+        const benefit = ps?.percentage
+          ? Math.round((ps.percentage * product.price) / 100)
+          : 0;
+        const beneficeAfterDiscount = applyPromotionOnProfit(
+          benefit,
+          promotion
+        );
+
+        const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
+
         // URL SHOP PRODUCT
         const shopUrl = `https://www.otekis.com/${shop.slug}/catalogues/${product.id}`;
 
@@ -63,10 +77,14 @@ export async function GET(req: Request) {
             title: product.name ?? "Produit sans nom",
             description: product.description ?? "",
             images: [product.image, ...(product.images || [])].filter(Boolean),
-            category: product.category ?? "Divers",
-            type: product.type ?? "Standard",
+            category: product.category ?? "autres",
+            type: product.type ?? "standard",
             price: Number(
-              ((ps.price ?? product.price) * exchangeRate).toFixed(2)
+              (
+                (discountPercentage && discountPercentage > 0
+                  ? totalPriceAfterDiscount
+                  : ps.price) * exchangeRate
+              ).toFixed(2)
             ),
             stock: product.stock ?? 0,
             brand: product.brand ?? "",
