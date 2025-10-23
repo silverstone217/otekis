@@ -19,6 +19,10 @@ export async function GET(req: Request) {
     const gender = searchParams.get("gender") || "O";
     const showAds = searchParams.get("showAds") === "true";
 
+    const page = Number(searchParams.get("page") || "1");
+    const take = 20;
+    const skip = (page - 1) * take;
+
     console.log("🔹 Preferences reçues :", { categories, gender, showAds });
 
     // --- Préférences de la compagnie ---
@@ -138,10 +142,11 @@ export async function GET(req: Request) {
 
     console.log(`✅ ${validContents.length} produits préparés et triés.`);
 
-    return NextResponse.json(
-      { CONTENTS: validContents, message: "Données récupérées avec succès" },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      CONTENTS: validContents,
+      hasMore: validContents.length === take,
+      message: "Données récupérées avec succès",
+    });
   } catch (error) {
     console.error("❌ Erreur GET /products/get :", error);
     return NextResponse.json(
