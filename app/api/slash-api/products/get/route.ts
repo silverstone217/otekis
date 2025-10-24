@@ -41,7 +41,8 @@ export async function GET(req: Request) {
     // --- Récupérer les produits liés aux shops ---
     const productShops = await prisma.productShop.findMany({
       include: { Product: true, shop: true },
-      take: 100,
+      take,
+      skip,
     });
 
     // --- Transformer et scorer les données ---
