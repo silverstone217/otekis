@@ -126,6 +126,7 @@ export async function GET(req: Request) {
             name: shop.name,
             description: shop.description ?? "",
             logo: shop.logo ?? "",
+            slug: shop.slug,
           },
           url: shopUrl,
         };
