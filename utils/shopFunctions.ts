@@ -24,3 +24,25 @@ export const luminanceColor = (color: string) => {
 
   return luminance > 0.5 ? "dark" : "light";
 };
+
+// Check name shop validity
+export function validateShopName(name: string, notRecommendedNames: string[]) {
+  if (!name || !name.trim()) {
+    return { error: true, message: "Le nom ne peut pas être vide." };
+  }
+
+  const normalizedName = name.trim().toLowerCase();
+
+  const exists = notRecommendedNames.some(
+    (reserved) => reserved.toLowerCase() === normalizedName
+  );
+
+  if (exists) {
+    return {
+      error: true,
+      message: `Le nom "${name}" est réservé ou non recommandé. Veuillez en choisir un autre.`,
+    };
+  }
+
+  return { error: false, message: "Nom valide." };
+}

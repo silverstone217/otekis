@@ -3,6 +3,8 @@ import { addShopBySellerSchema } from "@/schema/SellerShopSchema";
 import { getUser } from "@/actions/actions";
 import { generateSlug, normalizeProductName } from "@/utils/functions";
 import { NextResponse } from "next/server";
+import { validateShopName } from "@/utils/shopFunctions";
+import { NotRecommendedNames } from "@/utils/shopData";
 
 const PERMIT_ROLES = ["employe", "employee", "admin", "super_admin"];
 
@@ -46,6 +48,15 @@ export async function POST(request: Request) {
     }
 
     const revalidated = validation.data;
+
+    // check name shop validity
+    const result = validateShopName("Validation", NotRecommendedNames);
+    if (result.error) {
+      return NextResponse.json(
+        { message: result.message, error: true },
+        { status: 400 }
+      );
+    }
 
     // 🧠 Normalisation et slugification
     const name = normalizeProductName(revalidated.name.trim().toLowerCase());
