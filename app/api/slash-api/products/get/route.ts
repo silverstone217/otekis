@@ -43,6 +43,7 @@ export async function GET(req: Request) {
       include: { Product: true, shop: true },
       take,
       skip,
+      orderBy: { createdAt: "desc" },
     });
 
     // --- Transformer et scorer les données ---
@@ -89,7 +90,7 @@ export async function GET(req: Request) {
         }
 
         // --- Construction du format ContentType attendu ---
-        const shopUrl = `https://www.otekis.com/${shop.slug}/catalogues/${product.id}`;
+        const shopProductUrl = `https://www.otekis.com/${shop.slug}/catalogues/${product.id}`;
 
         return {
           count, // ⚙️ interne, on le supprimera après tri
@@ -128,7 +129,7 @@ export async function GET(req: Request) {
             logo: shop.logo ?? "",
             slug: shop.slug,
           },
-          url: shopUrl,
+          url: shopProductUrl,
         };
       })
     );
