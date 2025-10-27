@@ -67,12 +67,20 @@ interface MainOrderProps {
     delivery: string;
     phone: string | undefined;
     isOtekisDelivery: boolean;
+    validationPossible: boolean;
   } | null;
 
   otekisPrefs: OtekisPreferences | null;
   factureOrder: FactureOrderWithProductsDetailsType | null;
   factureDelivery: FactureDeliverOrder | null;
 }
+
+const NotPermitedValidatedStatus = [
+  "en cours d'annulation",
+  "annulé",
+  "remboursé",
+  "livré",
+];
 
 const MainMyOrder = ({
   myOrder,
@@ -318,14 +326,12 @@ const MainMyOrder = ({
       </div>
 
       {/* QR CODE AND ORDER SECRET */}
-      {!(
-        myOrder.status === "en cours d'annulation" ||
-        myOrder.status === "annulé"
-      ) && (
-        <section className="max-w-3xl mx-auto mb-10">
-          <GenerateSecret orderId={myOrder.id} myOrder={myOrder} />
-        </section>
-      )}
+      {deliveryInfo?.validationPossible === true &&
+        !NotPermitedValidatedStatus.includes(myOrder.status) && (
+          <section className="max-w-3xl mx-auto mb-10">
+            <GenerateSecret orderId={myOrder.id} myOrder={myOrder} />
+          </section>
+        )}
 
       {deliveryInfo && (
         <section className="max-w-3xl mx-auto mb-10">

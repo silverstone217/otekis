@@ -31,6 +31,7 @@ export type OrderWithProductDetails = Order & {
 // get myOrderbyId
 export const getMyOrderById = async (
   id: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shopCategory: string
 ): Promise<OrderWithProductDetails | null> => {
   const order = await prisma.order.findUnique({
@@ -99,6 +100,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
       delivery: "Self pick-up/ Recuperer soi-meme",
       phone: deliveryOrder?.receiverTel,
       isOtekisDelivery: false,
+      validationPossible: true,
     };
   }
 
@@ -112,6 +114,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
       delivery: deliveryCompany.name,
       phone: deliveryCompany.phone,
       isOtekisDelivery,
+      validationPossible: deliveryCompany.validationPossible,
     };
   }
 
@@ -126,6 +129,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
     delivery: agent.name,
     phone: agent.phone,
     isOtekisDelivery,
+    validationPossible: deliveryCompany.validationPossible,
   };
 };
 

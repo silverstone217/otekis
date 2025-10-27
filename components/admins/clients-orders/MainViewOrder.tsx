@@ -48,6 +48,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import ValidateOrderDialog from "./ValidateOrderDialog";
 
 type OrderItemsType = OrderItem & {
   productName: string;
@@ -74,6 +75,12 @@ export type OrderProps = {
   deliveryInfo: DeliveryOrder | null;
   companyDelivery: DeliveryCompany | null;
 };
+
+const PERMITED_STATUS_ORDERS = [
+  "en cours de traitement",
+  "en cours de livraison",
+  "en attente de livraison",
+];
 
 const MainViewOrder = ({
   order,
@@ -152,6 +159,14 @@ const MainViewOrder = ({
             <CancelOrderDialog
               disabled={order.status === "annulé"}
               onConfirm={() => handleChangeOrderStatus("en cours d'annulation")}
+            />
+          )}
+
+          {/* Validate order */}
+          {PERMITED_STATUS_ORDERS.includes(order.status) && (
+            <ValidateOrderDialog
+              order={order}
+              companyDelivery={companyDelivery}
             />
           )}
         </div>
@@ -391,8 +406,8 @@ const MainViewOrder = ({
                 {!isOtekisDelivery
                   ? companyDelivery?.name
                   : deliveryInfo
-                  ? agentOtekisName?.name
-                  : "Non-designé"}
+                    ? agentOtekisName?.name
+                    : "Non-designé"}
               </span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">

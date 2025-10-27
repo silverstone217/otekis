@@ -87,11 +87,13 @@ export const validationOrder = async (data: ValidationOrderType) => {
       });
       const deliveryAgentName = deliveryAgent?.name;
 
+      // Retrieve facture order
       const factureOrder = await prisma.facture.findFirst({
         where: { orderId },
       });
 
-      const invoiceDelivery = await prisma.factureDeliverOrder.create({
+      // invoice delivery record
+      await prisma.factureDeliverOrder.create({
         data: {
           amount: order.deliveryPrice,
           currency: order.currency,
@@ -102,7 +104,7 @@ export const validationOrder = async (data: ValidationOrderType) => {
           orderId: order.id,
           deliverBy: deliveryAgentName ?? "N/A",
           factureId: factureOrder ? factureOrder.id : "N/A",
-          exchange: prefs.exchangeRate,
+          exchange: order.exchange,
         },
       });
     }

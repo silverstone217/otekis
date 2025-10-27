@@ -605,3 +605,121 @@ export async function changeOrderStatusPayment(
     order: order,
   };
 }
+
+// Validate Order - set status to "livré" if  delivery company not validate
+
+export async function validateOrderByAdmin(orderId: string) {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Vous devez être connecté pour valider la commande",
+      };
+    }
+
+    const isPermitted = user ? PERMITED_ROLES.includes(user.role) : false;
+
+    if (!isPermitted) {
+      return {
+        error: true,
+        message: "Non autorisé!",
+        data: null,
+      };
+    }
+
+    // CHECK IF ORDER EXISTS
+    const idOrderExist = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (!idOrderExist) {
+      return {
+        error: true,
+        message: "Cette commande n'existe pas",
+      };
+    }
+
+    const PERMIT_STATUS = [
+      "en cours de livraison",
+      // "en attente de livraison"
+    ];
+
+    if (!PERMIT_STATUS.includes(idOrderExist.status)) {
+      return {
+        error: true,
+        message: "Le status de cette commande ne permet pas la validation",
+      };
+    }
+
+    if (idOrderExist.status === "livré") {
+      return {
+        error: true,
+        message: "Cette commande est déjà validée",
+      };
+    }
+
+    // Génère un code secret aléatoire simple (exemple)
+    const secret = Math.random().toString(36).slice(2, 10).toUpperCase();
+
+    await prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        ValidationCode: secret,
+      },
+    });
+
+    // validate order by status "livré"
+    await changeOrderStatusWithDeliveryCompany(orderId, "livré");
+
+    // Mettre à jour le statut de la livraison associée
+    await prisma.deliveryOrder.updateMany({
+      where: { orderId },
+      data: { status: "livré" },
+    });
+
+    const deliverOrder = await prisma.deliveryOrder.findFirst({
+      where: { orderId },
+    });
+
+    if (deliverOrder && deliverOrder.deliveryId) {
+      const deliveryAgent = await prisma.deliveryAgent.findUnique({
+        where: { id: deliverOrder.deliveryId },
+      });
+      const deliveryAgentName = deliveryAgent?.name;
+
+      // Retrieve facture order
+      const factureOrder = await prisma.facture.findFirst({
+        where: { orderId },
+      });
+
+      // create facture deliver order
+      await prisma.factureDeliverOrder.create({
+        data: {
+          amount: idOrderExist.deliveryPrice,
+          currency: idOrderExist.currency,
+          receiverAddress: idOrderExist.receiverAddress,
+          receiverName: idOrderExist.receiverName,
+          receiverTel: idOrderExist.receiverTel,
+          percentage: factureOrder ? factureOrder.cinetPayPercentage : "0",
+          orderId: idOrderExist.id,
+          deliverBy: deliveryAgentName ?? "N/A",
+          factureId: factureOrder ? factureOrder.id : "N/A",
+          exchange: idOrderExist.exchange,
+        },
+      });
+    }
+
+    return {
+      message: "Commande validée avec succès",
+      error: false,
+    };
+  } catch (error) {
+    console.error("Erreur dans validateOrder:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la validation de la commande",
+    };
+  }
+}

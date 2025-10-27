@@ -416,7 +416,8 @@ model DeliveryCompany {
   website     String?
   description String?
 
-  isAvailable Boolean @default(true)
+  isAvailable        Boolean @default(true)
+  validationPossible Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

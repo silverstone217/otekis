@@ -128,6 +128,7 @@ async function MyOrderPage(props: {
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
 
+  // DELIVERY INFO
   const deliveryInfo = await getDeliveryOrderWithClientOrder(myOrder.id);
 
   // FACTURE ORDER

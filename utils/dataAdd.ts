@@ -168,4 +168,4 @@ export const AdminOrdersPaimentStatus = [
   },
 ];
 
-export const PERMITED_ROLES = ["admin", "super_admin", "employee"];
+export const PERMITED_ROLES = ["admin", "super_admin", "employee", "employe"];
