@@ -17,11 +17,6 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebookF } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
-// interface AuthPopupProps {
-//   open: boolean;
-//   onOpenChange: (open: boolean) => void;
-// }
-
 export function AuthPopup() {
   const [loading, setLoading] = useState<
     "google" | "facebook" | "apple" | null
@@ -30,7 +25,7 @@ export function AuthPopup() {
   const handleSignIn = async (provider: "google" | "facebook" | "apple") => {
     setLoading(provider);
     try {
-      await signIn(provider, { redirect: false });
+      await signIn(provider);
     } finally {
       setLoading(null);
     }
