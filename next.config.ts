@@ -49,6 +49,9 @@ const nextConfig = {
     PUSHER_KEY: process.env.PUSHER_KEY,
     PUSHER_SECRET: process.env.PUSHER_SECRET,
     PUSHER_CLUSTER: process.env.PUSHER_CLUSTER,
+
+    // Delivers Apikey
+    DELIVERS_API_KEY: process.env.DELIVERS_API_KEY,
   },
   images: {
     // domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],

@@ -6,7 +6,7 @@ import {
   ProductShop,
   Shop,
 } from "@prisma/client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -28,6 +28,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SmoothLink } from "@/components/SmoothLink";
 import { luminanceColor } from "@/utils/shopFunctions";
+import SelectZones from "./SelectZone";
+import ChoiceDeliveryService from "./ChoiceDeliveryService";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -95,16 +97,24 @@ const PaymentSheetComponent = ({
     0
   );
 
-  const deliveryPrice = useMemo(() => {
-    const nbr = deliveryPriceByDeliveryChoice({
-      address: receiverAddress,
-      deliveryChoice,
-    });
-    if (typeof nbr === "string") {
-      return nbr;
-    }
-    return nbr * exchange;
-  }, [deliveryChoice, receiverAddress, exchange]);
+  const [commune, setCommune] = useState("");
+  const [quartier, setQuartier] = useState("");
+
+  // const deliveryPrice = useMemo(() => {
+  //   const nbr = deliveryPriceByDeliveryChoice({
+  //     address: receiverAddress,
+  //     deliveryChoice,
+  //   });
+  //   if (typeof nbr === "string") {
+  //     return nbr;
+  //   }
+  //   return nbr * exchange;
+  // }, [deliveryChoice, receiverAddress, exchange]);
+
+  // Fetch delivery price
+  const [deliveryPrice, setDeliveryPrice] = useState<
+    "Zone non couvert" | "non-specifie" | number
+  >("non-specifie");
 
   const totalAmountWithDeliveryPrice = useMemo(() => {
     if (typeof deliveryPrice === "number") {
@@ -276,14 +286,14 @@ const PaymentSheetComponent = ({
               >
                 Adresse de livraison *{" "}
                 <span className="text-xs text-gray-500 font-normal">
-                  (Numéro, Avenue, Commune, Ville, Pays)
+                  (Numéro, Avenue)
                 </span>
               </label>
               <input
                 type="text"
                 id="recAddress"
                 name="recAddress"
-                placeholder="82, Busumelo, Kasa-Vubu, Kinshasa, RDC"
+                placeholder="82, Busumelo"
                 className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
               transition-colors "
                 defaultValue={receiverAddress}
@@ -303,9 +313,18 @@ const PaymentSheetComponent = ({
               />
 
               <p id="recAddressHelp" className="mt-1 text-xs text-gray-400">
-                Exemple : 82, Busumelo, Kasa-Vubu, Kinshasa, RDC
+                Exemple : 82, Busu-melo
               </p>
             </div>
+
+            {/* COMMUNE ET QUARTIER */}
+            <SelectZones
+              commune={commune}
+              quartier={quartier}
+              loading={false}
+              setCommune={setCommune}
+              setQuartier={setQuartier}
+            />
 
             {/* descrition */}
 
@@ -402,13 +421,24 @@ const PaymentSheetComponent = ({
           </div>
 
           {/* delivery choice */}
-          <DeliveryChoiceComponent
+          <ChoiceDeliveryService
+            deliveryChoice={deliveryChoice}
+            setDeliveryChoice={setDeliveryChoice}
+            preferences={preferences}
+            commune={commune}
+            quartier={quartier}
+            deliveryPrice={deliveryPrice}
+            setDeliveryPrice={setDeliveryPrice}
+            deliveryService={deliveryService}
+          />
+
+          {/* <DeliveryChoiceComponent
             deliveryChoice={deliveryChoice}
             setDeliveryChoice={setDeliveryChoice}
             preferences={preferences}
             address={receiverAddress}
             deliveryService={deliveryService}
-          />
+          /> */}
 
           {/* pay */}
           <div
@@ -553,7 +583,7 @@ const PaymentSheetComponent = ({
             totalPrice={totalPrice}
             receiverInfo={{
               name: receiver,
-              address: receiverAddress,
+              address: `${receiverAddress}, ${quartier}, ${commune}`,
               tel: receiverPhone,
               description,
             }}

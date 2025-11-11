@@ -289,7 +289,8 @@ export function PaiementCinetPay({
           !receiverInfo.address ||
           !receiverInfo.tel ||
           !receiverInfo.name ||
-          typeof deliveryPrice === "string"
+          typeof deliveryPrice === "string" ||
+          receiverInfo.tel.length !== 9
         }
       >
         <span>

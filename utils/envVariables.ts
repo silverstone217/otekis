@@ -11,3 +11,6 @@ export const CINET_PAY_SITE_ID_CDF = process.env.CINET_PAY_SITE_ID_CDF!;
 
 // RESEND API KEYS
 export const RESEND_API_KEY = process.env.RESEND_API_KEY!;
+
+// DELIVERS API KEY
+export const DELIVERS_API_KEY = process.env.DELIVERS_API_KEY!;
