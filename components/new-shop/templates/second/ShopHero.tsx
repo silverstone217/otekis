@@ -30,7 +30,7 @@ const ShopHero = ({
   currency,
   exchange,
 }: ShopHeroType) => {
-  const [index] = useState(0);
+  // const [index] = useState(0);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ const ShopHero = ({
               <h2 className="text-4xl lg:text-6xl font-extrabold leading-tight tracking-wide line-clamp-3 mb-4">
                 {capitalizeText(itemsSlides[0].name)}
               </h2>
-              <p className="text-sm lg:text-base opacity-80 line-clamp-4 mb-6">
+              <p className="text-sm lg:text-base opacity-80 line-clamp-2 md:line-clamp-3 mb-6">
                 {capitalizeText(itemsSlides[0].description)}
               </p>
               <Link
@@ -156,7 +156,7 @@ const ShopHero = ({
                   itemsSlides[0].price * exchange !==
                     itemsSlides[0].productShopPrice * exchange && (
                     <span
-                      className={`ml-auto text-xs ${
+                      className={`ml-auto text-[8px] md:text-[10px] ${
                         luminance === "dark" ? "text-red-400" : "text-red-600"
                       }`}
                     >
@@ -202,21 +202,25 @@ const ShopHero = ({
                   <Link
                     href={`/${shop.slug}/catalogues/${item.id}`}
                     className="flex items-center justify-center font-medium text-white border-2 
-                    border-white py-1 px-6 rounded-lg hover:bg-white hover:text-black transition-colors duration-300 w-[60%] text-center"
+                    border-white py-1 px-6 rounded-lg hover:bg-white hover:text-black 
+                    transition-colors duration-300  text-center w-full text-[10px] md:text-xs
+                    "
                     style={{ borderRadius: preference.buttonRadius }}
                   >
                     <span>Acheter</span>
-                    <span className="ml-2 text-sm">
+                    <span className="ml-2 text-[8px] md:text-sm">
                       {returnFormatedMoney(
                         item.totalPriceAfterDiscountItem * exchange
                       )}
-                      <span className="ml-1 text-xs">{currency}</span>
+                      <span className="ml-1 text-[8px] md:text-[10px]">
+                        {currency}
+                      </span>
                     </span>
                     {item.discountPercentageItem > 0 &&
                       item.price * exchange !==
                         item.productShopPrice * exchange && (
                         <span
-                          className={`ml-auto text-xs ${
+                          className={`ml-auto text-[10px] hidden md:block ${
                             luminance === "dark"
                               ? "text-red-400"
                               : "text-red-600"

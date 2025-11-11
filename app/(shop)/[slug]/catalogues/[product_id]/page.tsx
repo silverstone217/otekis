@@ -299,10 +299,10 @@ const page = async (props: Props) => {
                         returnDataValue(product.type, TypeClothesData)
                       )
                     : product.category === "accessoires"
-                    ? capitalizeText(
-                        returnDataValue(product.type, AccessoriesData)
-                      )
-                    : null}
+                      ? capitalizeText(
+                          returnDataValue(product.type, AccessoriesData)
+                        )
+                      : null}
                 </span>
               </Link>
             )}
@@ -548,7 +548,9 @@ const page = async (props: Props) => {
           {/* desc */}
           <div className="w-full text-justify">
             <h3 className="font-semibold uppercase">Description</h3>
-            <p className="font-light">{product.description}</p>
+            <p className="font-light whitespace-pre-wrap text-sm">
+              {product.description}
+            </p>
           </div>
 
           {/* separators no bg */}

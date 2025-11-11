@@ -200,7 +200,7 @@ const ShopHero = ({
                   )}
                   <span className="ml-1 text-xs">{currency}</span>
                   {product.discountPercentageItem > 0 && (
-                    <span className="ml-2 text-sm text-red-500">
+                    <span className="ml-2 text-[10px] md:text-sm text-red-500">
                       -{product.discountPercentageItem}%
                     </span>
                   )}
