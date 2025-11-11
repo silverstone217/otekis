@@ -96,11 +96,11 @@ export function applyPromotionOnProfit(
   originalProfit: number,
   discountPercentage: number
 ): number {
-  const discountAmount = Number(
-    Math.round((originalProfit * discountPercentage) / 100)
-  );
+  const discountAmount = (originalProfit * discountPercentage) / 100;
+
   const newProfit = originalProfit - discountAmount;
-  return newProfit;
+
+  return Math.round(newProfit * 100) / 100;
 }
 
 // Fonction pour calculer le pourcentage de réduction
@@ -108,24 +108,18 @@ export function calculateDiscountPercentage(
   originalPrice: number,
   discountedPrice: number
 ): number {
-  // if (originalPrice <= 0) {
-  //   throw new Error("Le prix original doit être supérieur à zéro.");
-  // }
-
   const discountAmount = originalPrice - discountedPrice;
-  const discountPercentage = Math.round((discountAmount / originalPrice) * 100);
-  return discountPercentage;
+  const discountPercentage = (discountAmount / originalPrice) * 100;
+  return Math.round(discountPercentage * 100) / 100;
 }
 
 // calculate the benefit o
 export function calculateBenefitPercentage(
   originalPrice: number,
   discountPercentage: number
-) {
-  const benefitPercentageAmount = Math.round(
-    (originalPrice * discountPercentage) / 100
-  );
-  return benefitPercentageAmount;
+): number {
+  const benefitPercentageAmount = (originalPrice * discountPercentage) / 100;
+  return Math.round(benefitPercentageAmount * 100) / 100;
 }
 
 // calculate the total price
@@ -133,10 +127,9 @@ export function calculateTotalPrice(
   originalPrice: number,
   benefitPercentage: number
 ): number {
-  const benefitPercentageAmount = Math.round(
-    (originalPrice * benefitPercentage) / 100
-  );
-  return originalPrice + benefitPercentageAmount;
+  const benefitPercentageAmount = (originalPrice * benefitPercentage) / 100;
+  const newPrice = originalPrice + benefitPercentageAmount;
+  return Math.round(newPrice * 100) / 100;
 }
 
 // generateRandomString
@@ -248,29 +241,8 @@ export function returnNumberByPercent(
 
 // return formated money
 export function returnFormatedMoney(amount: number): string {
-  if (Number.isInteger(amount)) {
-    // Nombre entier -> format classique sans décimale
-    return amount.toLocaleString("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-  } else {
-    // Nombre flottant -> fraction non arrondie, format manuel
-    const amountStr = amount.toString(); // ex "2900.585"
-    const [integerPart, decimalPart] = amountStr.split(".");
-
-    // formate partie entière avec espaces en milliers
-    const formattedInteger = Number(integerPart).toLocaleString("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-
-    // si pas de parties décimales, on retourne integer simple
-    if (!decimalPart) {
-      return formattedInteger;
-    }
-
-    // sinon on concatène avec une virgule et décimales telles quelles
-    return `${formattedInteger},${decimalPart}`;
-  }
+  return amount.toLocaleString("fr-FR", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  });
 }

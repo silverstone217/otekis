@@ -1,10 +1,10 @@
 import { getUser } from "@/actions/actions";
 import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
 import DeleteProductByStock from "@/components/admins/products/DeleteProductByStock";
-import {
-  ProductDataTable,
-  Productscolumns,
-} from "@/components/admins/products/DisplayProductsTable";
+// import {
+//   ProductDataTable,
+//   Productscolumns,
+// } from "@/components/admins/products/DisplayProductsTable";
 import MainTableProduct from "@/components/admins/products/MainTableProduct";
 import PrintProductsBtn from "@/components/admins/products/PrintProductsBtn";
 // import NoUserComponent from "@/components/NoUserComponent";

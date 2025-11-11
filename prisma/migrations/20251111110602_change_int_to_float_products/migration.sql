@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "public"."Product" ALTER COLUMN "price" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "public"."ProductShop" ALTER COLUMN "price" SET DATA TYPE DOUBLE PRECISION;

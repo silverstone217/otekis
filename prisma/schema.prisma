@@ -41,6 +41,28 @@ model Session {
   @@map("sessions")
 }
 
+model VerificationRequest {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String?
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
 model User {
   id                           String    @id @default(cuid())
   name                         String?
@@ -65,28 +87,6 @@ model User {
   orders Order[]
 }
 
-model VerificationRequest {
-  id         String   @id @default(cuid())
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([identifier, token])
-}
-
-model VerificationToken {
-  id         String   @id @default(cuid())
-  identifier String?
-  token      String   @unique
-  expires    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([identifier, token])
-}
-
 // Products
 model Product {
   id          String   @id @default(cuid())
@@ -97,7 +97,7 @@ model Product {
   description String
   image       String
   images      String[]
-  price       Int
+  price       Float
   state       String   @default("nouveau")
   quality     String   @default("original")
   target      String?
@@ -211,7 +211,7 @@ model ProductShop {
   Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
   percentage    Int
-  price         Int
+  price         Float
   promotion     Int?
   promotionName String?
   createdAt     DateTime @default(now())

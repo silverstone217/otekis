@@ -106,10 +106,12 @@ const AddProductForm = () => {
         throw new Error("Erreur lors de l'enregistrement du produit");
       }
 
+      const formattedPrice = Number(price.toString().replace(",", "."));
+
       const formData = {
         name,
         description,
-        price: Number(price),
+        price: formattedPrice,
         image: imgUrl,
         images: imgUrls,
         // stock: Number(stock),
