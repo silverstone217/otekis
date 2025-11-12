@@ -416,7 +416,7 @@ export default function EmployeeOrderStatus({
                 <p className="text-base">
                   Remettre la commande à{" "}
                   <strong className="capitalize">
-                    {capitalizeText(companyDelivery.name)}
+                    {companyDelivery && capitalizeText(companyDelivery.name)}
                   </strong>
                 </p>
                 <Button

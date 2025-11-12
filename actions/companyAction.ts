@@ -167,6 +167,12 @@ export const exChangeRate = async () => {
   return prefs.currency === "USD" ? 1 : prefs.exchangeRate;
 };
 
+export const exChangeRateValue = async () => {
+  const prefs = await prisma.otekisPreferences.findFirst();
+  if (!prefs) return 1;
+  return prefs.exchangeRate;
+};
+
 // currency symbol
 export const getCurrencySymbol = async () => {
   const prefs = await prisma.otekisPreferences.findFirst();

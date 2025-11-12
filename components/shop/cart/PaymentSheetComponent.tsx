@@ -60,6 +60,7 @@ type Props = {
   modalOpen: boolean;
   currency: "$" | "CDF";
   exchange: number;
+  exchangeValue: number;
   deliveryService: DeliveryCompany[];
 };
 
@@ -77,6 +78,7 @@ const PaymentSheetComponent = ({
   modalOpen,
   currency,
   exchange,
+  exchangeValue,
   deliveryService,
 }: Props) => {
   const user = useCurrentUser();
@@ -91,6 +93,7 @@ const PaymentSheetComponent = ({
   useState(false);
 
   const [deliveryChoice, setDeliveryChoice] = useState("");
+  const [deliveryPaymentMethode, setDeliveryPaymentMethode] = useState("");
 
   const QuantityOfArticlesToBuy = ArticlesToBuy.reduce(
     (acc, val) => acc + val.quantity,
@@ -117,11 +120,14 @@ const PaymentSheetComponent = ({
   >("non-specifie");
 
   const totalAmountWithDeliveryPrice = useMemo(() => {
-    if (typeof deliveryPrice === "number") {
+    if (
+      typeof deliveryPrice === "number" &&
+      deliveryPaymentMethode !== "cash"
+    ) {
       return totalPrice + deliveryPrice;
     }
     return totalPrice;
-  }, [deliveryPrice, totalPrice]);
+  }, [deliveryPaymentMethode, deliveryPrice, totalPrice]);
 
   const deliveryChoiceId = useMemo(
     () =>
@@ -430,6 +436,10 @@ const PaymentSheetComponent = ({
             deliveryPrice={deliveryPrice}
             setDeliveryPrice={setDeliveryPrice}
             deliveryService={deliveryService}
+            setDeliveryPaymentMethode={setDeliveryPaymentMethode}
+            currency={currency}
+            exchange={exchange}
+            exchangeValue={exchangeValue}
           />
 
           {/* <DeliveryChoiceComponent
@@ -476,7 +486,7 @@ const PaymentSheetComponent = ({
             </p>
 
             {/* total amount */}
-            <p className="text-sm font-black flex items-center w-full justify-between">
+            <p className="text-base font-black flex items-center w-full justify-between">
               <span>Montant total</span>
 
               <span>
@@ -484,6 +494,12 @@ const PaymentSheetComponent = ({
                 <span className="text-xs"> {currency}</span>
               </span>
             </p>
+
+            {deliveryPaymentMethode === "cash" && (
+              <p className="text-xs text-destructive/80">
+                {` Le paiement de la livraion s'est fait a la livraison`}
+              </p>
+            )}
           </div>
 
           {/* CGI Vente et Achat */}
@@ -588,6 +604,7 @@ const PaymentSheetComponent = ({
               description,
             }}
             deliveryPrice={deliveryPrice}
+            deliveryPaymentMethode={deliveryPaymentMethode}
             ArticlesToBuy={ArticlesToBuy}
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Truck, User } from "lucide-react";
-import { DeliveryCompany, Preferences } from "@prisma/client";
+import { DeliveryCompany, PaymentMethod, Preferences } from "@prisma/client";
 import { DELIVERS_API_KEY } from "@/utils/envVariables";
 import { isEmptyString } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
@@ -24,6 +24,10 @@ interface DeliveryChoiceProps {
   preferences: Preferences;
   deliveryPrice: number | "Zone non couvert" | "non-specifie";
   deliveryService: DeliveryCompany[];
+  setDeliveryPaymentMethode: React.Dispatch<React.SetStateAction<string>>;
+  currency: "$" | "CDF";
+  exchange: number;
+  exchangeValue: number;
 }
 
 // ORIGIN ADDRESS
@@ -56,6 +60,7 @@ interface DeliveryService {
       website: string | null;
     };
   };
+  paymentMethod: PaymentMethod;
 }
 
 const ChoiceDeliveryService = ({
@@ -67,6 +72,10 @@ const ChoiceDeliveryService = ({
   deliveryPrice,
   setDeliveryPrice,
   deliveryService,
+  setDeliveryPaymentMethode,
+  currency,
+  exchange,
+  exchangeValue,
 }: DeliveryChoiceProps) => {
   const [companies, setCompanies] = useState<DeliveryService[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,6 +85,7 @@ const ChoiceDeliveryService = ({
 
   useEffect(() => {
     if (!apikey || isEmptyString(quartier) || isEmptyString(commune)) return;
+
     setDeliveryChoice("");
 
     const getData = async () => {
@@ -99,15 +109,28 @@ const ChoiceDeliveryService = ({
 
         const result: DeliveryService[] = await response.json();
 
-        // Filtrage : garder seulement les services dont le company.name est dans deliveryService
-        const filteredCompanies = result.filter((service) =>
-          deliveryService.some(
-            (registered) =>
-              registered.name.toLowerCase() ===
-              service.company.name.toLowerCase()
-          )
-        );
+        // 👉 On cherche pour chaque service retourné par l’API
+        // s’il correspond à un service "enregistré" du frontend.
+        // Si oui, on lui ajoute le paymentMethod local.
+        const filteredCompanies = result
+          .map((service) => {
+            const registered = deliveryService.find(
+              (r) => r.name.toLowerCase() === service.company.name.toLowerCase()
+            );
 
+            if (registered) {
+              return {
+                ...service,
+                paymentMethod: registered.paymentMethod, // 👈 on ajoute ici la méthode de paiement
+              };
+            }
+
+            return null; // sinon, on l’exclut
+          })
+          // on filtre les `null`
+          .filter((s): s is DeliveryService => s !== null);
+
+        // on met à jour le state avec les entreprises filtrées et enrichies
         setCompanies(filteredCompanies);
       } catch (error) {
         console.log("Erreur de choix de livraison", error);
@@ -134,12 +157,29 @@ const ChoiceDeliveryService = ({
     );
 
     if (selectedService) {
-      setDeliveryPrice(selectedService.price);
+      const newDelPrice =
+        currency === "$"
+          ? parseFloat((selectedService.price / exchangeValue).toFixed(2))
+          : parseFloat(selectedService.price.toFixed(2));
+
+      // PRICE DELIVERY
+      setDeliveryPrice(newDelPrice);
+
+      // PAYMENT METHOD
+      setDeliveryPaymentMethode(selectedService.paymentMethod!);
     } else {
       // Si aucun service ne correspond
       setDeliveryPrice("Zone non couvert");
     }
-  }, [deliveryChoice, companies, setDeliveryPrice]);
+  }, [
+    deliveryChoice,
+    companies,
+    setDeliveryPrice,
+    deliveryService,
+    setDeliveryPaymentMethode,
+    currency,
+    exchangeValue,
+  ]);
 
   return (
     <div

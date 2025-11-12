@@ -55,6 +55,7 @@ async function OrderPage(props: { params: Promise<{ id: string }> }) {
   const exchange = await exChangeRate();
   const deliveryInfo = order.deliveryOrder;
   const { deliveryOrder, ...orderSimple } = order;
+
   const companyDelivery = deliveryOrder?.deliveryCompanyId
     ? await getDeliveryCompanyById(deliveryOrder?.deliveryCompanyId)
     : null;

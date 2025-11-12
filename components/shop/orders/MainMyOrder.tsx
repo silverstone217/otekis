@@ -68,6 +68,7 @@ interface MainOrderProps {
     phone: string | undefined;
     isOtekisDelivery: boolean;
     validationPossible: boolean;
+    paymentMethod: "cash" | "mobile_money";
   } | null;
 
   otekisPrefs: OtekisPreferences | null;
@@ -157,6 +158,16 @@ const MainMyOrder = ({
   };
 
   const currencyOrder = myOrder.currency === "USD" ? "$" : "CDF";
+
+  const AmountOrder = useMemo(
+    () =>
+      deliveryInfo && deliveryInfo.paymentMethod === "mobile_money"
+        ? myOrder.totalAmount + myOrder.deliveryPrice
+        : myOrder.totalAmount,
+    [deliveryInfo, myOrder.deliveryPrice, myOrder.totalAmount]
+  );
+
+  // console.log(deliveryInfo && deliveryInfo.validationPossible);
 
   useEffect(() => {
     setIsClient(true);
@@ -311,13 +322,18 @@ const MainMyOrder = ({
                 <span className="text-xs">{currencyOrder}</span>
               </span>
             </div>
+
+            {deliveryInfo && <p>{deliveryInfo.paymentMethod}</p>}
+
+            {deliveryInfo && deliveryInfo.paymentMethod === "cash" && (
+              <p>{`Le frais de livraison est payé à la livraison`}</p>
+            )}
+
             <Separator />
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span>
-                {returnFormatedMoney(
-                  myOrder.totalAmount + myOrder.deliveryPrice
-                )}{" "}
+                {returnFormatedMoney(AmountOrder)}{" "}
                 <span className="text-xs">{currencyOrder}</span>
               </span>
             </div>

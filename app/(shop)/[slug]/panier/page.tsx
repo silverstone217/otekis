@@ -6,7 +6,11 @@ import { preferenceDefaults } from "@/utils/preferences";
 import { Article, Preferences, Product } from "@prisma/client";
 import React from "react";
 import ShopCartLogin from "@/components/auth/ShopCartLogin";
-import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
+import {
+  exChangeRate,
+  exChangeRateValue,
+  getCurrencySymbol,
+} from "@/actions/companyAction";
 
 type Props = {
   params: Promise<{
@@ -95,6 +99,7 @@ const CartShopPage = async (props: Props) => {
   const carts = await getCartsByUserId(user.id, shop.id);
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
+  const exchangeValue = await exChangeRateValue();
 
   const deliveryService = await getDeliveryCompanies();
 
@@ -110,6 +115,7 @@ const CartShopPage = async (props: Props) => {
         isUserBanned={isUserBanned}
         currency={currency}
         exchange={exchange}
+        exchangeValue={exchangeValue}
         deliveryService={deliveryService}
       />
     </div>

@@ -101,6 +101,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
       phone: deliveryOrder?.receiverTel,
       isOtekisDelivery: false,
       validationPossible: true,
+      paymentMethod: deliveryCompany.paymentMethod,
     };
   }
 
@@ -115,6 +116,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
       phone: deliveryCompany.phone,
       isOtekisDelivery,
       validationPossible: deliveryCompany.validationPossible,
+      paymentMethod: deliveryCompany.paymentMethod,
     };
   }
 
@@ -130,6 +132,7 @@ export const getDeliveryOrderWithClientOrder = async (orderId: string) => {
     phone: agent.phone,
     isOtekisDelivery,
     validationPossible: deliveryCompany.validationPossible,
+    paymentMethod: deliveryCompany.paymentMethod,
   };
 };
 

@@ -52,6 +52,7 @@ type Props = {
   setIsBuyingGeneralTermsAccepted: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  deliveryPaymentMethode: string;
   setIsBuyingTermsAccepted: React.Dispatch<React.SetStateAction<boolean>>;
   isBuyingGeneralTermsAccepted: boolean;
   isBuyingTermsAccepted: boolean;
@@ -71,6 +72,7 @@ export function PaiementCinetPay({
   isBuyingTermsAccepted,
   setIsBuyingGeneralTermsAccepted,
   setIsBuyingTermsAccepted,
+  deliveryPaymentMethode,
 }: Props) {
   // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =
@@ -162,9 +164,15 @@ export function PaiementCinetPay({
     //     // setLoading(false);
     //     return;
     //   }
+
+    // const amount =
+    //   deliveryPaymentMethode === "cash"
+    //     ? totalPrice
+    //     : totalPrice + deliveryPrice;
+
     //   window.CinetPay.getCheckout({
     //     transaction_id,
-    //     amount: totalPrice + deliveryPrice,
+    //     amount: amount,
     //     currency: currencyMoney,
     //     channels: "ALL",
     //     description: "Achat d'article",

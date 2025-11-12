@@ -51,6 +51,7 @@ type Props = {
   currency: "$" | "CDF";
   exchange: number;
   deliveryService: DeliveryCompany[];
+  exchangeValue: number;
 };
 
 const MainCartComponent = ({
@@ -64,6 +65,7 @@ const MainCartComponent = ({
   currency,
   exchange,
   deliveryService,
+  exchangeValue,
 }: Props) => {
   // Création du tableau combiné
   const combinedItems: CombinedItem[] = carts.map((cartItem) => {
@@ -350,6 +352,7 @@ const MainCartComponent = ({
               setModalOpen={setModalOpen}
               currency={currency}
               exchange={exchange}
+              exchangeValue={exchangeValue}
               deliveryService={deliveryService}
             />
           )}
