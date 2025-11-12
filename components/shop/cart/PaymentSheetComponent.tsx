@@ -137,6 +137,8 @@ const PaymentSheetComponent = ({
     [deliveryChoice, deliveryService]
   );
 
+  console.log(deliveryService, deliveryChoice, deliveryChoiceId);
+
   // LUMINANCE
   const luminance = useMemo(
     () => luminanceColor(preferences.background),
@@ -497,7 +499,7 @@ const PaymentSheetComponent = ({
 
             {deliveryPaymentMethode === "cash" && (
               <p className="text-xs text-destructive/80">
-                {` Le paiement de la livraion s'est fait a la livraison`}
+                {`Le paiement de la livraion s'est fait a la livraison`}
               </p>
             )}
           </div>

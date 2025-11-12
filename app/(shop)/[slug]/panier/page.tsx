@@ -103,6 +103,8 @@ const CartShopPage = async (props: Props) => {
 
   const deliveryService = await getDeliveryCompanies();
 
+  // console.table(deliveryService);
+
   return (
     <div>
       <MainCartComponent

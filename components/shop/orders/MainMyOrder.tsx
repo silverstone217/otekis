@@ -323,10 +323,8 @@ const MainMyOrder = ({
               </span>
             </div>
 
-            {deliveryInfo && <p>{deliveryInfo.paymentMethod}</p>}
-
             {deliveryInfo && deliveryInfo.paymentMethod === "cash" && (
-              <p>{`Le frais de livraison est payé à la livraison`}</p>
+              <p className="text-xs text-destructive">{`Le frais de livraison est payé à la livraison`}</p>
             )}
 
             <Separator />
@@ -362,7 +360,7 @@ const MainMyOrder = ({
               <p>
                 Livré par{" "}
                 <strong>
-                  {deliveryInfo.isOtekisDelivery && "Otekis delivery"} - agent{" "}
+                  {deliveryInfo.isOtekisDelivery && "Otekis delivery"} -{" "}
                   {deliveryInfo.delivery}
                 </strong>
               </p>

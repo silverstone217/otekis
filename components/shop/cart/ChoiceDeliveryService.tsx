@@ -153,7 +153,8 @@ const ChoiceDeliveryService = ({
 
     // Recherche le service correspondant dans la liste des compagnies
     const selectedService = companies.find(
-      (service) => service.name.toLowerCase() === deliveryChoice.toLowerCase()
+      (service) =>
+        service.company.name.toLowerCase() === deliveryChoice.toLowerCase()
     );
 
     if (selectedService) {
@@ -220,7 +221,7 @@ const ChoiceDeliveryService = ({
           {companies
             .filter((d) => d.company.name !== "self-pick-up")
             .map((service) => (
-              <SelectItem key={service.tarifId} value={service.name}>
+              <SelectItem key={service.tarifId} value={service.company.name}>
                 <div className="flex justify-between items-center">
                   <div className="capitalize flex items-center gap-2">
                     <Truck className="size-4 shrink-0" />
