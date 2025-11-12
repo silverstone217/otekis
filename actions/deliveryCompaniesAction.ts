@@ -27,7 +27,9 @@ export const getAllDeliveriesComp = async () => {
 };
 
 // ADD NEW Company
-export type newCompanyType = z.infer<typeof AddAgentSchema>;
+export type newCompanyType = z.infer<typeof AddAgentSchema> & {
+  paymentMethod: "mobile_money" | "cash";
+};
 export const addNewCompany = async (data: newCompanyType) => {
   const user = await getUser();
   if (!user || !PERMITED_ROLES.includes(user.role)) {
@@ -74,6 +76,7 @@ export const addNewCompany = async (data: newCompanyType) => {
       email: validated.email ?? undefined,
       phone: validated.phone,
       address: validated.address ?? undefined,
+      paymentMethod: data.paymentMethod,
     },
   });
 
@@ -92,7 +95,9 @@ export const addNewCompany = async (data: newCompanyType) => {
 };
 
 // UPDATE Company
-export type modifyCompanyType = z.infer<typeof ModifyCompanySchema>;
+export type modifyCompanyType = z.infer<typeof ModifyCompanySchema> & {
+  paymentMethod: "mobile_money" | "cash";
+};
 export const modifyACompanyByID = async (data: modifyCompanyType) => {
   const user = await getUser();
   if (!user || !PERMITED_ROLES.includes(user.role)) {
@@ -128,7 +133,7 @@ export const modifyACompanyByID = async (data: modifyCompanyType) => {
   if (!isCompanyExists) {
     return {
       error: true,
-      message: "Aucune companyietrouvé avec l'ID fourni",
+      message: "Aucune companyie trouvée avec l'ID fourni",
       data: null,
     };
   }
@@ -143,6 +148,7 @@ export const modifyACompanyByID = async (data: modifyCompanyType) => {
       phone: validated.phone,
       address: validated.address ?? undefined,
       isAvailable: validated.isAvailable,
+      paymentMethod: data.paymentMethod,
     },
   });
 

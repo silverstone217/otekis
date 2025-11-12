@@ -406,6 +406,11 @@ model DeliveryAgent {
   deliveryOrder DeliveryOrder[]
 }
 
+enum PaymentMethod {
+  mobile_money
+  cash
+}
+
 model DeliveryCompany {
   id          String  @id @default(cuid())
   name        String
@@ -416,8 +421,9 @@ model DeliveryCompany {
   website     String?
   description String?
 
-  isAvailable        Boolean @default(true)
-  validationPossible Boolean @default(false)
+  isAvailable        Boolean       @default(true)
+  validationPossible Boolean       @default(false)
+  paymentMethod      PaymentMethod @default(mobile_money) // cash 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
