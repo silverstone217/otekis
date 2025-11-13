@@ -9,6 +9,7 @@ import { getUser } from "@/actions/actions";
 // import { Plus } from "lucide-react";
 // import Link from "next/link";
 import React, { Suspense } from "react";
+import ExportButtonTbales from "@/components/admins/admins/ExportButtonTables";
 
 const getAdmins = async () => {
   const admins = await prisma.user.findMany({
@@ -62,6 +63,11 @@ const AdminPage = async () => {
           <Plus className="w-8 flex-shrink-0" />
           <span>Ajouter un nouvel admin</span>
         </Link> */}
+      </div>
+
+      {/* CALL DOWNLOAD ALL SENSIBLE TABLES */}
+      <div>
+        <ExportButtonTbales />
       </div>
 
       {/* Admins */}
