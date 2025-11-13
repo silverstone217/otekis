@@ -52,6 +52,7 @@ type Props = {
   exchange: number;
   deliveryService: DeliveryCompany[];
   exchangeValue: number;
+  cinetPayPercentage: number;
 };
 
 const MainCartComponent = ({
@@ -66,6 +67,7 @@ const MainCartComponent = ({
   exchange,
   deliveryService,
   exchangeValue,
+  cinetPayPercentage,
 }: Props) => {
   // Création du tableau combiné
   const combinedItems: CombinedItem[] = carts.map((cartItem) => {
@@ -354,6 +356,7 @@ const MainCartComponent = ({
               exchange={exchange}
               exchangeValue={exchangeValue}
               deliveryService={deliveryService}
+              cinetPayPercentage={cinetPayPercentage}
             />
           )}
         </div>

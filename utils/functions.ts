@@ -246,3 +246,15 @@ export function returnFormatedMoney(amount: number): string {
     maximumFractionDigits: 2,
   });
 }
+
+// return REAL VALUE WITH Percent
+export const returnRealValueWithPercentage = (
+  price: number,
+  percent: number
+): number => {
+  if (percent === 0) return parseFloat(price.toFixed(2));
+
+  const sum = price / (1 - percent / 100);
+
+  return parseFloat(sum.toFixed(2));
+};

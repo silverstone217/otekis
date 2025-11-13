@@ -12,9 +12,9 @@ export const setupCompanyPrefs = async () => {
     if (!companyPrefs) {
       await prisma.otekisPreferences.create({
         data: {
-          cinetPayPercentage: "3",
-          socialEmail: "marketstore.oteki@gmail.com",
-          exchangeRate: 2300,
+          cinetPayPercentage: "5",
+          socialEmail: "servigroup.social@gmail.com",
+          exchangeRate: 2100,
           socialPhone: "813350706",
         },
       });

@@ -62,6 +62,7 @@ type Props = {
   exchange: number;
   exchangeValue: number;
   deliveryService: DeliveryCompany[];
+  cinetPayPercentage: number;
 };
 
 const PaymentSheetComponent = ({
@@ -80,6 +81,7 @@ const PaymentSheetComponent = ({
   exchange,
   exchangeValue,
   deliveryService,
+  cinetPayPercentage,
 }: Props) => {
   const user = useCurrentUser();
 
@@ -442,6 +444,7 @@ const PaymentSheetComponent = ({
             currency={currency}
             exchange={exchange}
             exchangeValue={exchangeValue}
+            cinetPayPercentage={cinetPayPercentage}
           />
 
           {/* <DeliveryChoiceComponent

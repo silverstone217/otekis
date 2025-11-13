@@ -9,6 +9,7 @@ import ShopCartLogin from "@/components/auth/ShopCartLogin";
 import {
   exChangeRate,
   exChangeRateValue,
+  getCompanyPreference,
   getCurrencySymbol,
 } from "@/actions/companyAction";
 
@@ -100,6 +101,10 @@ const CartShopPage = async (props: Props) => {
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
   const exchangeValue = await exChangeRateValue();
+  const otekisPrefs = await getCompanyPreference();
+  const cinetPayPercentage = otekisPrefs
+    ? parseFloat(otekisPrefs.cinetPayPercentage)
+    : 0;
 
   const deliveryService = await getDeliveryCompanies();
 
@@ -119,6 +124,7 @@ const CartShopPage = async (props: Props) => {
         exchange={exchange}
         exchangeValue={exchangeValue}
         deliveryService={deliveryService}
+        cinetPayPercentage={cinetPayPercentage}
       />
     </div>
   );

@@ -10,7 +10,10 @@ import {
 import { Truck, User } from "lucide-react";
 import { DeliveryCompany, PaymentMethod, Preferences } from "@prisma/client";
 import { DELIVERS_API_KEY } from "@/utils/envVariables";
-import { isEmptyString } from "@/utils/functions";
+import {
+  isEmptyString,
+  returnRealValueWithPercentage,
+} from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 
 interface DeliveryChoiceProps {
@@ -28,6 +31,7 @@ interface DeliveryChoiceProps {
   currency: "$" | "CDF";
   exchange: number;
   exchangeValue: number;
+  cinetPayPercentage: number;
 }
 
 // ORIGIN ADDRESS
@@ -76,6 +80,7 @@ const ChoiceDeliveryService = ({
   currency,
   exchange,
   exchangeValue,
+  cinetPayPercentage,
 }: DeliveryChoiceProps) => {
   const [companies, setCompanies] = useState<DeliveryService[]>([]);
   const [loading, setLoading] = useState(false);
@@ -164,7 +169,9 @@ const ChoiceDeliveryService = ({
           : parseFloat(selectedService.price.toFixed(2));
 
       // PRICE DELIVERY
-      setDeliveryPrice(newDelPrice);
+      setDeliveryPrice(
+        returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+      );
 
       // PAYMENT METHOD
       setDeliveryPaymentMethode(selectedService.paymentMethod!);
