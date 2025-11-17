@@ -429,7 +429,8 @@ export function AddProductToShopSheet({
   );
 
   // Calcules
-  const benefit = Math.round((percentage * product.price) / 100);
+  const raw = (percentage * product.price) / 100;
+  const benefit = Math.floor(raw * 100) / 100;
   const beneficeAfterDiscount = applyPromotionOnProfit(benefit, promotion);
   const totalPrice = product.price + benefit;
   const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;

@@ -354,7 +354,8 @@ export function AddProductToShopSheet({
     (acc, article) => acc + article.stock,
     0
   );
-  const benefit = Math.round((percentage * product.price) / 100);
+  const raw = (percentage * product.price) / 100;
+  const benefit = Math.floor(raw * 100) / 100;
   const totalPrice = product.price + benefit;
   const images = [product.image, ...(product.images ?? [])];
 
