@@ -14,6 +14,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/connexion",
     verifyRequest: "/verif-email-sent",
+    error: "/auth-error",
   },
   providers: [
     Resend({
@@ -39,33 +40,44 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   secret: process.env.SECRET_KEY,
   callbacks: {
-    async session({ token, session }) {
-      if (token && session.user) {
-        const tokenId = token.sub;
-        if (tokenId) {
+    async session({ session, token }) {
+      try {
+        if (token?.sub && session?.user) {
           const user = await prisma.user.findUnique({
-            where: {
-              id: tokenId,
-            },
+            where: { id: token.sub },
           });
-          if (user) {
-            session.user = {
-              id: user.id,
-              name: user.name,
-              email: user.email ? user.email : "",
-              emailVerified: user.emailVerified,
-              image: user.image,
-              role: user.role as roleUserType,
-              tel: user.tel || "",
-              address: user.address || "",
-              createdAt: user.createdAt,
-              updatedAt: user.updatedAt,
-              isBanned: user.isBanned,
-              isBuyingGeneralTermsAccepted: user.isBuyingGeneralTermsAccepted,
-            };
+
+          // Si l'utilisateur n'existe plus → nettoyer la session sans casser le typage
+          if (!user) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            session.user = null as any;
+            return session;
           }
+
+          // Mise à jour du user dans la session
+          session.user = {
+            id: user.id,
+            name: user.name ?? "",
+            email: user.email ?? "",
+            emailVerified: user.emailVerified ?? null,
+            image: user.image ?? "",
+            role: (user.role as roleUserType) ?? "USER",
+            tel: user.tel ?? "",
+            address: user.address ?? "",
+            createdAt: user.createdAt ?? new Date(),
+            updatedAt: user.updatedAt ?? new Date(),
+            isBanned: user.isBanned ?? false,
+            isBuyingGeneralTermsAccepted:
+              user.isBuyingGeneralTermsAccepted ?? false,
+          };
         }
+      } catch (err) {
+        console.error("SESSION ERROR:", err);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        session.user = null as any;
       }
+
       return session;
     },
   },

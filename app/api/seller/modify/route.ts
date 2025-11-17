@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     const revalidated = validation.data;
 
     // check name shop validity
-    const result = validateShopName("Validation", NotRecommendedNames);
+    const result = validateShopName(revalidated.name, NotRecommendedNames);
     if (result.error) {
       return NextResponse.json(
         { message: result.message, error: true },
