@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CartIcons, MenuIcons, textColorData } from "@/utils/preferences";
 import Image from "next/image";
 import { ShopAllDataLinks } from "@/utils/shopData";
-import { LucideProps, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";

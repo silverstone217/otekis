@@ -88,7 +88,13 @@ const ShopHero = ({
     [preferences.background]
   );
 
-  if (!isClient || itemsSlides.length < 2) return null;
+  if (
+    !isClient ||
+    itemsSlides.length < 2 ||
+    products.length < 3 ||
+    productsShop.length < 3
+  )
+    return null;
 
   const shopUrl = `/${shop.slug}`;
 

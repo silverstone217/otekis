@@ -40,11 +40,13 @@ const ShopHero = ({
   // Clone et shuffle sans muter l'original
   const shuffleArray = (array: Product[]) => {
     const copy = [...array];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
+    if (copy.length > 0) {
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
     }
-    return copy;
+    return copy ?? [];
   };
 
   // Produits mélangés
@@ -137,9 +139,13 @@ const ShopHero = ({
   // Header position
   const Header = preference.Header;
 
-  if (!isClient) return null;
-
-  if (itemsSlides.length < 3) return null;
+  if (
+    !isClient ||
+    itemsSlides.length < 2 ||
+    products.length < 3 ||
+    productsShop.length < 3
+  )
+    return null;
 
   return (
     <div

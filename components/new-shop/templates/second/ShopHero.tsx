@@ -93,9 +93,13 @@ const ShopHero = ({
     [filteredProducts, productsShop]
   );
 
-  if (!isClient) return null;
-
-  if (itemsSlides.length < 3) return null;
+  if (
+    !isClient ||
+    itemsSlides.length < 2 ||
+    products.length < 3 ||
+    productsShop.length < 3
+  )
+    return null;
 
   return (
     <div

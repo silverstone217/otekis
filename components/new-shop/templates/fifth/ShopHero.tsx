@@ -80,7 +80,13 @@ const ShopHero = ({
       bgIsLightOrDark !== "light" ? "text-neutral-900" : "text-neutral-100",
   };
 
-  if (!isClient || itemsSlides.length < 2) return null;
+  if (
+    !isClient ||
+    itemsSlides.length < 2 ||
+    products.length < 3 ||
+    productsShop.length < 3
+  )
+    return null;
 
   const shopUrl = `/${shop.slug}`;
 
