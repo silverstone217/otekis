@@ -24,6 +24,7 @@ const HeaderSmallScreen = () => {
     setLoading(true);
     try {
       await signOut({ redirect: false });
+      setIsOpen(false);
       router.refresh();
     } catch (error) {
       console.error("Failed to log out", error);

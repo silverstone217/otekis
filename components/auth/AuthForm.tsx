@@ -41,7 +41,9 @@ const AuthForm = () => {
       </Link>
       <div className="w-full text-center space-y-1">
         <h1 className="font-bold text-2xl">{`Connection à votre compte`}</h1>
-        <p className="text-sm opacity-80">{` Continuer avec pour connecter a votre compte ou créer un nouveau.`}</p>
+        <p className="text-sm opacity-80">
+          {`Cliquez sur une option pour vous connecter ou créer un compte sur ${siteName}.`}
+        </p>
       </div>
 
       {/* form */}
