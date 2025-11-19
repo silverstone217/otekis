@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import {
   AddAgentSchema,
+  AddCompanySchema,
   ModifyAgentSchema,
   ModifyCompanySchema,
 } from "@/schema/deliverySchema";
@@ -27,7 +28,7 @@ export const getAllDeliveriesComp = async () => {
 };
 
 // ADD NEW Company
-export type newCompanyType = z.infer<typeof AddAgentSchema> & {
+export type newCompanyType = z.infer<typeof AddCompanySchema> & {
   paymentMethod: "mobile_money" | "cash";
 };
 export const addNewCompany = async (data: newCompanyType) => {
@@ -41,7 +42,7 @@ export const addNewCompany = async (data: newCompanyType) => {
   }
 
   //   validate data
-  const validationResult = AddAgentSchema.safeParse(data);
+  const validationResult = AddCompanySchema.safeParse(data);
 
   if (!validationResult.success) {
     console.log(validationResult.error.issues, "erreurs survenues");
@@ -77,6 +78,7 @@ export const addNewCompany = async (data: newCompanyType) => {
       phone: validated.phone,
       address: validated.address ?? undefined,
       paymentMethod: data.paymentMethod,
+      validationPossible: data.validationPossible,
     },
   });
 
@@ -149,6 +151,7 @@ export const modifyACompanyByID = async (data: modifyCompanyType) => {
       address: validated.address ?? undefined,
       isAvailable: validated.isAvailable,
       paymentMethod: data.paymentMethod,
+      validationPossible: data.validationPossible,
     },
   });
 

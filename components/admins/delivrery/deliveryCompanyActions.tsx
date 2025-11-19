@@ -17,8 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Trash2, Truck } from "lucide-react";
-import { deleteAgentById } from "@/actions/deliverymenActions";
+import { Truck } from "lucide-react";
 import { DeliveryCompany } from "@prisma/client";
 import {
   addNewCompany,
@@ -50,6 +49,7 @@ export function AddDeliveryCompany() {
     phone: "",
     address: "",
     paymentMethod: "mobile_money",
+    validationPossible: false,
   });
 
   const isValidEmail = (email: string) =>
@@ -80,6 +80,7 @@ export function AddDeliveryCompany() {
         phone: formData.phone,
         address: formData.address,
         paymentMethod: formData.paymentMethod as "mobile_money" | "cash",
+        validationPossible: formData.validationPossible,
       };
 
       const result = await addNewCompany(newformData);
@@ -97,6 +98,7 @@ export function AddDeliveryCompany() {
         phone: "",
         address: "",
         paymentMethod: "mobile_money",
+        validationPossible: false,
       });
       //   if (newCompany) onAdded?.(newCompany);
       router.refresh();
@@ -218,6 +220,21 @@ export function AddDeliveryCompany() {
             </RadioGroup>
           </div>
 
+          {/* company validationPossible? */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="isAvailable">Systeme de validation Possible</Label>
+            <Switch
+              id="validationPossible"
+              checked={formData.validationPossible}
+              onCheckedChange={(val) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  validationPossible: val,
+                }))
+              }
+            />
+          </div>
+
           <AlertDialogFooter className="mt-6 flex justify-end gap-2">
             <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
             <AlertDialogAction
@@ -279,15 +296,18 @@ export function ModifyDeliveryCompany({ company }: ModifyCompProps) {
   const [paymentMethod, setPaymentMethod] = useState(
     company.paymentMethod ?? "mobile_money"
   );
+  const [validationPossible, setValidationPossible] = useState(
+    company.validationPossible ?? false
+  );
 
   // 🔹 Validation email
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // const isValidEmail = (email: string) =>
+  //   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const isEmailAndValid = useMemo(() => {
-    if (email) return isValidEmail(email);
-    return true;
-  }, [email]);
+  // const isEmailAndValid = useMemo(() => {
+  //   if (email) return isValidEmail(email);
+  //   return true;
+  // }, [email]);
 
   // 🔹 Vérifier si les valeurs ont changé
   const hasChanged = useMemo(() => {
@@ -297,21 +317,24 @@ export function ModifyDeliveryCompany({ company }: ModifyCompProps) {
       phone === company.phone &&
       address === company.address &&
       isAvailable === company.isAvailable &&
-      paymentMethod === company.paymentMethod
+      paymentMethod === company.paymentMethod &&
+      validationPossible === company.validationPossible
     );
   }, [
     name,
-    email,
-    phone,
-    address,
-    isAvailable,
-    paymentMethod,
     company.name,
     company.email,
     company.phone,
     company.address,
     company.isAvailable,
     company.paymentMethod,
+    company.validationPossible,
+    email,
+    phone,
+    address,
+    isAvailable,
+    paymentMethod,
+    validationPossible,
   ]);
 
   // 🔹 Conditions d’activation du bouton
@@ -339,6 +362,7 @@ export function ModifyDeliveryCompany({ company }: ModifyCompProps) {
         address,
         isAvailable,
         paymentMethod: paymentMethod as "mobile_money" | "cash",
+        validationPossible,
       };
 
       const result = await modifyACompanyByID(newformData);
@@ -357,6 +381,7 @@ export function ModifyDeliveryCompany({ company }: ModifyCompProps) {
         setAddress(updatedCompany.address ?? "");
         setIsAvailable(updatedCompany.isAvailable ?? true);
         setPaymentMethod(updatedCompany.paymentMethod ?? "mobile_money");
+        setValidationPossible(updatedCompany.validationPossible ?? false);
       }
 
       toast.success(`Service ${updatedCompany?.name} modifié avec succès !`);
@@ -474,6 +499,18 @@ export function ModifyDeliveryCompany({ company }: ModifyCompProps) {
                 </div>
               ))}
             </RadioGroup>
+          </div>
+
+          {/* company validationPossible? */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="validationPossible">
+              Systeme de validation possible
+            </Label>
+            <Switch
+              id="validationPossible"
+              checked={validationPossible}
+              onCheckedChange={setValidationPossible}
+            />
           </div>
 
           {/* company isAvailable? */}
