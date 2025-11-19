@@ -243,6 +243,7 @@ type MakeTransactionCompanyBenefitType = {
   amount: number;
   currency: "USD" | "CDF";
 };
+
 export const makeTransactionCompanyBenefit = async ({
   amount,
   currency,

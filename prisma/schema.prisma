@@ -498,13 +498,15 @@ model WithdrawalHistory {
 }
 
 model OtekisBenefitAmount {
-  id         String   @id @default(cuid())
-  amount     Float    @default(0)
-  amountCDF  Float    @default(0)
-  benefit    Float    @default(0)
-  benefitCDF Float    @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id               String   @id @default(cuid())
+  amount           Float    @default(0)
+  amountCDF        Float    @default(0)
+  benefit          Float    @default(0)
+  benefitCDF       Float    @default(0)
+  deliveryPrice    Float    @default(0)
+  deliveryPriceCDF Float    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model OtekisWithdrawalHistory {

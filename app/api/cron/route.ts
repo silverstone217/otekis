@@ -69,35 +69,23 @@ export async function GET() {
         const companyPrefs = await prisma.otekisBenefitAmount.findFirst();
 
         if (companyPrefs) {
-          // const currencyAmount =
-          //   profit.currency === "USD"
-          //     ? {
-          //         amount:
-          //           companyPrefs.amount +
-          //           (profit.amount + profit.deliveryPrice),
-          //         benefit: companyPrefs.benefit + profit.benefit,
-          //         // benefitCDF: 0,
-          //       }
-          //     : {
-          //         amountCDF:
-          //           companyPrefs.amountCDF +
-          //           (profit.amount + profit.deliveryPrice),
-          //         // amount: 0,
-          //         // benefit: 0,
-          //         benefitCDF: companyPrefs.benefitCDF + profit.benefit,
-          //       };
-
           await prisma.otekisBenefitAmount.update({
             where: { id: companyPrefs.id },
             data:
               profit.currency === "USD"
                 ? {
                     amount: { increment: profit.amount + profit.deliveryPrice },
+                    deliveryPrice: {
+                      increment: profit.deliveryPrice,
+                    },
                     benefit: { increment: profit.benefit },
                   }
                 : {
                     amountCDF: {
                       increment: profit.amount + profit.deliveryPrice,
+                    },
+                    deliveryPriceCDF: {
+                      increment: profit.deliveryPrice,
                     },
                     benefitCDF: { increment: profit.benefit },
                   },
@@ -107,13 +95,6 @@ export async function GET() {
             where: { id: profit.id },
             data: { isProcessed: true },
           });
-
-          // add money to otekis
-
-          // await prisma.otekisBenefitAmount.update({
-          //   where: { id: companyPrefs.id },
-          //   data: currencyAmount,
-          // });
         }
       })
     );

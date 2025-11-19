@@ -20,12 +20,12 @@ interface DeliveryChoiceProps {
   deliveryChoice: string;
   setDeliveryChoice: React.Dispatch<React.SetStateAction<string>>;
   setDeliveryPrice: React.Dispatch<
-    React.SetStateAction<number | "Zone non couvert" | "non-specifie">
+    React.SetStateAction<number | "Zone non couverte" | "non-specifie">
   >;
   commune: string;
   quartier: string;
   preferences: Preferences;
-  deliveryPrice: number | "Zone non couvert" | "non-specifie";
+  deliveryPrice: number | "Zone non couverte" | "non-specifie";
   deliveryService: DeliveryCompany[];
   setDeliveryPaymentMethode: React.Dispatch<React.SetStateAction<string>>;
   currency: "$" | "CDF";
@@ -177,7 +177,7 @@ const ChoiceDeliveryService = ({
       setDeliveryPaymentMethode(selectedService.paymentMethod!);
     } else {
       // Si aucun service ne correspond
-      setDeliveryPrice("Zone non couvert");
+      setDeliveryPrice("Zone non couverte");
     }
   }, [
     deliveryChoice,
@@ -187,6 +187,7 @@ const ChoiceDeliveryService = ({
     setDeliveryPaymentMethode,
     currency,
     exchangeValue,
+    cinetPayPercentage,
   ]);
 
   return (

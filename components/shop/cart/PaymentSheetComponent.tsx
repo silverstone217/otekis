@@ -118,7 +118,7 @@ const PaymentSheetComponent = ({
 
   // Fetch delivery price
   const [deliveryPrice, setDeliveryPrice] = useState<
-    "Zone non couvert" | "non-specifie" | number
+    "Zone non couverte" | "non-specifie" | number
   >("non-specifie");
 
   const totalAmountWithDeliveryPrice = useMemo(() => {
@@ -131,15 +131,15 @@ const PaymentSheetComponent = ({
     return totalPrice;
   }, [deliveryPaymentMethode, deliveryPrice, totalPrice]);
 
-  const deliveryChoiceId = useMemo(
+  const deliveryChoiceSysteme = useMemo(
     () =>
       deliveryService.find((d) =>
         d.name.toLocaleLowerCase().includes(deliveryChoice.toLocaleLowerCase())
-      )?.id,
+      ),
     [deliveryChoice, deliveryService]
   );
 
-  console.log(deliveryService, deliveryChoice, deliveryChoiceId);
+  // console.log(deliveryService, deliveryChoice, deliveryChoiceId);
 
   // LUMINANCE
   const luminance = useMemo(
@@ -608,12 +608,14 @@ const PaymentSheetComponent = ({
               tel: receiverPhone,
               description,
             }}
-            deliveryPrice={deliveryPrice}
+            deliveryPrice={
+              deliveryChoiceSysteme?.validationPossible ? deliveryPrice : 0
+            }
             deliveryPaymentMethode={deliveryPaymentMethode}
             ArticlesToBuy={ArticlesToBuy}
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
-            deliveryChoiceId={deliveryChoiceId}
+            deliveryChoiceId={deliveryChoiceSysteme?.id}
             currency={currency}
             setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
             setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}

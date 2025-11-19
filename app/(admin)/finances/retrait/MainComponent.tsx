@@ -22,6 +22,7 @@ import {
 import React, { Suspense } from "react";
 import WithdrawTable from "./WithdrawTable";
 import RetrieveMoney from "@/components/admins/finances/retrait/RetrieveMoney";
+import RetrieveDeliveryPrice from "@/components/admins/finances/retrait/RetrieveDeliveryPrice";
 
 type Props = {
   currencySymbol: "$" | "CDF";
@@ -45,6 +46,11 @@ const MainComponent = ({
   const totalBalance =
     currency === "USD" ? companyBenefit.amount : companyBenefit.amountCDF;
 
+  const deliveryPrice =
+    currency === "USD"
+      ? companyBenefit.deliveryPrice
+      : companyBenefit.deliveryPriceCDF;
+
   return (
     <div className="w-full grid md:grid-cols-1 gap-4 ">
       <CardInfosSoldes
@@ -52,10 +58,15 @@ const MainComponent = ({
         productSold={productSold}
         benefit={benefit}
         totalBalance={totalBalance}
+        deliveryPrice={deliveryPrice}
       />
 
       <div className="flex items-center gap-4 flex-wrap justify-center my-10">
+        {/* Get benefit */}
         <RetrieveMoney currency={currency} />
+        {/* Get delievery benefit */}
+        <RetrieveDeliveryPrice currency={currency} />
+        {/* pay employee */}
         <Button variant={"secondary"}>
           <HandCoins className="size-4 " />
           <span>Payer les employé(e)s</span>
@@ -78,6 +89,7 @@ interface CardInfosSoldesProps {
   productSold: number;
   benefit: number;
   totalBalance: number;
+  deliveryPrice: number;
   currencySymbol?: string; // '$' ou d'autres symboles
 }
 
@@ -85,6 +97,7 @@ export const CardInfosSoldes = ({
   productSold = 20, // Valeurs par défaut
   benefit = 465.0,
   totalBalance = 1465.0,
+  deliveryPrice = 44.5,
   currencySymbol = "$",
 }: CardInfosSoldesProps) => {
   return (
@@ -107,13 +120,27 @@ export const CardInfosSoldes = ({
           </div>
         </Card>
 
-        {/* Card pour le total à payer */}
+        {/* Card pour les benefices faits */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
           <HandCoins className="text-red-600 size-6 mr-3 flex-shrink-0" />
           <div className="flex-grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Benefices</p>
             <p className="text-xl font-bold text-gray-900">
               {returnFormatedMoney(benefit)}{" "}
+              <span className="font-mono text-sm text-gray-600">
+                {currencySymbol}
+              </span>
+            </p>
+          </div>
+        </Card>
+
+        {/* Card pour les prix de chaque livraison obetnue */}
+        <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
+          <HandCoins className="text-yellow-600 size-6 mr-3 flex-shrink-0" />
+          <div className="flex-grow flex flex-col items-center justify-center">
+            <p className="text-sm font-medium text-gray-500">Livraison total</p>
+            <p className="text-xl font-bold text-gray-900">
+              {returnFormatedMoney(deliveryPrice)}{" "}
               <span className="font-mono text-sm text-gray-600">
                 {currencySymbol}
               </span>

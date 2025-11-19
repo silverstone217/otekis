@@ -22,7 +22,7 @@ import { isEmptyString } from "@/utils/functions";
 import { makeTransactionCompanyBenefit } from "@/actions/companyAction";
 import { toast } from "sonner";
 
-type RetrieveMoneyProps = {
+export type RetrieveMoneyProps = {
   currency: "CDF" | "USD";
 };
 
