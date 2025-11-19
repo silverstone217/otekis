@@ -37,6 +37,8 @@ export function PayShopsPopup({
   shops: ShopItem[];
   currency: "USD" | "CDF";
 }) {
+  const [loading, setLoading] = useState(false);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -58,7 +60,12 @@ export function PayShopsPopup({
             </Button>
           </DialogClose>
         </DialogHeader>
-        <ShopsTableToPay shops={shops} currency={currency} />
+        <ShopsTableToPay
+          shops={shops}
+          currency={currency}
+          loading={loading}
+          setLoading={setLoading}
+        />
       </DialogContent>
     </Dialog>
   );

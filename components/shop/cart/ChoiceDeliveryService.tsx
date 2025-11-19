@@ -28,6 +28,7 @@ interface DeliveryChoiceProps {
   deliveryPrice: number | "Zone non couverte" | "non-specifie";
   deliveryService: DeliveryCompany[];
   setDeliveryPaymentMethode: React.Dispatch<React.SetStateAction<string>>;
+  deliveryPaymentMethode: string;
   currency: "$" | "CDF";
   exchange: number;
   exchangeValue: number;
@@ -81,6 +82,7 @@ const ChoiceDeliveryService = ({
   exchange,
   exchangeValue,
   cinetPayPercentage,
+  deliveryPaymentMethode,
 }: DeliveryChoiceProps) => {
   const [companies, setCompanies] = useState<DeliveryService[]>([]);
   const [loading, setLoading] = useState(false);
@@ -170,7 +172,9 @@ const ChoiceDeliveryService = ({
 
       // PRICE DELIVERY
       setDeliveryPrice(
-        returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+        deliveryPaymentMethode !== "cash"
+          ? returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+          : newDelPrice
       );
 
       // PAYMENT METHOD
@@ -188,6 +192,7 @@ const ChoiceDeliveryService = ({
     currency,
     exchangeValue,
     cinetPayPercentage,
+    deliveryPaymentMethode,
   ]);
 
   return (

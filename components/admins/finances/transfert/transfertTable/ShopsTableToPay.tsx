@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ArrowRightLeft, DownloadCloud } from "lucide-react";
+import { ArrowRightLeft, DownloadCloud, Loader } from "lucide-react";
 import { Checkbox } from "./CheckBoxTransfertPopUp";
 import { capitalizeText } from "@/utils/shopFunctions";
 import cuid from "cuid";
@@ -39,11 +39,18 @@ type ShopItem = {
 interface ShopsTableProps {
   shops: ShopItem[];
   currency: "USD" | "CDF";
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
 }
 
-export default function ShopsTableToPay({ shops, currency }: ShopsTableProps) {
+export default function ShopsTableToPay({
+  shops,
+  currency,
+  loading,
+  setLoading,
+}: ShopsTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   // Gère la sélection d'une boutique
@@ -96,7 +103,7 @@ export default function ShopsTableToPay({ shops, currency }: ShopsTableProps) {
       }
 
       toast.success("Paiement effectué avec succès");
-      console.log({ data: result.data });
+
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -114,10 +121,14 @@ export default function ShopsTableToPay({ shops, currency }: ShopsTableProps) {
           size="sm"
           variant="outline"
           onClick={handlePayAndExport}
-          disabled={selectedIds.length === 0}
+          disabled={selectedIds.length === 0 || loading}
           className="flex items-center gap-2 ml-auto"
         >
-          <ArrowRightLeft className="w-4 h-4" />
+          {loading ? (
+            <Loader className="w-4 h-4 animate-spin" />
+          ) : (
+            <ArrowRightLeft className="w-4 h-4" />
+          )}
           Payer
         </Button>
       </div>

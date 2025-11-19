@@ -303,7 +303,7 @@ const PaymentSheetComponent = ({
                 type="text"
                 id="recAddress"
                 name="recAddress"
-                placeholder="82, Busumelo"
+                placeholder="82, Busu-melo"
                 className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
               transition-colors "
                 defaultValue={receiverAddress}
@@ -445,6 +445,7 @@ const PaymentSheetComponent = ({
             exchange={exchange}
             exchangeValue={exchangeValue}
             cinetPayPercentage={cinetPayPercentage}
+            deliveryPaymentMethode={deliveryPaymentMethode}
           />
 
           {/* <DeliveryChoiceComponent
@@ -502,7 +503,7 @@ const PaymentSheetComponent = ({
 
             {deliveryPaymentMethode === "cash" && (
               <p className="text-xs text-destructive/80">
-                {`Le paiement de la livraion s'est fait a la livraison`}
+                {`Les frais de livraison seront perçus à la livraison.`}
               </p>
             )}
           </div>
@@ -609,7 +610,7 @@ const PaymentSheetComponent = ({
               description,
             }}
             deliveryPrice={
-              deliveryChoiceSysteme?.validationPossible ? deliveryPrice : 0
+              deliveryPaymentMethode === "cash" ? 0 : deliveryPrice
             }
             deliveryPaymentMethode={deliveryPaymentMethode}
             ArticlesToBuy={ArticlesToBuy}
