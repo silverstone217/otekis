@@ -1,46 +1,44 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
 import { BanknoteArrowDown, BanknoteArrowUp, Cog } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const FinancesDataLinks = [
-  {
-    title: "Transfert",
-    link: "/finances/transfert",
-    icon: BanknoteArrowUp,
-  },
-  {
-    title: "Retrait",
-    link: "/finances/retrait",
-    icon: BanknoteArrowDown,
-  },
-  {
-    title: "Paramètres",
-    link: "/finances/parametres",
-    icon: Cog,
-  },
+  { title: "Transfert", link: "/finances/transfert", icon: BanknoteArrowUp },
+  { title: "Retrait", link: "/finances/retrait", icon: BanknoteArrowDown },
+  { title: "Paramètres", link: "/finances/parametres", icon: Cog },
 ];
 
 const FinanceNavigation = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="max-w-sm mx-auto px-4 sm:px-0 items-center justify-center mt-2 sm:w-full  flex">
-      {FinancesDataLinks.map((link, index) => {
-        const isActive = pathname === link.link;
+    <nav className="max-w-md mx-auto mt-4 flex w-full gap-2 px-4 sm:px-0">
+      {FinancesDataLinks.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.link;
 
         return (
           <Link
-            key={index}
-            href={link.link}
-            className={`
-            p-4 flex-1 text-center font-medium text-sm sm:text-base
-            ${isActive ? "text-white bg-primary" : "text-gray-500 bg-secondary"}
-            hover:text-gray-400 hover:bg-primary transition-all duration-500 ease-in-out
-          `}
+            key={item.link}
+            href={item.link}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl",
+              "font-medium text-sm sm:text-base transition-all duration-300",
+              isActive
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted text-muted-foreground hover:bg-muted/70"
+            )}
           >
-            {link.title}
+            <Icon
+              className={cn(
+                "h-5 w-5 transition-opacity",
+                isActive ? "opacity-100" : "opacity-70"
+              )}
+            />
+            <span>{item.title}</span>
           </Link>
         );
       })}
