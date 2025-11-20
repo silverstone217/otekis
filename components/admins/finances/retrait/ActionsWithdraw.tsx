@@ -30,9 +30,11 @@ import { toast } from "sonner";
 
 type ActionsTransactionsProps = {
   transaction: OtekisWithdrawalHistory;
+  type: "benefit" | "delivery";
 };
 export const ActionsTransaction = ({
   transaction,
+  type,
 }: ActionsTransactionsProps) => {
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState<null | "cancel" | "confirm">(
@@ -47,6 +49,7 @@ export const ActionsTransaction = ({
       // validate api
       const result = await validateCompanyBenefitAndTransaction({
         transactionId: transaction.id,
+        type,
       });
 
       if (result.error) {
@@ -56,6 +59,7 @@ export const ActionsTransaction = ({
       toast.success(result.message);
       setConfirmOpen(null);
       router.refresh();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error("Erreur lors de la validation.");
     } finally {
@@ -70,6 +74,7 @@ export const ActionsTransaction = ({
       // cancel api
       const result = await cancelCompanyBenefitAndTransaction({
         transactionId: transaction.id,
+        type,
       });
 
       if (result.error) {
@@ -80,6 +85,7 @@ export const ActionsTransaction = ({
       toast.success("Transaction annulée avec succès !");
       setConfirmOpen(null);
       router.refresh();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       toast.error("Erreur lors de l’annulation.");
     } finally {

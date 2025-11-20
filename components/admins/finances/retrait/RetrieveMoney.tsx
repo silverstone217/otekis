@@ -74,7 +74,7 @@ const RetrieveMoney = ({ currency }: RetrieveMoneyProps) => {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full md:w-fit"
           aria-label="Retirer les gains"
         >
           <BanknoteArrowDown className="h-5 w-5 text-muted-foreground" />

@@ -193,6 +193,20 @@ export const getCompanyWithdrawHistory = async () => {
   return companyWithdrawHistory;
 };
 
+export const getCompanyDeliveryPriceWithdrawHistory = async () => {
+  const user = await getUser();
+  if (!user || !["admin", "super_admin"].includes(user.role)) {
+    return [];
+  }
+  const companyWithdrawHistory =
+    await prisma.otekisDelPriceWithdrawalHistory.findMany({
+      orderBy: {
+        date: "desc",
+      },
+    });
+  return companyWithdrawHistory;
+};
+
 // company bemefit
 export const getCompanyBenefit = async () => {
   const user = await getUser();
@@ -356,8 +370,10 @@ export const makeTransactionCompanyBenefit = async ({
 // validate company benefit and transaction
 export const validateCompanyBenefitAndTransaction = async ({
   transactionId,
+  type,
 }: {
   transactionId: string;
+  type: "benefit" | "delivery";
 }) => {
   try {
     const user = await getUser();
@@ -385,36 +401,73 @@ export const validateCompanyBenefitAndTransaction = async ({
       };
     }
 
-    const transaction = await prisma.otekisWithdrawalHistory.findUnique({
-      where: {
-        id: transactionId,
-      },
-    });
+    if (type === "benefit") {
+      // BENEFIT WITHDRAW
+      const transaction = await prisma.otekisWithdrawalHistory.findUnique({
+        where: {
+          id: transactionId,
+        },
+      });
 
-    if (!transaction) {
-      return {
-        error: true,
-        message: "Transaction non trouvée",
-      };
+      if (!transaction) {
+        return {
+          error: true,
+          message: "Transaction non trouvée",
+        };
+      }
+
+      if (transaction.status !== "non-traité") {
+        return {
+          error: true,
+          message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
+        };
+      }
+
+      await prisma.otekisWithdrawalHistory.update({
+        where: {
+          id: transactionId,
+        },
+        data: {
+          status: "traité",
+        },
+      });
+
+      return { error: false, message: "Transaction traitée avec succès" };
+    } else {
+      // DELIVERY WITHDRAW
+
+      const transaction =
+        await prisma.otekisDelPriceWithdrawalHistory.findUnique({
+          where: {
+            id: transactionId,
+          },
+        });
+
+      if (!transaction) {
+        return {
+          error: true,
+          message: "Transaction non trouvée",
+        };
+      }
+
+      if (transaction.status !== "non-traité") {
+        return {
+          error: true,
+          message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
+        };
+      }
+
+      await prisma.otekisDelPriceWithdrawalHistory.update({
+        where: {
+          id: transactionId,
+        },
+        data: {
+          status: "traité",
+        },
+      });
+
+      return { error: false, message: "Transaction traitée avec succès" };
     }
-
-    if (transaction.status !== "non-traité") {
-      return {
-        error: true,
-        message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
-      };
-    }
-
-    await prisma.otekisWithdrawalHistory.update({
-      where: {
-        id: transactionId,
-      },
-      data: {
-        status: "traité",
-      },
-    });
-
-    return { error: false, message: "Transaction traitée avec succès" };
   } catch (error) {
     console.log(error);
     return {
@@ -427,8 +480,10 @@ export const validateCompanyBenefitAndTransaction = async ({
 // cancel company benefit and transaction
 export const cancelCompanyBenefitAndTransaction = async ({
   transactionId,
+  type,
 }: {
   transactionId: string;
+  type: "benefit" | "delivery";
 }) => {
   try {
     const user = await getUser();
@@ -456,70 +511,252 @@ export const cancelCompanyBenefitAndTransaction = async ({
       };
     }
 
-    const transaction = await prisma.otekisWithdrawalHistory.findUnique({
-      where: {
-        id: transactionId,
+    if (type === "benefit") {
+      const transaction = await prisma.otekisWithdrawalHistory.findUnique({
+        where: {
+          id: transactionId,
+        },
+      });
+
+      if (!transaction) {
+        return {
+          error: true,
+          message: "Transaction non trouvée",
+        };
+      }
+
+      if (transaction.status !== "non-traité") {
+        return {
+          error: true,
+          message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
+        };
+      }
+
+      // return money
+      const currency = transaction.currency;
+      const amount = transaction.amount;
+
+      if (currency === "USD") {
+        await prisma.otekisBenefitAmount.update({
+          where: {
+            id: companyBenefit.id,
+          },
+          data: {
+            benefit: {
+              increment: amount,
+            },
+            amount: {
+              increment: amount,
+            },
+          },
+        });
+      } else {
+        await prisma.otekisBenefitAmount.update({
+          where: {
+            id: companyBenefit.id,
+          },
+          data: {
+            benefitCDF: {
+              increment: amount,
+            },
+            amountCDF: {
+              increment: amount,
+            },
+          },
+        });
+      }
+
+      await prisma.otekisWithdrawalHistory.update({
+        where: {
+          id: transactionId,
+        },
+        data: {
+          status: "annulé",
+        },
+      });
+
+      return { error: false, message: "Transaction annulée avec succès" };
+    } else {
+      // DELIVERY
+
+      const transaction =
+        await prisma.otekisDelPriceWithdrawalHistory.findUnique({
+          where: {
+            id: transactionId,
+          },
+        });
+
+      if (!transaction) {
+        return {
+          error: true,
+          message: "Transaction non trouvée",
+        };
+      }
+
+      if (transaction.status !== "non-traité") {
+        return {
+          error: true,
+          message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
+        };
+      }
+
+      // return money
+      const currency = transaction.currency;
+      const amount = transaction.amount;
+
+      if (currency === "USD") {
+        await prisma.otekisBenefitAmount.update({
+          where: {
+            id: companyBenefit.id,
+          },
+          data: {
+            deliveryPrice: {
+              increment: amount,
+            },
+            amount: {
+              increment: amount,
+            },
+          },
+        });
+      } else {
+        await prisma.otekisBenefitAmount.update({
+          where: {
+            id: companyBenefit.id,
+          },
+          data: {
+            deliveryPriceCDF: {
+              increment: amount,
+            },
+            amountCDF: {
+              increment: amount,
+            },
+          },
+        });
+      }
+
+      await prisma.otekisDelPriceWithdrawalHistory.update({
+        where: {
+          id: transactionId,
+        },
+        data: {
+          status: "annulé",
+        },
+      });
+
+      return { error: false, message: "Transaction annulée avec succès" };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      error: true,
+      message: "Impossible de continuer cette action!",
+    };
+  }
+};
+
+// retrieve company benefit and make Delivery Benefit
+export const makeTransactionCompanyDeliveryBenefit = async ({
+  amount,
+  currency,
+}: MakeTransactionCompanyBenefitType) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Connectez-vous pour continuer",
+      };
+    }
+
+    const companyPrefs = await getCompanyPreference();
+
+    if (!companyPrefs) {
+      return {
+        error: true,
+        message: "Probleme de configuration",
+      };
+    }
+
+    const isPermited = user.role === "super_admin";
+    if (!isPermited) {
+      return {
+        error: true,
+        message: "Vous n'avez pas les droits pour effectuer cette action",
+      };
+    }
+
+    const companyBenefit = await prisma.otekisBenefitAmount.findFirst();
+    if (!companyBenefit) {
+      return {
+        error: true,
+        message:
+          "Erreur de configuration: impossible de trouver le solde de l'entreprise.",
+      };
+    }
+    const actuelAmount =
+      currency === "USD"
+        ? companyBenefit.deliveryPrice
+        : companyBenefit.deliveryPriceCDF;
+
+    const isCanCompanyAffordIt = actuelAmount >= amount;
+    if (!isCanCompanyAffordIt) {
+      return {
+        error: true,
+        message:
+          "L'entreprise n'a pas les fonds nécessaires pour effectuer cette transaction",
+      };
+    }
+    // const newAmount = actuelAmount - amount;
+    const generatedTransfertID =
+      Date.now().toString() + Math.random().toString(36).substring(2, 9);
+
+    // create transaction
+    await prisma.otekisDelPriceWithdrawalHistory.create({
+      data: {
+        amount: amount,
+        currency,
+        transfertID: generatedTransfertID,
+        paymentPhone: "813350706",
+        paymentName: "Otekis",
+        exchange: companyPrefs.exchangeRate,
       },
     });
 
-    if (!transaction) {
-      return {
-        error: true,
-        message: "Transaction non trouvée",
-      };
-    }
-
-    if (transaction.status !== "non-traité") {
-      return {
-        error: true,
-        message: "Cette transaction a déjà été traitée", // or "Cette transaction a déjà été traitée"
-      };
-    }
-
-    // return money
-    const currency = transaction.currency;
-    const amount = transaction.amount;
-
+    // reduced money company benefit
     if (currency === "USD") {
       await prisma.otekisBenefitAmount.update({
         where: {
           id: companyBenefit.id,
         },
         data: {
-          benefit: {
-            increment: amount,
+          deliveryPrice: {
+            decrement: amount,
           },
           amount: {
-            increment: amount,
+            decrement: amount,
           },
         },
       });
     } else {
+      // reduced money company benefit cdf
       await prisma.otekisBenefitAmount.update({
         where: {
           id: companyBenefit.id,
         },
         data: {
-          benefitCDF: {
-            increment: amount,
+          deliveryPriceCDF: {
+            decrement: amount,
           },
           amountCDF: {
-            increment: amount,
+            decrement: amount,
           },
         },
       });
     }
-
-    await prisma.otekisWithdrawalHistory.update({
-      where: {
-        id: transactionId,
-      },
-      data: {
-        status: "annulé",
-      },
-    });
-
-    return { error: false, message: "Transaction annulée avec succès" };
+    return {
+      error: false,
+      message: "Transaction effectuée avec succès",
+    };
   } catch (error) {
     console.log(error);
     return {

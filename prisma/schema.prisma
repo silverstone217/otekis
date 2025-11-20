@@ -522,6 +522,19 @@ model OtekisWithdrawalHistory {
   bankNumber   String?
 }
 
+model OtekisDelPriceWithdrawalHistory {
+  id           String   @id @default(cuid())
+  amount       Float
+  currency     String   @default("USD")
+  exchange     Float
+  date         DateTime @default(now())
+  status       String   @default("non-traité") // non-traité, traité, annulé
+  paymentPhone String?
+  paymentName  String?
+  transfertID  String?
+  bankNumber   String?
+}
+
 model OtekisPreferences {
   id String @id @default(cuid())
 

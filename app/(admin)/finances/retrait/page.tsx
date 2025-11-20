@@ -2,6 +2,7 @@ import { getUser } from "@/actions/actions";
 import {
   getAllProductSoldAmount,
   getCompanyBenefit,
+  getCompanyDeliveryPriceWithdrawHistory,
   getCompanyPreference,
   getCompanyWithdrawHistory,
   getCurrencySymbol,
@@ -22,6 +23,8 @@ const RetraitPage = async () => {
   const companyPrefs = await getCompanyPreference();
   const companyBenefit = await getCompanyBenefit();
 
+  const deliveryWidthdraw = await getCompanyDeliveryPriceWithdrawHistory();
+
   const productSold = await getAllProductSoldAmount();
 
   if (!companyPrefs || companyBenefit === null) return null;
@@ -35,6 +38,7 @@ const RetraitPage = async () => {
           withdraw={widthdraw}
           companyPrefs={companyPrefs}
           productSold={productSold}
+          deliveryWidthdraw={deliveryWidthdraw}
         />
       </Suspense>
     </div>

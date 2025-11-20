@@ -10,6 +10,7 @@ import {
 import { returnFormatedMoney } from "@/utils/functions";
 import {
   OtekisBenefitAmount,
+  OtekisDelPriceWithdrawalHistory,
   OtekisPreferences,
   OtekisWithdrawalHistory,
 } from "@prisma/client";
@@ -19,10 +20,11 @@ import {
   Landmark,
   PackageCheck,
 } from "lucide-react";
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import WithdrawTable from "./WithdrawTable";
 import RetrieveMoney from "@/components/admins/finances/retrait/RetrieveMoney";
 import RetrieveDeliveryPrice from "@/components/admins/finances/retrait/RetrieveDeliveryPrice";
+import DashboardTabs from "./DashboardTabs";
 
 type Props = {
   currencySymbol: "$" | "CDF";
@@ -30,6 +32,7 @@ type Props = {
   companyPrefs: OtekisPreferences;
   companyBenefit: OtekisBenefitAmount;
   productSold: number;
+  deliveryWidthdraw: OtekisDelPriceWithdrawalHistory[];
 };
 
 const MainComponent = ({
@@ -38,7 +41,10 @@ const MainComponent = ({
   companyBenefit,
   companyPrefs,
   productSold,
+  deliveryWidthdraw,
 }: Props) => {
+  const [index, setIndex] = useState(0);
+
   const currency = currencySymbol === "$" ? "USD" : "CDF";
   const benefit =
     currency === "USD" ? companyBenefit.benefit : companyBenefit.benefitCDF;
@@ -61,7 +67,7 @@ const MainComponent = ({
         deliveryPrice={deliveryPrice}
       />
 
-      <div className="flex items-center gap-4 flex-wrap justify-center my-10">
+      <div className=" grid grid-cols-1 md:flex items-center gap-4 flex-wrap justify-center my-10">
         {/* Get benefit */}
         <RetrieveMoney currency={currency} />
         {/* Get delievery benefit */}
@@ -73,9 +79,19 @@ const MainComponent = ({
         </Button>
       </div>
 
-      <Suspense fallback={<p>Chargement...</p>}>
-        <WithdrawTable withdraw={withdraw} />
-      </Suspense>
+      <DashboardTabs index={index} setIndex={setIndex} />
+
+      {/* Benefit withdraw history */}
+      {index === 0 ? (
+        <Suspense fallback={<p>Chargement...</p>}>
+          <WithdrawTable withdraw={withdraw} type={"benefit"} />
+        </Suspense>
+      ) : (
+        <Suspense fallback={<p>Chargement...</p>}>
+          {/* Delivery withdraw history */}
+          <WithdrawTable withdraw={deliveryWidthdraw} type={"delivery"} />
+        </Suspense>
+      )}
     </div>
   );
 };

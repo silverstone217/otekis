@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isEmptyString } from "@/utils/functions";
-import { makeTransactionCompanyBenefit } from "@/actions/companyAction";
+import { makeTransactionCompanyDeliveryBenefit } from "@/actions/companyAction";
 import { toast } from "sonner";
 import { RetrieveMoneyProps } from "./RetrieveMoney";
 import { capitalizeText } from "@/utils/shopFunctions";
@@ -43,7 +43,7 @@ const RetrieveDeliveryPrice = ({ currency }: RetrieveMoneyProps) => {
         val = Math.round(val * 100) / 100;
       }
       const formdata = { amount: val, currency };
-      const result = await makeTransactionCompanyBenefit(formdata);
+      const result = await makeTransactionCompanyDeliveryBenefit(formdata);
 
       if (result.error) {
         toast.error(result.message);
@@ -73,8 +73,8 @@ const RetrieveDeliveryPrice = ({ currency }: RetrieveMoneyProps) => {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="flex items-center gap-2"
-          aria-label="Retirer les gains"
+          className="flex items-center gap-2 w-full md:w-fit"
+          aria-label="Retirer les gains de la livraison"
         >
           <TruckElectric className="h-5 w-5 text-muted-foreground" />
           Retirer les frais de livraisons
@@ -99,7 +99,7 @@ const RetrieveDeliveryPrice = ({ currency }: RetrieveMoneyProps) => {
           </DialogClose>
 
           <DialogTitle className="text-lg font-semibold">
-            Retirer les bénéfices
+            Retirer les bénéfices de la livraison
           </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
             Vous pouvez retirer les bénéfices générés via la livraisons et

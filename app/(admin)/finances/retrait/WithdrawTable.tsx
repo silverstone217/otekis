@@ -55,9 +55,10 @@ export type Withdraw = {
 
 type Props = {
   withdraw: Withdraw[];
+  type: "benefit" | "delivery";
 };
 
-const statusOptions = [
+export const statusOptions = [
   { label: "Tous", value: "tous" },
   { label: "Traité", value: "traité" },
   { label: "Annulé", value: "annulé" },
@@ -124,7 +125,7 @@ export function filterDate(itemDate: Date, selected?: Date) {
 //           COMPOSANT
 // --------------------------
 
-export default function WithdrawTable({ withdraw }: Props) {
+export default function WithdrawTable({ withdraw, type }: Props) {
   // filtres
   const [statusFilter, setStatusFilter] = useState("tous");
   const [dateFilter, setDateFilter] = useState<Date | undefined>();
@@ -196,11 +197,13 @@ export default function WithdrawTable({ withdraw }: Props) {
       {
         id: "actions",
         header: "Actions",
-        cell: ({ row }) => <ActionsTransaction transaction={row.original} />,
+        cell: ({ row }) => (
+          <ActionsTransaction transaction={row.original} type={type} />
+        ),
         size: 60,
       },
     ],
-    []
+    [type]
   );
 
   // creation tableau tanstack avec pagination integrée
