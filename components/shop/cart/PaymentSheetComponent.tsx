@@ -16,7 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { CreditCard, FileText } from "lucide-react";
+import { CreditCard, FileText, Loader } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import Image from "next/image";
 import { returnDataValue, returnFormatedMoney } from "@/utils/functions";
@@ -63,6 +63,8 @@ type Props = {
   exchangeValue: number;
   deliveryService: DeliveryCompany[];
   cinetPayPercentage: number;
+  setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
+  isBuying: boolean;
 };
 
 const PaymentSheetComponent = ({
@@ -82,6 +84,8 @@ const PaymentSheetComponent = ({
   exchangeValue,
   deliveryService,
   cinetPayPercentage,
+  setIsBuying,
+  isBuying,
 }: Props) => {
   const user = useCurrentUser();
 
@@ -147,12 +151,25 @@ const PaymentSheetComponent = ({
     [preferences.background]
   );
 
+  const parts = useMemo(
+    () =>
+      `${receiverAddress}, ${quartier}, ${commune}`
+        .split(",")
+        .map((p) => p.trim()),
+    [commune, quartier, receiverAddress]
+  );
+
+  const isValidAddress = useMemo(
+    () => parts.length === 4 && parts.every((part) => part.length > 0),
+    [parts]
+  );
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-4 mt-6 py-3 hover:opacity-75
+          className="w-full flex items-center justify-center gap-2 mt-6 py-3 hover:opacity-75
   transition-all duration-500 ease-in-out hover:shadow-2xl shadow-md
   "
           style={{
@@ -160,9 +177,14 @@ const PaymentSheetComponent = ({
             color: preferences.buttonTextColor,
             borderRadius: preferences.buttonRadius,
           }}
+          disabled={isBuying}
         >
-          <span>Payer</span>
-          <CreditCard className="w-8 h-8 ml-2" />
+          {isBuying ? (
+            <Loader className="w-8 h-8 animate-spin" />
+          ) : (
+            <CreditCard className="w-8 h-8" />
+          )}
+          <span>{isBuying ? "Paiement..." : "Payer"}</span>
         </button>
       </SheetTrigger>
       <SheetContent
@@ -594,6 +616,18 @@ const PaymentSheetComponent = ({
             </div>
           </div>
 
+          {!isValidAddress && commune !== "" && quartier !== "" && (
+            <div
+              className="w-full grid gap-4 p-4 border-2 text-destructive text-sm"
+              style={{
+                borderRadius: preferences.buttonRadius,
+              }}
+            >
+              L&apos;adresse doit contenir : numéro et l&apos;avenue. Espacé par
+              une virgule.
+            </div>
+          )}
+
           {/* payment btn  */}
           <PaiementCinetPay
             carts={carts}
@@ -622,6 +656,9 @@ const PaymentSheetComponent = ({
             setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
             isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
             isBuyingTermsAccepted={isBuyingTermsAccepted}
+            isBuying={isBuying}
+            setIsBuying={setIsBuying}
+            isValidAddress={isValidAddress}
           />
         </div>
       </SheetContent>

@@ -83,6 +83,9 @@ const MainCartComponent = ({
     };
   });
 
+  // disabled buttton
+  const [isBuying, setIsBuying] = useState(false);
+
   // modal success
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -295,8 +298,9 @@ const MainCartComponent = ({
           <div className="w-full flex item-center justify-between text-sm">
             <Label className="opacity-75">Frais de livraison</Label>
             <p className="opacity-75 font-semibold tabular-nums">
-              {returnFormatedMoney(deliveryPrice)}{" "}
-              <span className="text-xs"> {currency}</span>
+              {/* {returnFormatedMoney(deliveryPrice)}{" "}
+              <span className="text-xs"> {currency}</span> */}
+              non-defini
             </p>
           </div>
 
@@ -357,6 +361,8 @@ const MainCartComponent = ({
               exchangeValue={exchangeValue}
               deliveryService={deliveryService}
               cinetPayPercentage={cinetPayPercentage}
+              isBuying={isBuying}
+              setIsBuying={setIsBuying}
             />
           )}
         </div>

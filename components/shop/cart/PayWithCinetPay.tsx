@@ -9,7 +9,7 @@ import {
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { OrderStatusType, PaymentStatusType } from "@/types/orders";
 import { Cart, Preferences, ProductShop, Shop } from "@prisma/client";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArticleToBuyType } from "./PaymentSheetComponent";
@@ -21,6 +21,7 @@ import {
   CINET_PAY_SITE_ID_USD,
 } from "@/utils/envVariables";
 import { SheetClose } from "@/components/ui/sheet";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
@@ -56,6 +57,9 @@ type Props = {
   setIsBuyingTermsAccepted: React.Dispatch<React.SetStateAction<boolean>>;
   isBuyingGeneralTermsAccepted: boolean;
   isBuyingTermsAccepted: boolean;
+  setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
+  isBuying: boolean;
+  isValidAddress: boolean;
 };
 
 export function PaiementCinetPay({
@@ -73,6 +77,9 @@ export function PaiementCinetPay({
   setIsBuyingGeneralTermsAccepted,
   setIsBuyingTermsAccepted,
   deliveryPaymentMethode,
+  isBuying,
+  setIsBuying,
+  isValidAddress,
 }: Props) {
   // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =
@@ -95,11 +102,13 @@ export function PaiementCinetPay({
   const [PaymentStatus] = useState<PaymentStatusType>("payé");
 
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   if (!user) return null;
 
   const handleCheckout = async () => {
     setLoading(true);
+    setIsBuying(true);
 
     if (!isBuyingGeneralTermsAccepted) {
       toast.error("Vous devez accepter les termes et conditions d'achat.");
@@ -262,6 +271,9 @@ export function PaiementCinetPay({
       toast.success(result.message);
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);
+
+      router.refresh();
+
       setModalOpen(true);
 
       // Optionnel : redirection ou mise à jour UI
@@ -273,6 +285,7 @@ export function PaiementCinetPay({
       });
     } finally {
       setLoading(false);
+      setIsBuying(false);
     }
   };
 
@@ -280,7 +293,7 @@ export function PaiementCinetPay({
     <SheetClose asChild>
       <button
         type="button"
-        className="w-full flex items-center justify-center gap-4 mt-6 py-3 hover:opacity-75
+        className="w-full flex items-center justify-center gap-2 mt-6 py-3 hover:opacity-75
     transition-all duration-500 ease-in-out hover:shadow-2xl shadow-md
     disabled:opacity-70
     "
@@ -298,13 +311,18 @@ export function PaiementCinetPay({
           !receiverInfo.tel ||
           !receiverInfo.name ||
           typeof deliveryPrice === "string" ||
-          receiverInfo.tel.length !== 9
+          receiverInfo.tel.length !== 9 ||
+          !isValidAddress
         }
       >
+        {loading ? (
+          <Loader className="w-8 h-8 animate-spin" />
+        ) : (
+          <CreditCard className="w-8 h-8" />
+        )}
         <span>
           {!loading ? "Payer maintenant" : "en cours de traitement...."}
         </span>
-        <CreditCard className="w-8 h-8 ml-2" />
       </button>
     </SheetClose>
   );

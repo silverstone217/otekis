@@ -3,6 +3,19 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    const companyPrefs = await prisma.otekisPreferences.findFirst();
+
+    if (!companyPrefs) {
+      return;
+    }
+
+    // MANAGE DATE FOR UPDATING OLD NOT PROCESSED AND DELIVERED ORDER
+
+    const getDelayDayToUpdate = companyPrefs.delayTransferableMoney;
+
+    const delayDate = new Date();
+    delayDate.setDate(delayDate.getDate() - getDelayDayToUpdate);
+
     // Récupérer tous les shopProfitWaited non traités liés à des commandes livrées
     const shopProfitsWaited = await prisma.shopProfitWaited.findMany({
       where: {
@@ -10,6 +23,7 @@ export async function GET() {
         order: {
           status: "livré",
         },
+        createdAt: { lte: delayDate },
       },
       include: {
         shop: true,
@@ -20,17 +34,6 @@ export async function GET() {
     await Promise.all(
       shopProfitsWaited.map(async (profit) => {
         if (profit.shop) {
-          // const currencyAmount =
-          //   profit.currency === "USD"
-          //     ? {
-          //         benefit: { increment: profit.amount },
-          //         benefitCDF: profit.shop.benefitCDF,
-          //       }
-          //     : {
-          //         benefitCDF: { increment: profit.amount },
-          //         benefit: profit.shop.benefit,
-          //       };
-
           await prisma.shop.update({
             where: { id: profit.shopId },
             data:
@@ -61,6 +64,7 @@ export async function GET() {
         order: {
           status: "livré",
         },
+        createdAt: { lte: delayDate },
       },
     });
 
