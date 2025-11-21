@@ -40,7 +40,7 @@ const RetrieveDeliveryPrice = ({ currency }: RetrieveMoneyProps) => {
       const raw = amount.trim();
       let val = parseFloat(raw);
       if (!Number.isNaN(val) && !Number.isInteger(val)) {
-        val = Math.round(val * 100) / 100;
+        val = Math.floor(val * 100) / 100;
       }
       const formdata = { amount: val, currency };
       const result = await makeTransactionCompanyDeliveryBenefit(formdata);

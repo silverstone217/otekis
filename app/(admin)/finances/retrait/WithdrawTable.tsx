@@ -76,10 +76,21 @@ export function sameDay(a: Date, b: Date) {
 
 // Formatage montant
 export function formatMoney(amount: number, currency: string) {
+  if (Number.isInteger(amount)) {
+    // Entier → pas de décimales
+    return (
+      amount.toLocaleString("fr-FR") +
+      " " +
+      (currency === "USD" ? "$" : currency)
+    );
+  }
+
+  // Float → garder 2 décimales sans arrondir
+  const truncated = Math.floor(amount * 100) / 100;
   return (
-    amount.toLocaleString("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+    truncated.toLocaleString("fr-FR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }) +
     " " +
     (currency === "USD" ? "$" : currency)

@@ -142,6 +142,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
   const cinetPayPercentage = companyPrefs?.cinetPayPercentage || 0;
   const currency = (await getCurrencySymbol()) === "$" ? "USD" : "CDF";
   const exChange = await exChangeRate();
+
   const compBenefit =
     currency === "USD" ? totalProdMinPrice : totalProdMinPrice * exChange;
 
