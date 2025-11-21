@@ -42,7 +42,11 @@ export function PayShopsPopup({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          disabled={loading}
+        >
           <BanknoteArrowDown className="w-4 h-4" />
           Payer des boutiques
         </Button>

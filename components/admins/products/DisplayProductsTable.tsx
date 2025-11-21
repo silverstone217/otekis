@@ -12,7 +12,6 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -274,6 +273,29 @@ const ProductToDelete = ({ product }: { product: ProductWithArticle }) => {
   );
 };
 
+// NAME CELL
+function ProductNameCell({ name }: { name: string }) {
+  return (
+    <div
+      className="
+        capitalize 
+        whitespace-normal 
+        break-words 
+        overflow-hidden 
+
+        max-w-[100px]       // mobile
+        sm:max-w-[160px]    // sm
+        md:max-w-[200px]    // desktop  
+        lg:md:max-w-[260px] // larger
+        line-clamp-2        
+      "
+      title={name}
+    >
+      {name}
+    </div>
+  );
+}
+
 // Columns data
 export const Productscolumns = (
   currencySymbol: string
@@ -326,7 +348,7 @@ export const Productscolumns = (
         </Button>
       );
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => <ProductNameCell name={row.getValue("name")} />,
   },
   {
     accessorKey: "category",
@@ -373,6 +395,7 @@ export const Productscolumns = (
   {
     id: "actions",
     enableHiding: false,
+    size: 80,
     cell: ({ row }) => {
       const product = row.original;
       return <ActionsCell product={product} />;
@@ -515,6 +538,7 @@ export function ProductDataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className=""
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

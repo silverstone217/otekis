@@ -130,6 +130,11 @@ export default function WithdrawTable({ withdraw, type }: Props) {
   const [statusFilter, setStatusFilter] = useState("tous");
   const [dateFilter, setDateFilter] = useState<Date | undefined>();
 
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10, // nombre de lignes par page
+  });
+
   // filtre les données selon filtres
   const filteredData = useMemo(() => {
     return withdraw
@@ -212,13 +217,8 @@ export default function WithdrawTable({ withdraw, type }: Props) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-      },
-    },
-    onPaginationChange: () => {}, // peut etre amélioré pour la gestions manuelles
+    state: { pagination },
+    onPaginationChange: setPagination,
     manualPagination: false,
   });
 

@@ -65,7 +65,7 @@ const RetrieveDeliveryPrice = ({ currency }: RetrieveMoneyProps) => {
 
   const isAmountValid = (() => {
     const num = Number(amount);
-    return !isEmptyString(amount) && !isNaN(num) && num >= 0.1;
+    return !isEmptyString(amount) && !isNaN(num) && num >= 0.001;
   })();
 
   return (

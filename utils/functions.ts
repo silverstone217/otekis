@@ -236,13 +236,20 @@ export function returnNumberByPercent(
 ) {
   const percentValue =
     typeof percent === "string" ? parseFloat(percent) : percent;
-  return amount - (amount * percentValue) / 100;
+
+  const result = amount - (amount * percentValue) / 100;
+
+  // Si entier → on renvoie tel quel
+  if (Number.isInteger(result)) return result;
+
+  // Sinon → on garde 2 décimales maximum SANS ARRONDIR
+  return Math.floor(result * 100) / 100;
 }
 
 // return formated money
 export function returnFormatedMoney(amount: number): string {
   return amount.toLocaleString("fr-FR", {
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
 }
@@ -252,9 +259,12 @@ export const returnRealValueWithPercentage = (
   price: number,
   percent: number
 ): number => {
-  if (percent === 0) return parseFloat(price.toFixed(2));
+  if (percent === 0) {
+    return Math.floor(price * 100) / 100;
+  }
 
   const sum = price / (1 - percent / 100);
 
-  return parseFloat(sum.toFixed(2));
+  // Coupe à 2 décimales (pas d'arrondi)
+  return Math.floor(sum * 100) / 100;
 };
