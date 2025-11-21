@@ -57,12 +57,10 @@ export const transfertShop = async (data: TransfertShopType) => {
       };
     }
 
-    const validated = validationResult.data.map((itm) => {
-      return {
-        ...itm,
-        exchange: prefs.exchangeRate,
-      };
-    });
+    const validated = validationResult.data.map((itm) => ({
+      ...itm,
+      exchange: prefs.exchangeRate,
+    }));
 
     const currency = prefs.currency;
 
@@ -74,16 +72,18 @@ export const transfertShop = async (data: TransfertShopType) => {
       };
     }
 
-    // find if we have enough money
-    const totalMoneyToPay = validated.reduce((acc, item) => {
-      return acc + item.amount;
-    }, 0);
+    // Fonction pour tronquer à 2 décimales sans arrondir
+    const truncateTwoDecimals = (value: number) =>
+      Math.trunc(value * 100) / 100;
 
+    // Vérifie si l'entreprise a assez de fonds
+    const totalMoneyToPay = validated.reduce(
+      (acc, item) => acc + item.amount,
+      0
+    );
     const companyAmount =
       currency === "USD" ? companyPrefs.amount : companyPrefs.amountCDF;
-    const hasEnoughMoney = totalMoneyToPay <= companyAmount;
-
-    if (!hasEnoughMoney) {
+    if (totalMoneyToPay > companyAmount) {
       return {
         error: true,
         message: "Fonds insuffisants pour effectuer le transfert",
@@ -96,7 +96,7 @@ export const transfertShop = async (data: TransfertShopType) => {
       data: validated,
     });
 
-    // Récupérer en batch les shops concernés
+    // Récupère les shops concernés
     const shopIds = Array.from(new Set(validated.map((item) => item.shopId)));
     const shopsMap = new Map(
       (
@@ -106,7 +106,7 @@ export const transfertShop = async (data: TransfertShopType) => {
       ).map((shop) => [shop.id, shop])
     );
 
-    // Met à jour les shops en parallèle (fire and forget les erreurs)
+    // Met à jour les shops et l'entreprise
     await Promise.all(
       validated.map(async (item) => {
         const shop = shopsMap.get(item.shopId);
@@ -115,19 +115,30 @@ export const transfertShop = async (data: TransfertShopType) => {
         try {
           const updateData =
             item.currency === "USD"
-              ? { benefit: shop.benefit - item.amount }
-              : { benefitCDF: shop.benefitCDF - item.amount };
+              ? { benefit: truncateTwoDecimals(shop.benefit - item.amount) }
+              : {
+                  benefitCDF: truncateTwoDecimals(
+                    shop.benefitCDF - item.amount
+                  ),
+                };
 
           await prisma.shop.update({
             where: { id: item.shopId },
             data: updateData,
           });
 
-          // cut money otekis
           const reducedTotalAmountCompanyData =
             item.currency === "USD"
-              ? { amount: companyPrefs.amount - item.amount }
-              : { amountCDF: companyPrefs.amountCDF - item.amount };
+              ? {
+                  amount: truncateTwoDecimals(
+                    companyPrefs.amount - item.amount
+                  ),
+                }
+              : {
+                  amountCDF: truncateTwoDecimals(
+                    companyPrefs.amountCDF - item.amount
+                  ),
+                };
 
           await prisma.otekisBenefitAmount.update({
             where: { id: companyPrefs.id },

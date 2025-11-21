@@ -252,6 +252,11 @@ export const getAllProductSoldAmount = async () => {
   return amount;
 };
 
+// TRUNCATE VALUE 2 after comma
+function truncateTwoDecimals(value: number) {
+  return Math.trunc(value * 100) / 100;
+}
+
 // retrieve company benefit and make transaction
 type MakeTransactionCompanyBenefitType = {
   amount: number;
@@ -326,34 +331,28 @@ export const makeTransactionCompanyBenefit = async ({
     // reduced money company benefit
     if (currency === "USD") {
       await prisma.otekisBenefitAmount.update({
-        where: {
-          id: companyBenefit.id,
-        },
+        where: { id: companyBenefit.id },
         data: {
           benefit: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.benefit - amount),
           },
-          amount: {
-            decrement: amount,
-          },
+          amount: { set: truncateTwoDecimals(companyBenefit.amount - amount) },
         },
       });
     } else {
-      // reduced money company benefit cdf
       await prisma.otekisBenefitAmount.update({
-        where: {
-          id: companyBenefit.id,
-        },
+        where: { id: companyBenefit.id },
         data: {
           benefitCDF: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.benefitCDF - amount),
           },
           amountCDF: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.amountCDF - amount),
           },
         },
       });
     }
+
     return {
       error: false,
       message: "Transaction effectuée avec succès",
@@ -662,23 +661,15 @@ export const makeTransactionCompanyDeliveryBenefit = async ({
   try {
     const user = await getUser();
     if (!user) {
-      return {
-        error: true,
-        message: "Connectez-vous pour continuer",
-      };
+      return { error: true, message: "Connectez-vous pour continuer" };
     }
 
     const companyPrefs = await getCompanyPreference();
-
     if (!companyPrefs) {
-      return {
-        error: true,
-        message: "Probleme de configuration",
-      };
+      return { error: true, message: "Probleme de configuration" };
     }
 
-    const isPermited = user.role === "super_admin";
-    if (!isPermited) {
+    if (user.role !== "super_admin") {
       return {
         error: true,
         message: "Vous n'avez pas les droits pour effectuer cette action",
@@ -693,27 +684,27 @@ export const makeTransactionCompanyDeliveryBenefit = async ({
           "Erreur de configuration: impossible de trouver le solde de l'entreprise.",
       };
     }
+
     const actuelAmount =
       currency === "USD"
         ? companyBenefit.deliveryPrice
         : companyBenefit.deliveryPriceCDF;
 
-    const isCanCompanyAffordIt = actuelAmount >= amount;
-    if (!isCanCompanyAffordIt) {
+    if (actuelAmount < amount) {
       return {
         error: true,
         message:
           "L'entreprise n'a pas les fonds nécessaires pour effectuer cette transaction",
       };
     }
-    // const newAmount = actuelAmount - amount;
+
     const generatedTransfertID =
       Date.now().toString() + Math.random().toString(36).substring(2, 9);
 
     // create transaction
     await prisma.otekisDelPriceWithdrawalHistory.create({
       data: {
-        amount: amount,
+        amount,
         currency,
         transfertID: generatedTransfertID,
         paymentPhone: "813350706",
@@ -722,46 +713,36 @@ export const makeTransactionCompanyDeliveryBenefit = async ({
       },
     });
 
-    // reduced money company benefit
+    // reduce money company benefit safely
     if (currency === "USD") {
       await prisma.otekisBenefitAmount.update({
-        where: {
-          id: companyBenefit.id,
-        },
+        where: { id: companyBenefit.id },
         data: {
           deliveryPrice: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.deliveryPrice - amount),
           },
           amount: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.amount - amount),
           },
         },
       });
     } else {
-      // reduced money company benefit cdf
       await prisma.otekisBenefitAmount.update({
-        where: {
-          id: companyBenefit.id,
-        },
+        where: { id: companyBenefit.id },
         data: {
           deliveryPriceCDF: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.deliveryPriceCDF - amount),
           },
           amountCDF: {
-            decrement: amount,
+            set: truncateTwoDecimals(companyBenefit.amountCDF - amount),
           },
         },
       });
     }
-    return {
-      error: false,
-      message: "Transaction effectuée avec succès",
-    };
+
+    return { error: false, message: "Transaction effectuée avec succès" };
   } catch (error) {
     console.log(error);
-    return {
-      error: true,
-      message: "Impossible de continuer cette action!",
-    };
+    return { error: true, message: "Impossible de continuer cette action!" };
   }
 };
