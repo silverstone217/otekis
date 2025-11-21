@@ -128,7 +128,7 @@ const RetrieveMoney = ({ currency }: RetrieveMoneyProps) => {
               id="amountInput"
               type="number"
               step="0.01"
-              min="0"
+              min="0.01"
               autoComplete="off"
               inputMode="decimal"
               value={amount}
