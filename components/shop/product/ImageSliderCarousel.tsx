@@ -51,6 +51,7 @@ const ImageSliderCarousel = ({ images, preferences, custom_height }: Props) => {
             style={{
               borderRadius: preferences.buttonRadius,
             }}
+            unoptimized
           />
         </div>
         {images.length > 1 && (

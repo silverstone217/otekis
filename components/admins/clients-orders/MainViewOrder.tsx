@@ -232,6 +232,7 @@ const MainViewOrder = ({
                             className="rounded object-cover"
                             priority
                             sizes="48px"
+                            unoptimized
                           />
                         </div>
 

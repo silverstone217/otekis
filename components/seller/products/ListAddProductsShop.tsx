@@ -273,6 +273,7 @@ function ProductCardAddShop({
             src={product.image || noProduct}
             alt={product.name}
             fill
+            unoptimized
             className="object-cover w-full h-full group-hover:scale-105 
             transition-transform duration-500 ease-in-out bg-muted"
             priority

@@ -420,6 +420,7 @@ const PaymentSheetComponent = ({
                     style={{
                       borderRadius: preferences.buttonRadius,
                     }}
+                    unoptimized
                   />
                   <div className="flex-1 flex flex-col gap-1">
                     <h4 className="capitalize font-medium line-clamp-2">

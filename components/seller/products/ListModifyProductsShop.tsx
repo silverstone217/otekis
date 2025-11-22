@@ -304,6 +304,7 @@ export const ListAddProductCard = ({
             src={product.image || noProduct}
             alt={product.name}
             fill
+            unoptimized
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out bg-muted"
             sizes="(max-width: 600px) 100vw, 25vw"
             priority

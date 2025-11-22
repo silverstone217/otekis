@@ -167,6 +167,7 @@ export const ProductCard = ({
           style={{
             borderRadius: preferences.buttonRadius,
           }}
+          unoptimized
         />
 
         {productShopPromotion &&

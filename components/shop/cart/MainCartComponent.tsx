@@ -519,6 +519,7 @@ const CartItemProduct = ({
           style={{
             borderRadius: "5px",
           }}
+          unoptimized
         />
       </div>
       {/* infos */}

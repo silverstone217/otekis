@@ -328,6 +328,7 @@ export const Productscolumns = (
             height={800}
             priority
             className="object-cover brightness-90 w-14 h-14"
+            unoptimized
           />
         ) : (
           "Aucune image"

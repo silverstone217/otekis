@@ -332,7 +332,7 @@ export const ChooseColorItem = ({
         <span>
           {color === "nothing"
             ? "Aucune couleur"
-            : ColorsData.find((c) => c.value === color)?.label ?? color}
+            : (ColorsData.find((c) => c.value === color)?.label ?? color)}
         </span>
         <ChevronDown className="w-6 h-6 opacity-75" />
       </DialogTrigger>

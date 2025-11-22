@@ -774,6 +774,7 @@ const ModifyProductForm = ({ product }: Props) => {
                       height={1500}
                       priority
                       className="w-full h-full object-cover"
+                      unoptimized
                     />
                     <span
                       className="absolute top-1 right-1 text-sm text-destructive 
@@ -858,6 +859,7 @@ const ModifyProductForm = ({ product }: Props) => {
                           width={2050}
                           height={2050}
                           priority
+                          unoptimized
                           className="w-full h-full object-cover transition-all duration-500 ease-in-out"
                         />
                         <span

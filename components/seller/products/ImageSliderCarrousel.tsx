@@ -42,6 +42,7 @@ const ImageSliderCarrousel = ({ images, custom_height }: Props) => {
             width={1200}
             height={1000}
             priority
+            unoptimized
           />
         </div>
         {images.length > 1 && (
