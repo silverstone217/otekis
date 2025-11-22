@@ -126,6 +126,7 @@ const ShopHero = ({
               className="object-cover transition-transform duration-700 ease-in-out hover:scale-105"
               priority
               sizes="(max-width: 1024px) 100vw, 60vw"
+              unoptimized
             />
             {/* Overlay Dégradé */}
             <div

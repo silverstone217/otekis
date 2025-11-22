@@ -182,6 +182,7 @@ const ShopHero = ({
                 style={{
                   borderRadius: preferences.buttonRadius,
                 }}
+                unoptimized
               />
             )}
 

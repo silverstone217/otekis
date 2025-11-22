@@ -153,6 +153,7 @@ const ShopHero = ({
                   //   borderTopLeftRadius: preferences.buttonRadius,
                   //   borderTopRightRadius: preferences.buttonRadius,
                   // }}
+                  unoptimized
                 />
               </div>
 

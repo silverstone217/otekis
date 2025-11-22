@@ -190,6 +190,7 @@ const ShopHero = ({
                 style={{
                   borderRadius: preference.buttonRadius,
                 }}
+                unoptimized
               />
             </div>
             {/* Overlay infos */}

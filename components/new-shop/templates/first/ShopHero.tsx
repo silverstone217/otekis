@@ -17,7 +17,7 @@ export type ShopHeroType = {
 
 const ShopHero = ({
   shop,
-  getMyFont,
+  // getMyFont,
   preferences: preference,
 }: ShopHeroType) => {
   // text position
@@ -25,14 +25,14 @@ const ShopHero = ({
   const imgCoverSrc = shop.cover
     ? `url('${shop.cover}')`
     : shop.category === "cosmetiques"
-    ? `url(${coverImg2.src})`
-    : `url(${coverImg.src})`;
+      ? `url(${coverImg2.src})`
+      : `url(${coverImg.src})`;
 
   const imgCover = shop.cover
     ? shop.cover
     : shop.category === "cosmetiques"
-    ? coverImg2
-    : coverImg;
+      ? coverImg2
+      : coverImg;
 
   return (
     <div
@@ -84,6 +84,7 @@ const ShopHero = ({
             width={2000}
             height={2000}
             className="object-cover w-full h-full"
+            unoptimized
           />
         </div>
       )}
