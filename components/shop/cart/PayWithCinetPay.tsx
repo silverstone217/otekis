@@ -215,7 +215,7 @@ export function PaiementCinetPay({
 
       window.CinetPay.onClose(function () {
         // l'utilisateur a fermé la fenêtre sans payer
-        reject(new Error("Paiement annulé par l'utilisateur"));
+        reject(new Error("Paiement été annulé !"));
       });
     });
 
@@ -272,7 +272,7 @@ export function PaiementCinetPay({
       const result = await newOrderAction(formData);
 
       if (result.error) {
-        toast.error("Une erreur est survenue", { description: result.message });
+        toast.error(result.message);
         return;
       }
       toast.success(result.message);
