@@ -16,8 +16,32 @@ export const metadata: Metadata = {
   title: siteName
     ? `${siteCapName} - business autrement!`
     : "OTEKIS - business autrement!",
+  keywords: [
+    "boutique",
+    "shop",
+    "RDC",
+    "vêtements",
+    "accessoires",
+    "vente",
+    "cosmetiques",
+    "chaussures",
+    "business",
+  ],
   description:
     "Nouvelle façon de créer un business, prener de l'elan et transformer tout, en un clique et tout cela depuis chez vous sur shoppy",
+  metadataBase: new URL("https://www.otekis.com"),
+
+  openGraph: {
+    type: "website",
+    title: "Otekis",
+    description: "Découvrez les meilleurs produits en RDC.",
+    url: "https://www.otekis.com",
+    siteName: "Otekis",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const lato = Lato({

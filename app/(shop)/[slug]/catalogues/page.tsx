@@ -51,16 +51,20 @@ Promise<Metadata> {
   }
 
   return {
-    title: capitalizeText(shop.name),
+    title: capitalizeText(shop.name) + " - catalogues",
     description: capitalizeText(shop.description),
     openGraph: {
-      title: capitalizeText(shop.name),
+      title: capitalizeText(shop.name) + " - catalogues",
       description: capitalizeText(shop.description),
       images: [shop.logo],
       type: "website",
+      url: "https://www.otekis.com/" + shop.slug + "/catalogues",
     },
     icons: {
       icon: shop.logo,
+    },
+    alternates: {
+      canonical: `https://www.otekis.com/${shop.slug}/catalogues`,
     },
   };
 }

@@ -52,9 +52,13 @@ Promise<Metadata> {
       description: capitalizeText(shop.description),
       images: [shop.logo],
       type: "website",
+      url: "https://www.otekis.com/" + shop.slug + "/commandes",
     },
     icons: {
       icon: shop.logo,
+    },
+    alternates: {
+      canonical: `https://www.otekis.com/${shop.slug}/commandes`,
     },
   };
 }
