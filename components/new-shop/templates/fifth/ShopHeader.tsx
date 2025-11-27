@@ -12,14 +12,6 @@ import { Preferences, Shop } from "@prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Separator } from "@/components/ui/separator";
 import { capitalizeText } from "@/utils/shopFunctions";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { IconLikeComponent } from "@/types/data";
 import {
   Popover,

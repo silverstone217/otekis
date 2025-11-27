@@ -15,15 +15,13 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { UserAvatar } from "@/components/home/Header";
 import { toast } from "sonner";
-import { signIn, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Preferences, Shop } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -31,7 +29,7 @@ import { ShopHeaderType } from "../first/ShopHeader";
 
 const ShopHeader = ({
   shop,
-  getMyFont,
+  // getMyFont,
   preferences: preference,
 }: ShopHeaderType) => {
   // const [isOpen, setIsOpen] = useState(false);
@@ -228,7 +226,7 @@ const SmallDevicesLinksPart = ({
       {/* Trigger bouton menu */}
       <SheetTrigger>
         <IconMenu
-          className="w-8 h-8 lg:hidden cursor-pointer 
+          className="lg:hidden cursor-pointer 
           transition-transform hover:scale-110"
           style={{
             borderRadius: preferences.buttonRadius,

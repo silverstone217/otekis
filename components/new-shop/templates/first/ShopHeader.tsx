@@ -103,7 +103,6 @@ const ShopHeader = ({
             <X className="w-7 h-7" />
           ) : (
             <IconMenu
-              className="w-7 h-7"
               style={{
                 borderRadius: preference.buttonRadius,
                 color: preference.textColor,
