@@ -452,7 +452,7 @@ export const deleteShop = async (shopId: string) => {
   const user = await getUser();
   if (!user) {
     return {
-      message: "Pas authorisé à faire ça!",
+      message: "Pas autorisé à faire ça !",
       error: true,
     };
   }
@@ -461,25 +461,38 @@ export const deleteShop = async (shopId: string) => {
     where: { id: shopId },
     include: {
       orders: true,
+      user: true, // propriétaire de la boutique
     },
   });
 
   if (!shop) {
     return {
-      message: "Cette boutique n'existe pas!",
+      message: "Cette boutique n'existe pas !",
       error: true,
     };
   }
 
-  const isHisShop = shop.userId === user.id;
+  const isOwner = shop.userId === user.id;
+  const isUserSuperAdmin = user.role === "super_admin";
+  const isShopOwnerSuperAdmin = shop.user.role === "super_admin";
 
-  if (!isHisShop) {
+  /**
+   * LOGIQUE :
+   * - Le propriétaire peut TOUJOURS supprimer sa boutique (même s’il est super admin)
+   * - Un super_admin peut supprimer une boutique SEULEMENT si le propriétaire n'est PAS super_admin
+   * - Sinon → interdit
+   */
+  if (
+    !isOwner && // pas le propriétaire
+    !(isUserSuperAdmin && !isShopOwnerSuperAdmin) // super admin mais boutique d'un autre super admin => interdit
+  ) {
     return {
-      message: "Pas authorisé à faire ça!",
+      message: "Pas autorisé à faire ça !",
       error: true,
     };
   }
 
+  // Protection : commandes en cours
   const ORDERS_STATUS = [
     "en attente de traitement",
     "en cours de traitement",
@@ -489,11 +502,11 @@ export const deleteShop = async (shopId: string) => {
     "en cours d'annulation",
   ];
 
-  const orders = shop.orders.filter((order) =>
+  const ordersInProgress = shop.orders.filter((order) =>
     ORDERS_STATUS.includes(order.status)
   );
-  // console.log({ ord: orders.length });
-  if (orders && orders.length > 0) {
+
+  if (ordersInProgress.length > 0) {
     return {
       message:
         "Cette boutique a des commandes en cours, vous ne pouvez pas la supprimer !",
@@ -501,12 +514,23 @@ export const deleteShop = async (shopId: string) => {
     };
   }
 
-  const _deleteShop = await prisma.shop.delete({
+  await prisma.shop.delete({
     where: { id: shopId },
   });
 
+  const Usershops = await prisma.shop.findMany({
+    where: { userId: shop.userId },
+  });
+
+  if (Usershops.length === 0 && shop.user.role === "seller") {
+    await prisma.user.update({
+      where: { id: shop.userId },
+      data: { role: "user" },
+    });
+  }
+
   return {
-    message: "Boutique supprimée avec succès!",
+    message: "Boutique supprimée avec succès !",
     error: false,
   };
 };

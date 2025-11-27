@@ -33,6 +33,7 @@ import { ProductShop, Shop } from "@prisma/client";
 import { banishUser, changeUserRole } from "@/utils/userFunction";
 import Link from "next/link";
 import { returnRoleWith } from "@/utils/functions";
+import DeleteShopAdmin from "./DeleteShopAdmin";
 
 type User = {
   name: string | null;
@@ -246,11 +247,13 @@ export default function UserDetailPage({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {shops.map((shop) => (
-              <Link
+              <div
                 key={shop.id}
-                href={`/${shop.slug}`}
-                className="border rounded-lg p-4 flex flex-col space-y-3 hover:shadow-md transition-shadow"
+                className="border rounded-lg p-4 flex flex-col space-y-3 
+          hover:shadow-md transition-shadow cursor-pointer"
+                // onClick={() => router.push(`/${shop.slug}`)}
               >
+                {/* Header */}
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 relative rounded-md overflow-hidden bg-gray-100">
                     <Image
@@ -262,6 +265,7 @@ export default function UserDetailPage({
                       priority
                     />
                   </div>
+
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold truncate capitalize">
                       {shop.name}
@@ -269,15 +273,14 @@ export default function UserDetailPage({
                     <p className="text-sm text-muted-foreground capitalize">
                       {shop.category}
                     </p>
+
                     <div className="w-full flex items-center gap-4 mt-1 text-sm">
-                      {/* banned */}
                       <Badge
                         variant={shop.isBanned ? "destructive" : "secondary"}
                       >
                         {shop.isBanned ? "Bannie" : "Active"}
                       </Badge>
 
-                      {/* published */}
                       {!shop.isBanned && (
                         <Badge
                           variant={shop.isPublished ? "outline" : "secondary"}
@@ -285,10 +288,11 @@ export default function UserDetailPage({
                           {shop.isPublished ? "Publiée" : "Non publiée"}
                         </Badge>
                       )}
-                      <p className="text-sm text-muted-foreground capitalize"></p>
                     </div>
                   </div>
                 </div>
+
+                {/* Infos */}
                 <div className="flex flex-wrap justify-between text-sm text-muted-foreground">
                   <div>
                     Produits :{" "}
@@ -305,7 +309,37 @@ export default function UserDetailPage({
                     </span>
                   </div>
                 </div>
-              </Link>
+
+                {/* --- Actions Section --- */}
+                <div className="pt-3 flex items-center  border-t gap-4">
+                  {/* Voir */}
+                  <Button
+                    className=""
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/${shop.slug}`);
+                    }}
+                    variant={"outline"}
+                    size={"sm"}
+                  >
+                    Voir
+                  </Button>
+
+                  {/* Supprimer */}
+                  <DeleteShopAdmin shop={shop} />
+
+                  {/* Action future */}
+                  {/* <button
+                    className="px-3 py-1.5 rounded-md bg-secondary text-sm hover:bg-secondary/80 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toast.info("Cette fonctionnalité arrive bientôt !");
+                    }}
+                  >
+                    Action+
+                  </button> */}
+                </div>
+              </div>
             ))}
           </div>
         )}
