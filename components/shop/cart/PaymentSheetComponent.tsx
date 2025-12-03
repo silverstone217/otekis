@@ -22,8 +22,8 @@ import Image from "next/image";
 import { returnDataValue, returnFormatedMoney } from "@/utils/functions";
 import { ColorsData } from "@/utils/dataAdd";
 import { PaiementCinetPay } from "./PayWithCinetPay";
-import DeliveryChoiceComponent from "./DeliveryChoiceComponent";
-import { deliveryPriceByDeliveryChoice } from "@/utils/delivery";
+// import DeliveryChoiceComponent from "./DeliveryChoiceComponent";
+// import { deliveryPriceByDeliveryChoice } from "@/utils/delivery";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SmoothLink } from "@/components/SmoothLink";
@@ -628,6 +628,20 @@ const PaymentSheetComponent = ({
               une virgule.
             </div>
           )}
+
+          {/* Accept all terms */}
+          {(user && user.isBuyingGeneralTermsAccepted === false) ||
+          isBuyingTermsAccepted === false ? (
+            <div
+              className="w-full grid gap-4 p-4 border-2 text-destructive text-sm"
+              style={{
+                borderRadius: preferences.buttonRadius,
+              }}
+            >
+              Vous devez accepter les termes et conditions pour continuer le
+              paiement.
+            </div>
+          ) : null}
 
           {/* payment btn  */}
           <PaiementCinetPay
