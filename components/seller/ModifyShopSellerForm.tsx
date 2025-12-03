@@ -72,13 +72,28 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
   const handleDrop = useCallback(
     (
       e: React.DragEvent,
-      setFile: React.Dispatch<React.SetStateAction<File | null>>
+      setFile: React.Dispatch<React.SetStateAction<File | null>>,
+      type: "cover" | "logo"
     ) => {
       e.preventDefault();
       if (loading) return;
-      const file = e.dataTransfer.files;
-      if (file && file.length > 0 && file[0].type.startsWith("image/")) {
-        setFile(file[0]);
+
+      const file = e.dataTransfer.files[0];
+
+      if (file && file.type.startsWith("image/")) {
+        // Vérification taille max 2MB
+        if (file.size > 2 * 1024 * 1024) {
+          toast.error("L’image dépasse la taille maximale de 2 MB.");
+          return;
+        }
+
+        setFile(file);
+
+        if (type === "cover") {
+          setVisualizeCover(URL.createObjectURL(file));
+        } else {
+          setVisualizeLogo(URL.createObjectURL(file));
+        }
       } else {
         toast.error("Merci de déposer une image valide.");
       }
@@ -341,7 +356,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
           {/* Logo */}
           <div
             className="relative border-2 border-dashed rounded-lg p-4 cursor-pointer hover:border-primary"
-            onDrop={(e) => handleDrop(e, setLogo)}
+            onDrop={(e) => handleDrop(e, setLogo, "logo")}
             onDragOver={handleDragOver}
             onClick={() => !loading && logoInputRef.current?.click()}
             role="button"
@@ -366,7 +381,18 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
               ref={logoInputRef}
               onChange={(e) => {
                 const files = e.target.files;
-                if (files && files[0]) setLogo(files[0]);
+                if (files && files[0]) {
+                  const file = files[0];
+
+                  // Vérifier la taille du logo : max 2MB
+                  if (file.size > 2 * 1024 * 1024) {
+                    toast.error("Le logo dépasse la taille maximale de 2 MB.");
+                    return;
+                  }
+
+                  setLogo(file);
+                  setVisualizeLogo(URL.createObjectURL(file));
+                }
               }}
               className="hidden"
               disabled={loading}
@@ -416,7 +442,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
           {/* Cover */}
           <div
             className="relative border-2 border-dashed rounded-lg p-4 cursor-pointer hover:border-primary"
-            onDrop={(e) => handleDrop(e, setCover)}
+            onDrop={(e) => handleDrop(e, setCover, "cover")}
             onDragOver={handleDragOver}
             onClick={() => !loading && coverInputRef.current?.click()}
             role="button"
@@ -441,7 +467,18 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
               ref={coverInputRef}
               onChange={(e) => {
                 const files = e.target.files;
-                if (files && files[0]) setCover(files[0]);
+                if (files && files[0]) {
+                  const file = files[0];
+
+                  // Vérifier la taille : 2MB = 2 * 1024 * 1024
+                  if (file.size > 2 * 1024 * 1024) {
+                    toast.error("L'image dépasse la taille maximale de 2 MB.");
+                    return;
+                  }
+
+                  setCover(file);
+                  setVisualizeCover(URL.createObjectURL(file));
+                }
               }}
               className="hidden"
               disabled={loading}
@@ -495,7 +532,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
 
           <p className="text-sm text-muted-foreground mt-2">
             <strong>Important :</strong> Le logo est obligatoire, la couverture
-            est optionnelle.
+            est optionnelle. Ne doit pas dépasser 2 MB chacune.
           </p>
         </BorderWrapper>
       </div>

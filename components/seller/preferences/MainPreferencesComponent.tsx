@@ -52,7 +52,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     preferences?.background ?? backgroundColors.white
   );
   const [textColor, setTextColor] = useState(
-    preferences?.textColor ?? background === backgroundColors.white
+    (preferences?.textColor ?? background === backgroundColors.white)
       ? textColorData.light
       : textColorData.dark
   );
@@ -63,7 +63,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     preferences?.buttonRadius ?? buttonRadiusData.small
   );
   const [buttonTextColor, setButtonTextColor] = useState(
-    preferences?.textColor ?? buttonColor === buttonColors.white
+    (preferences?.textColor ?? buttonColor === buttonColors.white)
       ? textColorData.light
       : textColorData.dark
   );
@@ -137,12 +137,12 @@ const MainPreferencesComponent = ({ shops }: Props) => {
           "Parcourez le catalogue et trouvez ce qui vous fait envie!"
       );
       setButtonTextColor(
-        preferences.buttonTextColor ?? buttonColor === buttonColors.white
+        (preferences.buttonTextColor ?? buttonColor === buttonColors.white)
           ? textColorData.light
           : textColorData.dark
       );
       setTextColor(
-        preferences.textColor ?? background === backgroundColors.white
+        (preferences.textColor ?? background === backgroundColors.white)
           ? textColorData.light
           : textColorData.dark
       );
@@ -706,8 +706,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                         background === clr.value
                           ? "dimgray"
                           : clr.value === backgroundColors.white
-                          ? "gainsboro"
-                          : "transparent"
+                            ? "gainsboro"
+                            : "transparent"
                       }`,
                     }}
                     className="transition-all duration-500 ease-in-out 
@@ -749,8 +749,8 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                             buttonColor === clr.value
                               ? "dimgray"
                               : clr.value === buttonColors.white
-                              ? "gainsboro"
-                              : "transparent"
+                                ? "gainsboro"
+                                : "transparent"
                           }`,
                         }}
                         className="transition-all duration-500 ease-in-out 
@@ -819,20 +819,6 @@ const MainPreferencesComponent = ({ shops }: Props) => {
             </div>
           </BorderWrapper>
 
-          {/* buttons */}
-          {!preferences && (
-            <div className="w-full gap-4 flex flex-col transition-all duration-500 ease-in-out">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-                onClick={handleAddNewPrefs}
-              >
-                {loading ? "En cours..." : "Ajouter"}
-              </Button>
-            </div>
-          )}
-
           {/* Footer shop */}
           <BorderWrapper>
             <div
@@ -862,6 +848,20 @@ const MainPreferencesComponent = ({ shops }: Props) => {
               </RadioGroup>
             </div>
           </BorderWrapper>
+
+          {/* buttons */}
+          {!preferences && (
+            <div className="w-full gap-4 flex flex-col transition-all duration-500 ease-in-out">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+                onClick={handleAddNewPrefs}
+              >
+                {loading ? "En cours..." : "Ajouter"}
+              </Button>
+            </div>
+          )}
 
           {/* SUBMIT BTN */}
 

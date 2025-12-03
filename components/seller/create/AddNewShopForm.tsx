@@ -49,8 +49,16 @@ const AddNewShopForm = () => {
     ) => {
       e.preventDefault();
       if (loading) return;
+
       const file = e.dataTransfer.files[0];
+
       if (file && file.type.startsWith("image/")) {
+        // Vérification taille max 2MB
+        if (file.size > 2 * 1024 * 1024) {
+          toast.error("L’image dépasse la taille maximale de 2 MB.");
+          return;
+        }
+
         setFile(file);
       } else {
         toast.error("Merci de déposer une image valide.");
@@ -305,8 +313,20 @@ const AddNewShopForm = () => {
                   accept="image/*"
                   disabled={loading}
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) setLogo(file);
+                    const files = e.target.files;
+                    if (files && files[0]) {
+                      const file = files[0];
+
+                      // Vérifier la taille du logo : max 2MB
+                      if (file.size > 2 * 1024 * 1024) {
+                        toast.error(
+                          "Le logo dépasse la taille maximale de 2 MB."
+                        );
+                        return;
+                      }
+
+                      setLogo(file);
+                    }
                   }}
                 />
                 <div
@@ -341,7 +361,8 @@ const AddNewShopForm = () => {
               </div>
             )}
             <p className="mt-1 text-xs text-muted-foreground">
-              Le logo est obligatoire avant de soumettre.
+              Le logo est obligatoire avant de soumettre. Ne doit pas dépasser 2
+              MB.
             </p>
           </div>
 
@@ -368,8 +389,20 @@ const AddNewShopForm = () => {
                   accept="image/*"
                   disabled={loading}
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) setCover(file);
+                    const files = e.target.files;
+                    if (files && files[0]) {
+                      const file = files[0];
+
+                      // Vérifier la taille du logo : max 2MB
+                      if (file.size > 2 * 1024 * 1024) {
+                        toast.error(
+                          "Le logo dépasse la taille maximale de 2 MB."
+                        );
+                        return;
+                      }
+
+                      setCover(file);
+                    }
                   }}
                 />
                 <div
@@ -404,7 +437,7 @@ const AddNewShopForm = () => {
               </div>
             )}
             <p className="mt-1 text-xs text-muted-foreground">
-              La couverture est optionnelle.
+              La couverture est optionnelle. Ne doit pas dépasser 2 MB.
             </p>
           </div>
         </BorderWrapper>
