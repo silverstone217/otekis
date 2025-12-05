@@ -208,17 +208,6 @@ const PaymentSheetComponent = ({
               borderRadius: preferences.buttonRadius,
             }}
           >
-            <h2 className="uppercase pb-2 border-b text-sm font-bold">
-              Informations User {user ? `(${user?.email})` : "Non connecté"}
-            </h2>
-          </div>
-
-          <div
-            className="w-full grid gap-4 p-4 border-2"
-            style={{
-              borderRadius: preferences.buttonRadius,
-            }}
-          >
             {/* Client Name */}
             <div className="w-full flex flex-col text-sm">
               <label
