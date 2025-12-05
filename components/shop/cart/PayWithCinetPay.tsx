@@ -113,13 +113,15 @@ export function PaiementCinetPay({
     if (!isBuyingGeneralTermsAccepted) {
       toast.error("Vous devez accepter les termes et conditions d'achat.");
       setLoading(false);
-      return;
+      setIsBuying(false);
+      return; // arrête proprement la fonction
     }
 
     if (!isBuyingTermsAccepted) {
       toast.error("Vous devez accepter les conditions de vente.");
       setLoading(false);
-      return;
+      setIsBuying(false);
+      return; // arrête proprement la fonction
     }
 
     const orderItems = ArticlesToBuy.map((item) => ({
