@@ -274,7 +274,7 @@ const PaymentSheetComponent = ({
                   className="w-full border-b-2 border-gray-300 
       focus:border-blue-600 focus:outline-none py-2 pl-16
       transition-colors"
-                  defaultValue={receiverPhone}
+                  value={receiverPhone}
                   onChange={(e) => setReceiverPhone(e.target.value)}
                   required
                   autoCapitalize="none"
@@ -318,7 +318,7 @@ const PaymentSheetComponent = ({
                 placeholder="82, Busu-melo"
                 className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
               transition-colors "
-                defaultValue={receiverAddress}
+                value={receiverAddress}
                 onChange={(e) => setReceiverAddress(e.target.value)}
                 required
                 autoCapitalize="none"
@@ -329,7 +329,7 @@ const PaymentSheetComponent = ({
                   color: preferences.textColor,
                   backgroundColor:
                     luminance === "dark"
-                      ? "rgba(256, 256, 256, 0.3)"
+                      ? "rgba(255, 255, 255, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
               />
@@ -366,9 +366,8 @@ const PaymentSheetComponent = ({
                 placeholder="specifier comment vous livrer ou un mot additionnel"
                 className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
               transition-colors resize-none h-24"
-                defaultValue={description}
+                value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                required
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
@@ -377,7 +376,7 @@ const PaymentSheetComponent = ({
                   color: preferences.textColor,
                   backgroundColor:
                     luminance === "dark"
-                      ? "rgba(256, 256, 256, 0.3)"
+                      ? "rgba(255, 255, 255, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
                 maxLength={400}
