@@ -320,8 +320,8 @@ export function PaiementCinetPay({
           typeof deliveryPrice === "string" ||
           receiverInfo.tel.length !== 9 ||
           !isValidAddress ||
-          !isBuyingTermsAccepted ||
-          !isBuyingGeneralTermsAccepted
+          !isBuyingTermsAccepted
+          // !isBuyingGeneralTermsAccepted
         }
       >
         {loading ? (

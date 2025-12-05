@@ -395,6 +395,18 @@ const PaymentSheetComponent = ({
             </div>
           </div>
 
+          {!isValidAddress && commune !== "" && quartier !== "" && (
+            <div
+              className="w-full grid gap-4 p-4 border-2 text-destructive text-sm"
+              style={{
+                borderRadius: preferences.buttonRadius,
+              }}
+            >
+              L&apos;adresse doit contenir : numéro et l&apos;avenue. Espacé par
+              une virgule.
+            </div>
+          )}
+
           <div
             className="w-full grid gap-4 p-4 border-2"
             style={{
@@ -616,18 +628,6 @@ const PaymentSheetComponent = ({
               </div>
             </div>
           </div>
-
-          {!isValidAddress && commune !== "" && quartier !== "" && (
-            <div
-              className="w-full grid gap-4 p-4 border-2 text-destructive text-sm"
-              style={{
-                borderRadius: preferences.buttonRadius,
-              }}
-            >
-              L&apos;adresse doit contenir : numéro et l&apos;avenue. Espacé par
-              une virgule.
-            </div>
-          )}
 
           {/* Accept all terms */}
           {(user && user.isBuyingGeneralTermsAccepted === false) ||
