@@ -6,7 +6,8 @@ import {
   ProductShop,
   Shop,
 } from "@prisma/client";
-import React, { useEffect, useMemo, useState } from "react";
+
+import React, { useMemo, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -108,17 +109,6 @@ const PaymentSheetComponent = ({
 
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
-
-  // const deliveryPrice = useMemo(() => {
-  //   const nbr = deliveryPriceByDeliveryChoice({
-  //     address: receiverAddress,
-  //     deliveryChoice,
-  //   });
-  //   if (typeof nbr === "string") {
-  //     return nbr;
-  //   }
-  //   return nbr * exchange;
-  // }, [deliveryChoice, receiverAddress, exchange]);
 
   // Fetch delivery price
   const [deliveryPrice, setDeliveryPrice] = useState<
