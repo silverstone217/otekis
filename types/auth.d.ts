@@ -5,34 +5,16 @@ export type roleUserType =
   | "seller"
   | "employee"
   | "other";
-export type User = {
-  id: string;
-  email: string | null;
-  name: string | null;
-  token?: string | null;
-  role: roleUserType;
-  tel: string;
-  address: string;
-  image: string | null;
-  isBanned: boolean;
-  emailVerified: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  isBuyingGeneralTermsAccepted: boolean;
-};
-
-import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface User {
     id: string;
     email: string | null;
     name: string | null;
-    token?: string | null;
+    image: string | null;
     role: roleUserType;
     tel: string;
     address: string;
-    image: string | null;
     isBanned: boolean;
     emailVerified: Date | null;
     createdAt: Date;
@@ -41,34 +23,11 @@ declare module "next-auth" {
   }
 
   interface Session {
-    user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      token?: string | null;
-      role: roleUserType;
-      tel: string;
-      address: string;
-      image: string | null;
-      isBanned: boolean;
-      emailVerified: Date | null;
-      createdAt: Date;
-      updatedAt: Date;
-      isBuyingGeneralTermsAccepted: boolean;
-    };
-    token: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      id: any;
-      sub?: string;
-      email?: string | null;
-      name?: string | null;
-      picture?: string | null;
-      role?: roleUserType;
-      tel?: string;
-      address?: string;
-      emailVerified?: Date | null;
-      createdAt?: Date;
-      updatedAt?: Date;
-    };
+    user: User | null; // ⬅️ Important
+  }
+
+  interface JWT {
+    sub?: string;
+    role?: roleUserType;
   }
 }
