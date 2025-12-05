@@ -84,7 +84,7 @@ export function PaiementCinetPay({
   // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? "https://otekis.vercel.app"
+      ? "https://www.otekis.com"
       : "http://localhost:3000";
 
   const notify_url = `${baseUrl}/api/cinetpay/notify`;
