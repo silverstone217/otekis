@@ -17,6 +17,7 @@ import {
   Product,
   ProductShop,
   Shop,
+  User,
 } from "@prisma/client";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
@@ -53,6 +54,7 @@ type Props = {
   deliveryService: DeliveryCompany[];
   exchangeValue: number;
   cinetPayPercentage: number;
+  user: Omit<User, "password">;
 };
 
 const MainCartComponent = ({
@@ -68,6 +70,7 @@ const MainCartComponent = ({
   deliveryService,
   exchangeValue,
   cinetPayPercentage,
+  user,
 }: Props) => {
   // Création du tableau combiné
   const combinedItems: CombinedItem[] = carts.map((cartItem) => {
@@ -363,6 +366,7 @@ const MainCartComponent = ({
               cinetPayPercentage={cinetPayPercentage}
               isBuying={isBuying}
               setIsBuying={setIsBuying}
+              user={user}
             />
           )}
         </div>

@@ -1,13 +1,14 @@
 "use client";
 import { getUser } from "@/actions/actions";
 import { User } from "@prisma/client";
-// import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 type UserAuthType = Omit<User, "password"> | null;
 
 export const useCurrentUser = () => {
   const [user, setUser] = useState<UserAuthType>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -16,7 +17,7 @@ export const useCurrentUser = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [session?.user]);
 
   return user;
 };

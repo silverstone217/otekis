@@ -125,6 +125,7 @@ const CartShopPage = async (props: Props) => {
         exchangeValue={exchangeValue}
         deliveryService={deliveryService}
         cinetPayPercentage={cinetPayPercentage}
+        user={user}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import {
   Preferences,
   ProductShop,
   Shop,
+  User,
 } from "@prisma/client";
 
 import React, { useMemo, useState } from "react";
@@ -66,6 +67,7 @@ type Props = {
   cinetPayPercentage: number;
   setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
   isBuying: boolean;
+  user: Omit<User, "password">;
 };
 
 const PaymentSheetComponent = ({
@@ -87,9 +89,8 @@ const PaymentSheetComponent = ({
   cinetPayPercentage,
   setIsBuying,
   isBuying,
+  user,
 }: Props) => {
-  const user = useCurrentUser();
-
   const [receiver, setReceiver] = useState(user?.name ?? "");
   const [receiverPhone, setReceiverPhone] = useState(user?.tel ?? "");
   const [receiverAddress, setReceiverAddress] = useState(user?.address ?? "");
@@ -183,7 +184,7 @@ const PaymentSheetComponent = ({
           color: preferences.textColor,
           borderColor: preferences.background,
         }}
-        className="max-h-[100dvh] overflow-x-hidden overflow-y-auto w-full"
+        className="max-h-dvh overflow-x-hidden overflow-y-auto w-full"
       >
         <SheetHeader
           style={{ borderColor: "dimgray" }}
@@ -223,7 +224,7 @@ const PaymentSheetComponent = ({
                 placeholder="John Doe"
                 className="w-full border-b-2 border-gray-300 
                 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors !bg-transparent"
+              transition-colors bg-transparent!"
                 defaultValue={receiver}
                 onChange={(e) => setReceiver(e.target.value)}
                 required
@@ -235,7 +236,7 @@ const PaymentSheetComponent = ({
                   color: preferences.textColor,
                   backgroundColor:
                     luminance === "dark"
-                      ? "rgba(256, 256, 256, 0.3)"
+                      ? "rgba(255, 255, 255, 0.3)"
                       : "rgba(19, 19, 19, 0.3)",
                 }}
               />
