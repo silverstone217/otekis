@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 import AsideNavigationBigScreen from "@/components/admins/AsideNavigationBigScreen";
 import HeaderSmallScreen from "@/components/admins/HeaderSmallScreen";
 import NoUserComponent from "@/components/NoUserComponent";
