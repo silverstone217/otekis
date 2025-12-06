@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getDeliveryMen } from "@/actions/deliverymenActions";
 import { DataTableDeliverymen } from "@/components/admins/delivrery/DeliveryMenMainComponent";
 import React, { Suspense } from "react";
