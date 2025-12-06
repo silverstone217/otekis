@@ -10,10 +10,12 @@ import { Article } from "@prisma/client";
 export const getUser = async () => {
   const session = await auth();
 
-  if (session?.user) {
-    return session.user;
-  }
-  return null;
+  if (!session?.user?.email) return null;
+
+  return await prisma.user.findUnique({
+    where: { email: session.user.email },
+    omit: { password: true },
+  });
 };
 
 // delete products images
