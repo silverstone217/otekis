@@ -8,12 +8,12 @@ import Resend from "next-auth/providers/resend";
 import { prisma } from "./lib/prisma";
 import { roleUserType } from "./types/auth";
 // import Apple from "next-auth/providers/apple";
-import type { Adapter } from "next-auth/adapters";
+// import type { Adapter } from "next-auth/adapters";
 
 const ResendApiKey = process.env.AUTH_RESEND_KEY!;
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(prisma),
   pages: {
     signIn: "/connexion",
     verifyRequest: "/verif-email-sent",
