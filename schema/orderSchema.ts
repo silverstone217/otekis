@@ -18,11 +18,7 @@ export const PaymentStatusEnum = [
   "remboursé",
 ] as const;
 
-export const paymentMethodEnum = [
-  "cinetpay",
-  "mpesa",
-  "cash à la livraison",
-] as const;
+export const paymentMethodEnum = ["cinetpay", "mpesa", "cash", "bank"] as const;
 
 export const OrderCinetPaySchema = z.object({
   totalAmount: z.number().min(0),

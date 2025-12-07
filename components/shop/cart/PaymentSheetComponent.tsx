@@ -6,7 +6,7 @@ import {
   ProductShop,
   Shop,
   User,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 
 import React, { useMemo, useState } from "react";
 import {
@@ -32,6 +32,8 @@ import { SmoothLink } from "@/components/SmoothLink";
 import { luminanceColor } from "@/utils/shopFunctions";
 import SelectZones from "./SelectZone";
 import ChoiceDeliveryService from "./ChoiceDeliveryService";
+import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
+import PaymentWithCash from "./PaymentWithCash";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -68,6 +70,7 @@ type Props = {
   setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
   isBuying: boolean;
   user: Omit<User, "password">;
+  paymentMethod: PaymentMethodOrder;
 };
 
 const PaymentSheetComponent = ({
@@ -90,6 +93,7 @@ const PaymentSheetComponent = ({
   setIsBuying,
   isBuying,
   user,
+  paymentMethod,
 }: Props) => {
   const [receiver, setReceiver] = useState(user?.name ?? "");
   const [receiverPhone, setReceiverPhone] = useState(user?.tel ?? "");
@@ -634,37 +638,73 @@ const PaymentSheetComponent = ({
           ) : null}
 
           {/* payment btn  */}
-          <PaiementCinetPay
-            carts={carts}
-            isUserBanned={isUserBanned}
-            isUserShopBanned={isUserShopBanned}
-            productsShop={productsShop}
-            shop={shop}
-            shopPreferences={preferences}
-            totalPrice={totalPrice}
-            receiverInfo={{
-              name: receiver,
-              address: `${receiverAddress}, ${quartier}, ${commune}`,
-              tel: receiverPhone,
-              description,
-            }}
-            deliveryPrice={
-              deliveryPaymentMethode === "cash" ? 0 : deliveryPrice
-            }
-            deliveryPaymentMethode={deliveryPaymentMethode}
-            ArticlesToBuy={ArticlesToBuy}
-            modalOpen={modalOpen}
-            setModalOpen={setModalOpen}
-            deliveryChoiceId={deliveryChoiceSysteme?.id}
-            currency={currency}
-            setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
-            setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
-            isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
-            isBuyingTermsAccepted={isBuyingTermsAccepted}
-            isBuying={isBuying}
-            setIsBuying={setIsBuying}
-            isValidAddress={isValidAddress}
-          />
+          {paymentMethod === "cinetpay" ? (
+            <PaiementCinetPay
+              carts={carts}
+              isUserBanned={isUserBanned}
+              isUserShopBanned={isUserShopBanned}
+              productsShop={productsShop}
+              shop={shop}
+              shopPreferences={preferences}
+              totalPrice={totalPrice}
+              receiverInfo={{
+                name: receiver,
+                address: `${receiverAddress}, ${quartier}, ${commune}`,
+                tel: receiverPhone,
+                description,
+              }}
+              deliveryPrice={
+                deliveryPaymentMethode === "cash" ? 0 : deliveryPrice
+              }
+              deliveryPaymentMethode={deliveryPaymentMethode}
+              ArticlesToBuy={ArticlesToBuy}
+              modalOpen={modalOpen}
+              setModalOpen={setModalOpen}
+              deliveryChoiceId={deliveryChoiceSysteme?.id}
+              currency={currency}
+              setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
+              setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
+              isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
+              isBuyingTermsAccepted={isBuyingTermsAccepted}
+              isBuying={isBuying}
+              setIsBuying={setIsBuying}
+              isValidAddress={isValidAddress}
+              paymentMethod={paymentMethod}
+            />
+          ) : (
+            <PaymentWithCash
+              carts={carts}
+              isUserBanned={isUserBanned}
+              isUserShopBanned={isUserShopBanned}
+              productsShop={productsShop}
+              shop={shop}
+              shopPreferences={preferences}
+              totalPrice={totalPrice}
+              receiverInfo={{
+                name: receiver,
+                address: `${receiverAddress}, ${quartier}, ${commune}`,
+                tel: receiverPhone,
+                description,
+              }}
+              deliveryPrice={
+                deliveryPaymentMethode === "cash" ? 0 : deliveryPrice
+              }
+              deliveryPaymentMethode={deliveryPaymentMethode}
+              ArticlesToBuy={ArticlesToBuy}
+              modalOpen={modalOpen}
+              setModalOpen={setModalOpen}
+              deliveryChoiceId={deliveryChoiceSysteme?.id}
+              currency={currency}
+              setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
+              setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
+              isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
+              isBuyingTermsAccepted={isBuyingTermsAccepted}
+              isBuying={isBuying}
+              setIsBuying={setIsBuying}
+              isValidAddress={isValidAddress}
+              paymentMethod={paymentMethod}
+            />
+          )}
         </div>
       </SheetContent>
     </Sheet>

@@ -3,7 +3,7 @@ import MainCartComponent from "@/components/shop/cart/MainCartComponent";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/actions/actions";
 import { preferenceDefaults } from "@/utils/preferences";
-import { Article, Preferences, Product } from "@prisma/client";
+
 import React from "react";
 import ShopCartLogin from "@/components/auth/ShopCartLogin";
 import {
@@ -12,6 +12,7 @@ import {
   getCompanyPreference,
   getCurrencySymbol,
 } from "@/actions/companyAction";
+import { Article, Preferences, Product } from "@/lib/generated/prisma/client";
 
 type Props = {
   params: Promise<{
@@ -107,6 +108,7 @@ const CartShopPage = async (props: Props) => {
     : 0;
 
   const deliveryService = await getDeliveryCompanies();
+  const paymentMethod = otekisPrefs?.paymentMethod || "cash";
 
   // console.table(deliveryService);
 
@@ -126,6 +128,7 @@ const CartShopPage = async (props: Props) => {
         deliveryService={deliveryService}
         cinetPayPercentage={cinetPayPercentage}
         user={user}
+        paymentMethod={paymentMethod}
       />
     </div>
   );

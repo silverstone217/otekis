@@ -8,7 +8,12 @@ import {
 } from "@/actions/paimentActions";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { OrderStatusType, PaymentStatusType } from "@/types/orders";
-import { Cart, Preferences, ProductShop, Shop } from "@prisma/client";
+import {
+  Cart,
+  Preferences,
+  ProductShop,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import { CreditCard, Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,6 +27,7 @@ import {
 } from "@/utils/envVariables";
 import { SheetClose } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
+import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
 
 declare global {
   interface Window {
@@ -60,6 +66,7 @@ type Props = {
   setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
   isBuying: boolean;
   isValidAddress: boolean;
+  paymentMethod: PaymentMethodOrder;
 };
 
 export function PaiementCinetPay({
@@ -80,6 +87,7 @@ export function PaiementCinetPay({
   isBuying,
   setIsBuying,
   isValidAddress,
+  paymentMethod,
 }: Props) {
   // const [isCinetPayReady, setIsCinetPayReady] = useState(false);
   const baseUrl =

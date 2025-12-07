@@ -9,7 +9,7 @@ import {
   OrderItem,
   Shop,
   User,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 import { Link, AlertTriangle } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
@@ -159,6 +159,15 @@ const MainViewOrder = ({
             <CancelOrderDialog
               disabled={order.status === "annulé"}
               onConfirm={() => handleChangeOrderStatus("en cours d'annulation")}
+            />
+          )}
+
+          {/* Cancel order */}
+          {!(order.status === "annulé") && (
+            <CancelOrderDialog
+              disabled={order.status === "annulé"}
+              onConfirm={() => handleChangeOrderStatus("annulé")}
+              placeholder="Annulation absolue"
             />
           )}
 
@@ -586,11 +595,13 @@ export default MainViewOrder;
 interface CancelOrderDialogProps {
   onConfirm: () => void;
   disabled?: boolean;
+  placeholder?: string;
 }
 
 export function CancelOrderDialog({
   onConfirm,
   disabled,
+  placeholder,
 }: CancelOrderDialogProps) {
   const [open, setOpen] = useState(false);
 
@@ -598,7 +609,7 @@ export function CancelOrderDialog({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="destructive" disabled={disabled}>
-          Annuler
+          {placeholder || "Annuler"}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-md w-full rounded-lg p-6 bg-white text-gray-900 shadow-lg">
