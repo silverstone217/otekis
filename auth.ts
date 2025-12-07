@@ -13,7 +13,7 @@ import type { Adapter } from "next-auth/adapters";
 const ResendApiKey = process.env.AUTH_RESEND_KEY!;
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma) as unknown as Adapter,
+  adapter: PrismaAdapter(prisma as any),
   pages: {
     signIn: "/connexion",
     verifyRequest: "/verif-email-sent",
