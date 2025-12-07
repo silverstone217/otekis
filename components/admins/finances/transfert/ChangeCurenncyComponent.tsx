@@ -170,18 +170,6 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
           />
         </div>
 
-        {/* transfertCurrency */}
-        {/* <div className="grid w-full max-w-sm items-center gap-3">
-          <Label htmlFor="transfertCurrency">
-            Devises sur le transfert(paiement de boutique)
-          </Label>
-          <SelectCurrencyOption
-            select={transfertCurrency}
-            setSelect={setTransfertCurrency}
-            placehoder="Devise de transfert"
-          />
-        </div> */}
-
         <div className="grid w-full max-w-sm items-center gap-3">
           <Label htmlFor="transfertCurrency">
             {`Taux d'echange du dollars en franc`}
