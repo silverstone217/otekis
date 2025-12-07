@@ -1,10 +1,16 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
 }
 
 // User auth
@@ -535,17 +541,25 @@ model OtekisDelPriceWithdrawalHistory {
   bankNumber   String?
 }
 
+enum PaymentMethodOrder {
+  cinetpay
+  mpesa
+  bank
+  cash
+}
+
 model OtekisPreferences {
   id String @id @default(cuid())
 
-  productCurrency        String @default("USD")
-  transfertCurrency      String @default("USD")
-  withdrawCurrency       String @default("USD")
-  exchangeRate           Float  @default(2300)
-  currency               String @default("USD")
-  cinetPayPercentage     String @default("3") // 3%
-  delayRefund            Int    @default(2)
-  delayTransferableMoney Int    @default(4)
+  productCurrency        String             @default("USD")
+  transfertCurrency      String             @default("USD")
+  withdrawCurrency       String             @default("USD")
+  exchangeRate           Float              @default(2300)
+  currency               String             @default("USD")
+  cinetPayPercentage     String             @default("3") // 3%
+  delayRefund            Int                @default(2)
+  delayTransferableMoney Int                @default(4)
+  paymentMethod          PaymentMethodOrder @default(cinetpay) // cinetpay, mpesa, bank
 
   socialEmail String @default("marketstore.oteki@gmail.com")
   socialPhone String @default("813350706")

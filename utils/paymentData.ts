@@ -11,3 +11,22 @@ export const StatusOrderData = [
   // "en cours de retour",
   // "retourné",
 ];
+
+export const PaymentOrderMethods = [
+  {
+    label: "CinetPay",
+    value: "cinetpay",
+  },
+  {
+    label: "Cash",
+    value: "cash",
+  },
+  {
+    label: "Mpesa",
+    value: "mpesa",
+  },
+  {
+    label: "Carte Bancaire",
+    value: "bank",
+  },
+];

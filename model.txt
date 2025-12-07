@@ -1,0 +1,570 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+// User auth
+model Account {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  type              String?
+  provider          String
+  providerAccountId String   @map("provider_account_id")
+  token_type        String?
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  scope             String?
+  id_token          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String?  @map("user_id")
+  sessionToken String   @unique @map("session_token")
+  accessToken  String?  @map("access_token")
+  expires      DateTime
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model VerificationRequest {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String?
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id                           String    @id @default(cuid())
+  name                         String?
+  email                        String?   @unique
+  emailVerified                DateTime? @map("email_verified")
+  password                     String?
+  image                        String?
+  role                         String    @default("user")
+  tel                          String?
+  address                      String?
+  isBanned                     Boolean   @default(false)
+  isBuyingGeneralTermsAccepted Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  Shop   Shop[]
+  Cart   Cart[]
+  orders Order[]
+}
+
+// Products
+model Product {
+  id          String   @id @default(cuid())
+  uid         String
+  name        String
+  slug        String
+  category    String
+  description String
+  image       String
+  images      String[]
+  price       Float
+  state       String   @default("nouveau")
+  quality     String   @default("original")
+  target      String?
+  type        String?
+  material    String?
+  brand       String?
+  stock       Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Article     Article[]
+  ProductShop ProductShop[]
+}
+
+model Article {
+  id            String  @id @default(cuid())
+  commandNumber String  @default("AI45BC")
+  color         String?
+  size          String?
+  flavor        String?
+  volume        String?
+  stock         Int     @default(0)
+  productId     String
+
+  Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // HistoryOrders HistoryOrder[] // un article a plusieurs historiques
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Cart Cart[]
+}
+
+model HistoryOrder {
+  id            String   @id @default(cuid())
+  articleId     String
+  commandNumber String   @default("AI45BC")
+  stock         Int      @default(0)
+  productName   String   @default("N/A")
+  productId     String   @default("N/A")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model DeletedProduct {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+}
+
+// Shop
+model Shop {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String
+  logo        String
+  cover       String?
+  category    String
+
+  percentage   Int    @default(5)
+  ajout        String @default("self")
+  paymentPhone String @default("815555555")
+  paymentName  String @default("N/A")
+
+  isBanned              Boolean  @default(false)
+  isPublished           Boolean  @default(true)
+  isSellerTermsAccepted Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  Contact Contact?
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ProductShop ProductShop[]
+  // new prefs
+  Preferences Preferences?
+
+  // ORDERS
+  orders Order[]
+
+  // benefit
+  benefit           Float               @default(0)
+  benefitCDF        Float               @default(0)
+  shopProfitWaited  ShopProfitWaited[]
+  withdrawalHistory WithdrawalHistory[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  shopId    String   @unique
+  Shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  email     String
+  phone     String
+  facebook  String?
+  twitter   String?
+  instagram String?
+  pinterest String?
+  youtube   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductShop {
+  id            String   @id @default(cuid())
+  productId     String
+  shopId        String
+  Product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  percentage    Int
+  price         Float
+  promotion     Int?
+  promotionName String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Cart Cart[]
+
+  @@unique([productId, shopId])
+}
+
+model Preferences {
+  id              String @id @default(cuid())
+  shopId          String @unique
+  background      String @default("#f7fafc")
+  textColor       String @default("#000000")
+  buttonColor     String @default("#000000")
+  buttonTextColor String @default("#ffffff")
+  buttonRadius    String @default("4px")
+  hero            String @default("cover")
+  fontFamily      String @default("Lato")
+  title           String @default("Bienvenue dans Ma boutique")
+  description     String @default("Parcourez le catalogue et trouvez ce qui vous fait envie!")
+  logo            String @default("name")
+  menuIcon        String @default("0")
+  cartIcon        String @default("0")
+
+  Header          String  @default("0")
+  Hero            String  @default("0")
+  Category        String  @default("0")
+  Popular         String  @default("0")
+  Footer          String  @default("0")
+  // template desc-1
+  positionText    String  @default("center") // "center" / "top" / "hidden"
+  showDescription Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+// Cart
+model Cart {
+  id            String      @id @default(cuid())
+  userId        String
+  productShopId String
+  articleId     String
+  quantity      Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productShop   ProductShop @relation(fields: [productShopId], references: [id], onDelete: Cascade)
+  article       Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// Orders
+model Order {
+  id          String @id
+  clientId    String
+  shopId      String
+  status      String @default("en cours de traitement")
+  totalAmount Float
+
+  ValidationCode      String?
+  ShipmentNumber      String?
+  paymentRef          String? // reference du paiement
+  paymentRefRefund    String? // reference du remboursement
+  paymentMethod       String  @default("cinetpay")
+  paymentMethodRefund String  @default("mpesa")
+  paymentStatus       String  @default("en attente de paiement")
+  currency            String  @default("USD")
+  exchange            Float
+
+  receiverAddress String
+  receiverTel     String
+  receiverName    String
+
+  refundPhoneNumber  String?
+  refundReceiverName String?
+  description        String?
+  deliveryPrice      Float   @default(0)
+
+  // isBuyingTermsAccepted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  orderItems    OrderItem[]
+  deliveryOrder DeliveryOrder?
+
+  shopProfitWaited   ShopProfitWaited?
+  otekisProfitWaited OtekisProfitWaited?
+}
+
+// Order item
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  articleId String
+  quantity  Float
+  price     Float
+  discount  Float?
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// Factures
+model Facture {
+  id String @id @default(cuid())
+
+  paymentMethod      String @default("cinetpay")
+  status             String @default("en attente")
+  PaymentRef         String
+  orderId            String
+  type               String @default("paiement") //remboursement
+  currency           String @default("USD")
+  cinetPayPercentage String
+  exchange           Float
+
+  totalAmount       Float
+  deliveryPrice     Float   @default(0)
+  address           String?
+  refundPhoneNumber String?
+  TVA               Float   @default(15)
+
+  paymentDate DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  productFactures ProductFacture[]
+}
+
+// Product facture table
+model ProductFacture {
+  id          String   @id @default(cuid())
+  factureId   String
+  productName String
+  productInfo String?
+  quantity    Int
+  price       Float
+  currency    String   @default("USD")
+  exchange    Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  facture     Facture  @relation(fields: [factureId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryOrder {
+  id     String @id @default(cuid())
+  status String @default("en attente de livraison")
+
+  orderId           String  @unique
+  deliveryId        String?
+  deliveryCompanyId String?
+
+  deliveryDate  DateTime?
+  deliveryPrice Float     @default(0)
+  currency      String    @default("USD")
+  exchange      Float
+  percentage    String    @default("0")
+
+  clientId        String
+  deliveryAddress String
+  receiverTel     String
+  receiverName    String
+  description     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  deliveryAgent   DeliveryAgent?   @relation(fields: [deliveryId], references: [id])
+  deliveryCompany DeliveryCompany? @relation(fields: [deliveryCompanyId], references: [id])
+}
+
+model DeliveryAgent {
+  id      String  @id @default(cuid())
+  name    String
+  email   String?
+  phone   String
+  address String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveryOrder DeliveryOrder[]
+}
+
+enum PaymentMethod {
+  mobile_money
+  cash
+}
+
+model DeliveryCompany {
+  id          String  @id @default(cuid())
+  name        String
+  email       String?
+  phone       String
+  address     String?
+  logo        String?
+  website     String?
+  description String?
+
+  isAvailable        Boolean       @default(true)
+  validationPossible Boolean       @default(false)
+  paymentMethod      PaymentMethod @default(mobile_money) // cash 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveryOrder DeliveryOrder[]
+}
+
+model FactureDeliverOrder {
+  id         String @id @default(cuid())
+  amount     Float
+  currency   String @default("USD")
+  exchange   Float
+  percentage String
+
+  deliverBy       String
+  receiverAddress String
+  receiverTel     String
+  receiverName    String
+
+  factureId String
+  orderId   String
+
+  createdAt DateTime @default(now())
+}
+
+// Argent tanpom de la boutique
+model ShopProfitWaited {
+  id          String  @id @default(cuid())
+  shopId      String
+  amount      Float
+  currency    String  @default("USD")
+  exchange    Float
+  orderId     String  @unique
+  isProcessed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  shop  Shop  @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model OtekisProfitWaited {
+  id            String  @id @default(cuid())
+  amount        Float
+  benefit       Float   @default(0)
+  currency      String  @default("USD")
+  exchange      Float
+  deliveryPrice Float
+  orderId       String  @unique
+  isProcessed   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model WithdrawalHistory {
+  id           String   @id @default(cuid())
+  shopId       String
+  amount       Float
+  currency     String   @default("USD")
+  exchange     Float
+  date         DateTime @default(now())
+  status       String   @default("non-traité") // non-traité, traité, annulé
+  paymentPhone String
+  paymentName  String
+  transfertID  String
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model OtekisBenefitAmount {
+  id               String   @id @default(cuid())
+  amount           Float    @default(0)
+  amountCDF        Float    @default(0)
+  benefit          Float    @default(0)
+  benefitCDF       Float    @default(0)
+  deliveryPrice    Float    @default(0)
+  deliveryPriceCDF Float    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model OtekisWithdrawalHistory {
+  id           String   @id @default(cuid())
+  amount       Float
+  currency     String   @default("USD")
+  exchange     Float
+  date         DateTime @default(now())
+  status       String   @default("non-traité") // non-traité, traité, annulé
+  paymentPhone String?
+  paymentName  String?
+  transfertID  String?
+  bankNumber   String?
+}
+
+model OtekisDelPriceWithdrawalHistory {
+  id           String   @id @default(cuid())
+  amount       Float
+  currency     String   @default("USD")
+  exchange     Float
+  date         DateTime @default(now())
+  status       String   @default("non-traité") // non-traité, traité, annulé
+  paymentPhone String?
+  paymentName  String?
+  transfertID  String?
+  bankNumber   String?
+}
+
+enum PaymentMethodOrder {
+  cinetpay
+  mpesa
+  bank
+  cash
+}
+
+model OtekisPreferences {
+  id String @id @default(cuid())
+
+  productCurrency        String             @default("USD")
+  transfertCurrency      String             @default("USD")
+  withdrawCurrency       String             @default("USD")
+  exchangeRate           Float              @default(2300)
+  currency               String             @default("USD")
+  cinetPayPercentage     String             @default("3") // 3%
+  delayRefund            Int                @default(2)
+  delayTransferableMoney Int                @default(4)
+  paymentMethod          PaymentMethodOrder @default(cinetpay) // cinetpay, mpesa, bank
+
+  socialEmail String @default("marketstore.oteki@gmail.com")
+  socialPhone String @default("813350706")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TestCronJob {
+  id        String   @id @default(cuid())
+  isWorking Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

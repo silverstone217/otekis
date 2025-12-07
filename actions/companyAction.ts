@@ -66,6 +66,7 @@ type ChangeCurrencyParams = {
   cinetPayPercentage: number;
   delayTransferableMoney: number;
   delayRefund: number;
+  paymentMethod: "cinetpay" | "cash" | "mpesa" | "bank";
 };
 export const changeCurrencies = async ({
   productCurrency,
@@ -74,6 +75,7 @@ export const changeCurrencies = async ({
   cinetPayPercentage,
   delayRefund,
   delayTransferableMoney,
+  paymentMethod,
 }: ChangeCurrencyParams) => {
   const user = await getUser();
   const isPermited = user ? PERMITED_ROLES.includes(user?.role) : false;
@@ -95,6 +97,7 @@ export const changeCurrencies = async ({
       cinetPayPercentage: cinetPayPercentage.toString(),
       delayRefund,
       delayTransferableMoney,
+      paymentMethod: paymentMethod,
     },
   });
 

@@ -1,5 +1,4 @@
 "use client";
-import { OtekisPreferences } from "@prisma/client";
 import React, { useMemo, useState } from "react";
 import {
   Card,
@@ -25,6 +24,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { isEmptyString, returnFormatedMoney } from "@/utils/functions";
+import { OtekisPreferences } from "@/lib/generated/prisma/client";
+import { PaymentOrderMethods } from "@/utils/paymentData";
 
 const CURRENCIES = ["USD", "CDF"];
 
@@ -56,6 +57,10 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
     companyPrefs?.delayTransferableMoney.toString() || ""
   );
 
+  const [paymentMethod, setPaymentMethod] = useState(
+    companyPrefs?.paymentMethod || "cinetpay"
+  );
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -67,7 +72,8 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
       exchangeRate === companyPrefs.exchangeRate.toString() &&
       cinetPayPercentage === companyPrefs.cinetPayPercentage &&
       Number(delayRefund) === companyPrefs.delayRefund &&
-      Number(delayTransferableMoney) === companyPrefs.delayTransferableMoney
+      Number(delayTransferableMoney) === companyPrefs.delayTransferableMoney &&
+      paymentMethod === companyPrefs.paymentMethod
     )
       return true;
 
@@ -76,7 +82,8 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
       isEmptyString(cinetPayPercentage) ||
       isEmptyString(productCurrency) ||
       isEmptyString(delayRefund) ||
-      isEmptyString(delayTransferableMoney)
+      isEmptyString(delayTransferableMoney) ||
+      isEmptyString(paymentMethod)
     )
       return true;
     return false;
@@ -88,6 +95,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
     cinetPayPercentage,
     delayTransferableMoney,
     delayRefund,
+    paymentMethod,
   ]);
 
   const handleChangeCurrency = async () => {
@@ -119,6 +127,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
         cinetPayPercentage: cinetPayToNumber,
         delayRefund: delayRefundToNumber,
         delayTransferableMoney: delayTransferableMoneyToNumber,
+        paymentMethod,
       };
 
       const result = await changeCurrencies(formData);
@@ -215,7 +224,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
         {/* delay tranferable money */}
         <div className="grid w-full max-w-sm items-center gap-3">
           <Label htmlFor="transfertCurrency">
-            {`delai d'attente d'argent sur CinetPay`}
+            {`Delai d'attente d'argent sur CinetPay`}
           </Label>
           <Input
             type="number"
@@ -225,7 +234,38 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
             max={7}
           />
         </div>
+
+        {/* PaymentOrderMethods */}
+
+        <div className="grid w-full max-w-sm items-center gap-3">
+          <Label htmlFor="transfertCurrency">
+            {`Méthode de paiement par défaut `} {paymentMethod}
+          </Label>
+          <div>
+            {PaymentOrderMethods.map((method) => {
+              return (
+                <div key={method.value} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id={method.value}
+                    name="paymentMethod"
+                    value={method.value}
+                    checked={paymentMethod === method.value}
+                    onChange={() =>
+                      setPaymentMethod(
+                        method.value as "cinetpay" | "cash" | "mpesa" | "bank"
+                      )
+                    }
+                  />
+                  <label htmlFor={method.value}>{method.label}</label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </CardContent>
+
+      {/* FOOTER */}
       <CardFooter className="flex items-center justify-start gap-4 flex-wrap">
         <Button disabled={isButtonDisabled} onClick={handleChangeCurrency}>
           {loading ? (
