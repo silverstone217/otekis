@@ -29,7 +29,7 @@ import {
   Settings2,
   Store,
 } from "lucide-react";
-import { ProductShop, Shop } from "@prisma/client";
+import { ProductShop, Shop } from "@/lib/generated/prisma/client";
 import { banishUser, changeUserRole } from "@/utils/userFunction";
 import Link from "next/link";
 import { returnRoleWith } from "@/utils/functions";

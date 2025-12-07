@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Grid2x2, PrinterCheck, BetweenHorizontalEnd, X } from "lucide-react";
 import { AllProductsTypes, CategoriesData } from "@/utils/data";
-import { Product } from "@prisma/client";
+import { Product } from "@/lib/generated/prisma/client";
 import { returnDataValue } from "@/utils/functions";
 import { PrintProductByCatOrTypes } from "@/actions/printActions";
 import { capitalizeText } from "@/utils/shopFunctions";

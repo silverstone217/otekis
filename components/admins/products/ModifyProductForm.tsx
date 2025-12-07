@@ -17,7 +17,7 @@ import {
   TypeClothesData,
 } from "@/utils/data";
 import { isEmptyString, returnDataValue } from "@/utils/functions";
-import { Product } from "@prisma/client";
+import { Product } from "@/lib/generated/prisma/client";
 import {
   deleteObject,
   getDownloadURL,

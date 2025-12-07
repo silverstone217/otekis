@@ -42,7 +42,7 @@ import {
 import { isEmptyString } from "@/utils/functions";
 import { toast } from "sonner";
 import Link from "next/link";
-import { DeliveryCompany } from "@prisma/client";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import {
   AddDeliveryCompany,
   DeleteThisCompany,

@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Truck } from "lucide-react";
-import { DeliveryCompany } from "@prisma/client";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import {
   addNewCompany,
   deleteCompanyById,

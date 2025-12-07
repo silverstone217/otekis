@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Article } from "@prisma/client";
+import { Article } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import Image from "next/image";

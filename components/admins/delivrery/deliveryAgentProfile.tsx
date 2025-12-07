@@ -25,7 +25,7 @@ import {
   Calendar,
   Mail,
 } from "lucide-react";
-import { DeliveryAgent, DeliveryOrder } from "@prisma/client";
+import { DeliveryAgent, DeliveryOrder } from "@/lib/generated/prisma/client";
 import { DeleteThisAgent, ModifyDeliveryAgent } from "./deliveryAgentActions";
 import { useState, useMemo } from "react";
 import {
@@ -220,8 +220,8 @@ export function DeliveryAgentProfile({ agent }: DeliveryAgentProfileProps) {
                             order.status === "livré"
                               ? "default"
                               : order.status === "en cours de livraison"
-                              ? "secondary"
-                              : "outline"
+                                ? "secondary"
+                                : "outline"
                           }
                           className="capitalize"
                         >

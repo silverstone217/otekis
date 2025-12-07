@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Preferences } from "@prisma/client";
+import { Preferences } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button"; // shadcn button
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { SiApple } from "react-icons/si";

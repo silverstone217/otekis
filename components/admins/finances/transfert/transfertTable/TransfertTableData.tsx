@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
-import { Shop, WithdrawalHistory } from "@prisma/client";
+import { Shop, WithdrawalHistory } from "@/lib/generated/prisma/client";
 import PrintWholeTransfertTable from "./PrintWholeTransfertTable";
 import { toast } from "sonner";
 import { FaSpinner } from "react-icons/fa";

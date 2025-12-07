@@ -1,4 +1,4 @@
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import React, { ReactNode } from "react";
 import ShopHeader from "../third/ShopHeader";

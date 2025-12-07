@@ -23,7 +23,7 @@ import { UserAvatar } from "@/components/home/Header";
 import { toast } from "sonner";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { ShopHeaderType } from "../first/ShopHeader";
 

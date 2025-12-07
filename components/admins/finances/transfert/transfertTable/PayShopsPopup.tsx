@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { DownloadCloud, BanknoteArrowDown } from "lucide-react";
 import ShopsTableToPay from "./ShopsTableToPay";
-import { WithdrawalHistory } from "@prisma/client";
+import { WithdrawalHistory } from "@/lib/generated/prisma/client";
 import ShopsTableToPrintExcel from "./ShopsTableToPrintExcel";
 
 type ShopItem = {

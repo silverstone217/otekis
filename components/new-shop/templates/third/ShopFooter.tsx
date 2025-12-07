@@ -2,7 +2,7 @@
 import { CategoriesData } from "@/utils/data";
 import { returnDataValue } from "@/utils/functions";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
-import { Shop, Preferences, Contact } from "@prisma/client";
+import { Shop, Preferences, Contact } from "@/lib/generated/prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";

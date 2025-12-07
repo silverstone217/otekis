@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Loader, Trash } from "lucide-react";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";

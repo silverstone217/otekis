@@ -2,7 +2,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Preferences, Product, ProductShop, Shop } from "@prisma/client";
+import {
+  Preferences,
+  Product,
+  ProductShop,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import {

@@ -42,7 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PaymentStatusEnum } from "@/schema/orderSchema";
-import { DeliveryCompany } from "@prisma/client";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import { capitalizeText } from "@/utils/shopFunctions";
 
 type OrderStatus =

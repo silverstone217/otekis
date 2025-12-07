@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { OtekisWithdrawalHistory } from "@prisma/client";
+import { OtekisWithdrawalHistory } from "@/lib/generated/prisma/client";
 import { CircleCheck, CircleX, Ellipsis } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

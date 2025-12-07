@@ -1,6 +1,11 @@
 "use client";
 import React from "react";
-import { Preferences, Product, ProductShop, Shop } from "@prisma/client";
+import {
+  Preferences,
+  Product,
+  ProductShop,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 
 export type ShopHeroType = {

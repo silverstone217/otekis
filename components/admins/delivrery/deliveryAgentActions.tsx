@@ -25,7 +25,7 @@ import {
   modifyAgentType,
   newAgentType,
 } from "@/actions/deliverymenActions";
-import { DeliveryAgent } from "@prisma/client";
+import { DeliveryAgent } from "@/lib/generated/prisma/client";
 
 export type DeliveryManStats = {
   id: string;

@@ -22,7 +22,7 @@ import {
 } from "@/actions/transfertAction";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { WithdrawalHistory } from "@prisma/client";
+import { WithdrawalHistory } from "@/lib/generated/prisma/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { returnFormatedMoney } from "@/utils/functions";
@@ -325,8 +325,8 @@ const ShopsTableToPrintExcel = ({ allWidithdraw, currency }: Props) => {
                           withdraw.status === "annulé"
                             ? "destructive"
                             : withdraw.status === "non-traité"
-                            ? "outline"
-                            : "default"
+                              ? "outline"
+                              : "default"
                         }
                       >
                         {withdraw.status}

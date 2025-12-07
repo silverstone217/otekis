@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import { Article } from "@prisma/client";
+import { Article } from "@/lib/generated/prisma/client";
 import { Input } from "@/components/ui/input";
 import {
   Select,

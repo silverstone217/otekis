@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { Preferences, Product, ProductShop, Shop } from "@prisma/client";
+import {
+  Preferences,
+  Product,
+  ProductShop,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import coverImg from "@/public/images/cover1.jpg";
 import coverImg2 from "@/public/images/cosmetic_bg.jpg";

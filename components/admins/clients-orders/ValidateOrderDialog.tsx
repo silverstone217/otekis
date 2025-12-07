@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { OrderWithPropsType } from "./MainViewOrder";
-import { DeliveryCompany } from "@prisma/client";
+import { DeliveryCompany } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

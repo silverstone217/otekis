@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@prisma/client";
+import { User } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import {
   ArrowUpDown,

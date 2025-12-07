@@ -16,7 +16,7 @@ import { deleteObject, ref } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import { toast } from "sonner";
 import { ProductWithArticle } from "@/types/data";
-import { Article } from "@prisma/client";
+import { Article } from "@/lib/generated/prisma/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -79,8 +79,8 @@ const DeleteProductByStock = ({ products }: Props) => {
           order === "inferieur"
             ? prod.stock < stock
             : order === "inferieur-egal"
-            ? prod.stock <= stock
-            : prod.stock === stock
+              ? prod.stock <= stock
+              : prod.stock === stock
         );
 
       // console.log({ productsToDelete });

@@ -4,7 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
-import { Product, ProductShop, Shop, Preferences } from "@prisma/client";
+import {
+  Product,
+  ProductShop,
+  Shop,
+  Preferences,
+} from "@/lib/generated/prisma/client";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import {
   applyPromotionOnProfit,

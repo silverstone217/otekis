@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { returnDataValue } from "@/utils/functions";
 import { CategoriesData } from "@/utils/data";
 import { Printer } from "lucide-react";

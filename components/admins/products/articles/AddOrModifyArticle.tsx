@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ColorsData } from "@/utils/dataAdd";
-import { Article, Product } from "@prisma/client";
+import { Article, Product } from "@/lib/generated/prisma/client";
 import { ChevronDown, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
