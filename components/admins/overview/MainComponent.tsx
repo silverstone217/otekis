@@ -11,8 +11,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { PieChart, Pie, Cell } from "recharts";
-import { TrendingUp, ShoppingBag, DollarSign, Users } from "lucide-react";
+import {
+  TrendingUp,
+  ShoppingBag,
+  DollarSign,
+  Users,
+  Store,
+  ArrowRight,
+  Clock,
+} from "lucide-react";
 import { ProductsByCategoryType } from "@/actions/adminsActions";
+import { capitalizeText } from "@/utils/shopFunctions";
 
 const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
 
@@ -35,6 +44,21 @@ interface OverViewProps {
     name: string;
     sales: number;
   }[];
+
+  total_shopsPerMonths: {
+    total: number;
+    change: string;
+  };
+
+  total_shops: {
+    total: number;
+    lateset: {
+      id: string;
+      name: string;
+      createdAt: string;
+      ownerId: string;
+    }[];
+  };
 }
 
 export default function OverviewMainComponent({
@@ -44,6 +68,8 @@ export default function OverviewMainComponent({
   total_users,
   total_product,
   sales_Week,
+  total_shopsPerMonths,
+  total_shops,
 }: OverViewProps) {
   const totals = total_product.reduce((arr, prod) => {
     return arr + prod.value;
@@ -82,6 +108,83 @@ export default function OverviewMainComponent({
           icon={<Users />}
           change={total_users.change}
         />
+      </div>
+
+      {/* shops */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* new shops */}
+        <StatCard
+          title="Nouveaux magasins ce mois"
+          value={total_shopsPerMonths.total.toString()}
+          icon={<Store />}
+          change={total_shopsPerMonths.change}
+        />
+
+        {/* total shops & latest shops */}
+        <div className="grid gap-6">
+          {/* Total shops */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Magasins total
+              </CardTitle>
+              <Store className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {total_shops.total.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Magasins enregistrés sur la plateforme
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Latest shops */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">
+                  Derniers magasins créés
+                </CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              {total_shops.lateset.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Aucun magasin récent.
+                </p>
+              )}
+
+              <ul className="space-y-3">
+                {total_shops.lateset.slice(0, 5).map((shop) => (
+                  <li
+                    key={shop.id}
+                    className="flex items-center justify-between rounded-lg 
+                    border p-3 hover:bg-muted/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Store className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium text-sm">
+                          {capitalizeText(shop.name)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Créé le{" "}
+                          {new Date(shop.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Charts */}

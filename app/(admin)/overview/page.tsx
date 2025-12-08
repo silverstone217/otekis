@@ -1,5 +1,3 @@
-// import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
-// import NoUserComponent from "@/components/NoUserComponent";
 import { getUser } from "@/actions/actions";
 import React from "react";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
@@ -9,6 +7,8 @@ import {
   get_today_sales,
   get_total_product,
   get_total_sales,
+  get_total_shops,
+  get_total_shops_Per_month,
   get_total_users,
   get_weekly_benefits,
   ProductsByCategoryType,
@@ -33,6 +33,9 @@ const OverviewPage = async () => {
   const total_product = (await get_total_product()) as ProductsByCategoryType[];
   const sales_Week = await get_sales_week();
 
+  const totalsShopThisMonth = await get_total_shops_Per_month();
+  const totalShopsAndNew = await get_total_shops();
+
   return (
     <div>
       <OverviewMainComponent
@@ -42,6 +45,8 @@ const OverviewPage = async () => {
         total_users={total_users.total_users}
         total_product={total_product}
         sales_Week={sales_Week}
+        total_shops={totalShopsAndNew.total_shops}
+        total_shopsPerMonths={totalsShopThisMonth.total_shops}
       />
     </div>
   );

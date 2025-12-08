@@ -475,3 +475,93 @@ export const get_sales_week = async () => {
 
   return salesData;
 };
+
+//  gets number of shops
+export const get_total_shops_Per_month = async () => {
+  const user = await getUser();
+  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+
+  if (!isPermit) {
+    return {
+      total_shops: {
+        total: 0,
+        change: "0% ce mois",
+      },
+    };
+  }
+
+  const now = new Date();
+
+  // 📌 Ce mois
+  const startThisMonth = startOfMonth(now);
+  const endThisMonth = endOfMonth(now);
+
+  const shopsThisMonth = await prisma.shop.count({
+    where: {
+      createdAt: { gte: startThisMonth, lte: endThisMonth },
+    },
+  });
+
+  // 📌 Mois précédent
+  const lastMonth = subMonths(now, 1);
+  const startLastMonth = startOfMonth(lastMonth);
+  const endLastMonth = endOfMonth(lastMonth);
+
+  const shopsLastMonth = await prisma.shop.count({
+    where: {
+      createdAt: { gte: startLastMonth, lte: endLastMonth },
+    },
+  });
+
+  // 📌 Variation   %
+  let percentChange = 0;
+  if (shopsLastMonth === 0 && shopsThisMonth > 0) {
+    percentChange = 100;
+  } else if (shopsLastMonth > 0) {
+    percentChange = ((shopsThisMonth - shopsLastMonth) / shopsLastMonth) * 100;
+  }
+
+  const change =
+    (percentChange >= 0 ? "+" : "") + `${percentChange.toFixed(0)}% ce mois`;
+
+  return {
+    total_shops: {
+      total: shopsThisMonth,
+      change,
+    },
+  };
+};
+
+// GET TOTAL SHOPS
+export const get_total_shops = async () => {
+  const user = await getUser();
+  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+
+  if (!isPermit) {
+    return {
+      total_shops: {
+        total: 0,
+        lateset: [],
+      },
+    };
+  }
+  const shops = await prisma.shop.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const totalShops = shops.map((shop) => ({
+    id: shop.id,
+    name: shop.name,
+    createdAt: format(shop.createdAt, "dd MMM yyyy", { locale: fr }),
+    ownerId: shop.userId,
+  }));
+
+  return {
+    total_shops: {
+      total: totalShops.length,
+      lateset: totalShops.slice(0, 5),
+    },
+  };
+};
