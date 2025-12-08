@@ -165,7 +165,7 @@ export async function changeOrderStatus(orderId: string, status: string) {
     });
 
     // Si le status est "en cours d'annulation", mettre à jour la livraison et supprimer le profit en attente
-    if (status === "en cours d'annulation") {
+    if (status === "en cours d'annulation" || status === "annulé") {
       await prisma.deliveryOrder.updateMany({
         where: { orderId: order.id },
         data: { status },
@@ -191,6 +191,25 @@ export async function changeOrderStatus(orderId: string, status: string) {
         await prisma.otekisProfitWaited.delete({
           where: { id: otekisProfitWaitedExist.id },
         });
+      }
+
+      // Return the order items to stock
+      if (status === "annulé") {
+        const orderItems = await prisma.orderItem.findMany({
+          where: { orderId: order.id },
+        });
+
+        for (const item of orderItems) {
+          const article = await prisma.article.findUnique({
+            where: { id: item.articleId },
+          });
+          if (article) {
+            await prisma.article.update({
+              where: { id: article.id },
+              data: { stock: article.stock + item.quantity },
+            });
+          }
+        }
       }
     }
 
