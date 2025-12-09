@@ -99,13 +99,13 @@ Promise<Metadata> {
   return {
     title:
       capitalizeText(shop.name) +
-      " " +
+      " - " +
       capitalizeText(product?.name ?? "Produit"),
     description: capitalizeText(product?.description ?? ""),
     openGraph: {
       title:
         capitalizeText(shop.name) +
-        " " +
+        " - " +
         capitalizeText(product?.name ?? "Produit"),
       description: capitalizeText(product?.description ?? ""),
       images: [product?.image ?? shop.logo],
