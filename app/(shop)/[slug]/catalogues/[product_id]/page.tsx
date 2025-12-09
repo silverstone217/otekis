@@ -101,15 +101,18 @@ Promise<Metadata> {
       capitalizeText(shop.name) +
       " " +
       capitalizeText(product?.name ?? "Produit"),
-    description: capitalizeText(shop.description),
+    description: capitalizeText(product?.description ?? ""),
     openGraph: {
-      title: capitalizeText(shop.name),
-      description: capitalizeText(shop.description),
-      images: [shop.logo],
+      title:
+        capitalizeText(shop.name) +
+        " " +
+        capitalizeText(product?.name ?? "Produit"),
+      description: capitalizeText(product?.description ?? ""),
+      images: [product?.image ?? shop.logo],
       type: "website",
     },
     icons: {
-      icon: shop.logo,
+      icon: product?.image ?? shop.logo,
     },
   };
 }
