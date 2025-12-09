@@ -16,7 +16,7 @@ import {
   DollarSign,
   ShoppingBasket,
 } from "lucide-react";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { ShopDefaultSelect } from "../SelectWIthOptionsDefaultShop";
 import useSelectDefaultShop from "../SelectDefaultShop";
 import { useEffect, useState } from "react";

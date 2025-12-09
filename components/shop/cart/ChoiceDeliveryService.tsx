@@ -8,7 +8,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Truck, User } from "lucide-react";
-import { DeliveryCompany, PaymentMethod, Preferences } from "@prisma/client";
+import {
+  DeliveryCompany,
+  PaymentMethod,
+  Preferences,
+} from "@/lib/generated/prisma/client";
 import { DELIVERS_API_KEY } from "@/utils/envVariables";
 import {
   isEmptyString,

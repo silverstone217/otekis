@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { CategoriesData } from "@/utils/data";
 import { returnDataValue } from "@/utils/functions";
 import useSelectDefaultShop from "./SelectDefaultShop";

@@ -1,5 +1,5 @@
 "use client";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { useEffect, useState } from "react";
 
 type Props = {

@@ -1,5 +1,5 @@
 "use client";
-import { Contact, Shop } from "@prisma/client";
+import { Contact, Shop } from "@/lib/generated/prisma/client";
 import React, { useEffect, useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
 import { useRouter } from "next/navigation";

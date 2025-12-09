@@ -5,7 +5,7 @@ import {
   preferenceDefaults,
   textColorData,
 } from "@/utils/preferences";
-import { Preferences } from "@prisma/client";
+import { Preferences } from "@/lib/generated/prisma/client";
 import { redirect } from "next/navigation";
 import React, { ReactNode, Suspense } from "react";
 import { cn } from "@/lib/utils";

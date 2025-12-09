@@ -1,5 +1,5 @@
 "use client";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
 import {

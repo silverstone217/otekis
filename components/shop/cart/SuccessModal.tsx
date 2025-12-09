@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 
 interface SuccessModalProps {
   open: boolean;

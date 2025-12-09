@@ -1,5 +1,5 @@
 "use client";
-import { DeliveryCompany, Preferences } from "@prisma/client";
+import { DeliveryCompany, Preferences } from "@/lib/generated/prisma/client";
 import React from "react";
 import {
   Select,

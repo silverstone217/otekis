@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { FontsList } from "@/utils/fontsData";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Preferences, Product } from "@prisma/client";
+import { Preferences, Product } from "@/lib/generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -138,7 +138,9 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
     // );
     function isOutOfStock(product: ProductsTypeWithArticles) {
       if (!product.Article || product.Article.length === 0) return true;
-      return product.Article.every((a) => a.stock == null || a.stock <= 0);
+      return product.Article.every(
+        (a: { stock: number | null }) => a.stock == null || a.stock <= 0
+      );
     }
 
     const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>

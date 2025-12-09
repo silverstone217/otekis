@@ -102,7 +102,9 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
     // );
     function isOutOfStock(product: ProductsTypeWithArticles) {
       if (!product.Article || product.Article.length === 0) return true;
-      return product.Article.every((a) => a.stock == null || a.stock <= 0);
+      return product.Article.every(
+        (a: { stock: number | null }) => a.stock == null || a.stock <= 0
+      );
     }
 
     const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>

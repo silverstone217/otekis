@@ -9,7 +9,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Store } from "lucide-react";

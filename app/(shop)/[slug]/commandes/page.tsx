@@ -5,7 +5,7 @@ import MainOrders from "@/components/shop/orders/MainOrders";
 import { prisma } from "@/lib/prisma";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Order, OrderItem, Preferences } from "@prisma/client";
+import { Order, OrderItem, Preferences } from "@/lib/generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";

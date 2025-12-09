@@ -10,6 +10,14 @@ import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 import React, { ReactNode } from "react";
 import { prisma } from "@/lib/prisma";
 
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
+
 const PERMITED_ROLES = ["admin", "super_admin", "employee"];
 
 const getCount = async (status: string) => {

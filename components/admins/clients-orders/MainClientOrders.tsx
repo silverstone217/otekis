@@ -37,7 +37,7 @@ import {
 import { returnFormatedMoney } from "@/utils/functions";
 
 import { toast } from "sonner";
-import { Order, OrderItem } from "@prisma/client";
+import { Order, OrderItem } from "@/lib/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
