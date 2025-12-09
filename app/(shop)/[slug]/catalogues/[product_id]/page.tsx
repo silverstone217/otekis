@@ -21,7 +21,7 @@ import {
 } from "@/utils/functions";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Article, Preferences } from "@prisma/client";
+import { Article, Preferences } from "@/lib/generated/prisma/client";
 import { SearchX } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -82,7 +82,7 @@ export async function generateMetadata(
 Promise<Metadata> {
   const params = await props.params;
   // read route params
-  const { slug } = params;
+  const { slug, product_id } = params;
 
   // fetch data
   const shop = await getShopBySlug(slug);
@@ -94,8 +94,13 @@ Promise<Metadata> {
     };
   }
 
+  const product = await getProductById(product_id);
+
   return {
-    title: capitalizeText(shop.name),
+    title:
+      capitalizeText(shop.name) +
+      " " +
+      capitalizeText(product?.name ?? "Produit"),
     description: capitalizeText(shop.description),
     openGraph: {
       title: capitalizeText(shop.name),

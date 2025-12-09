@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ProductsTypeWithArticles } from "@/types/shop";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Preferences } from "@prisma/client";
+import { Preferences } from "@/lib//generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
