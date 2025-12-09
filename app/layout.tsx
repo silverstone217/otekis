@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "business",
   ],
   description:
-    "Nouvelle façon de créer un business, prener de l'elan et transformer tout, en un clique et tout cela depuis chez vous sur shoppy",
+    "Nouvelle façon de créer un business, prener de l'elan et transformer tout, en un clique et tout cela depuis chez vous sur Otekis",
   metadataBase: new URL("https://www.otekis.com"),
 
   openGraph: {

@@ -6,7 +6,12 @@ import {
   returnFormatedMoney,
 } from "@/utils/functions";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
-import { Article, Preferences, ProductShop, Shop } from "@prisma/client";
+import {
+  Article,
+  Preferences,
+  ProductShop,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -240,7 +245,7 @@ export const ProductCard = ({
                 {totalQuantity > 1
                   ? totalQuantity.toString().padStart(2, "0") + " disponibles"
                   : totalQuantity.toString().padStart(2, "0") +
-                    "disponible"}{" "}
+                    " disponible"}{" "}
               </span>
             ) : (
               <span className="text-xs text-red-800">

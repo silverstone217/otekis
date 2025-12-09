@@ -24,7 +24,7 @@ import {
 } from "@/utils/data";
 import { ColorsData } from "@/utils/dataAdd";
 import { returnDataValue } from "@/utils/functions";
-import { Shop, Preferences, ProductShop } from "@prisma/client";
+import { Shop, Preferences, ProductShop } from "@/lib/generated/prisma/client";
 import { Search, SearchX, SlidersHorizontal } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "../home/NewArrivalProductSection";
@@ -164,7 +164,7 @@ const MainCatalogueComponent = ({
           if (color === "") {
             return true;
           }
-          return product.Article.some((item) => {
+          return product.Article.some((item: { color: string | string[] }) => {
             return item.color?.includes(color);
           });
         })
@@ -172,7 +172,7 @@ const MainCatalogueComponent = ({
           if (size === "") {
             return true;
           }
-          return product.Article.some((item) => {
+          return product.Article.some((item: { size: string | string[] }) => {
             return item.size?.includes(size.toLowerCase());
           });
         }),
@@ -201,7 +201,7 @@ const MainCatalogueComponent = ({
         Array.from(
           new Set(
             products.flatMap((pr) =>
-              pr.Article.map((itm) => itm.size?.toLowerCase())
+              pr.Article.map((itm: { size: string }) => itm.size?.toLowerCase())
             )
           )
         ),
