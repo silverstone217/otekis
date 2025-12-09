@@ -164,7 +164,7 @@ const MainCatalogueComponent = ({
           if (color === "") {
             return true;
           }
-          return product.Article.some((item: { color: string | string[] }) => {
+          return product.Article.some((item) => {
             return item.color?.includes(color);
           });
         })
@@ -172,7 +172,7 @@ const MainCatalogueComponent = ({
           if (size === "") {
             return true;
           }
-          return product.Article.some((item: { size: string | string[] }) => {
+          return product.Article.some((item) => {
             return item.size?.includes(size.toLowerCase());
           });
         }),

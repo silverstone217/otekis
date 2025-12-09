@@ -20,7 +20,7 @@ const Hero = () => {
         className="flex flex-col items-start justify-start lg:justify-center gap-10 min-h-72 lg:flex-1 w-full lg:w-fit py-5 md:py-14 lg:gap-14"
       >
         {/* Titre */}
-        <h1 className="text-5xl font-extrabold tracking-wide bg-gradient-to-r from-blue-700 via-sky-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+        <h1 className="text-5xl font-extrabold tracking-wide bg-linear-to-r from-blue-700 via-sky-500 to-indigo-400 inline-block text-transparent bg-clip-text">
           Créez votre boutique en ligne facilement et rapidement
         </h1>
 
@@ -45,7 +45,7 @@ const Hero = () => {
           </Link>
 
           <Link
-            href={"#"}
+            href={"https://youtu.be/QIopnFhy440?si=iBky-qWbIiR8WeTT"}
             className="flex gap-2 items-center justify-center w-full lg:w-fit"
           >
             <div className="w-10 h-10 rounded-full grid place-content-center bg-blue-600">
@@ -72,7 +72,7 @@ const Hero = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="px-4 rounded py-4 flex items-center justify-start gap-2 shadow-2xl absolute lg:top-24 top-16 left-1 lg:left-16 z-20 border-gray-100 border-2 bg-white text-black"
         >
-          <Boxes className="flex-shrink-0 size-8" />
+          <Boxes className="shrink-0 size-8" />
           <div className="flex-1 flex flex-col text-xs font-medium gap-1.5">
             <p>Aide sur la logistique et la livraison</p>
             <p className="opacity-65">Plus de 1000 produits disponibles</p>
@@ -86,7 +86,7 @@ const Hero = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="px-4 rounded py-4 flex items-center justify-start gap-2 shadow-2xl absolute bottom-4 right-1 lg:right-0 z-20 border-gray-100 border-2 bg-white text-black"
         >
-          <HandHelping className="flex-shrink-0 size-8" />
+          <HandHelping className="shrink-0 size-8" />
           <div className="flex-1 flex flex-col text-xs font-medium gap-1.5">
             <p>Soutien et service client disponible</p>
             <p className="opacity-65">24h/24 et 7j/7</p>
