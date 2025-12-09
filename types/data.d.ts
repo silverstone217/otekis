@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Product } from "@/lib/generated/prisma/client";
 import React from "react";
 
 export type ProductWithArticle = Product & {

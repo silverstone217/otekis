@@ -132,7 +132,7 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
       <MainCatalogueComponent
         shop={shop}
         preferences={preferences}
-        products={filteredProducts() as ProductsTypeWithArticles[]}
+        products={filteredProducts() as unknown as ProductsTypeWithArticles[]}
         productsShop={productsShop}
         currency={currency}
         exchange={exchange}

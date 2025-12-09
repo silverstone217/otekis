@@ -201,7 +201,7 @@ const MainCatalogueComponent = ({
         Array.from(
           new Set(
             products.flatMap((pr) =>
-              pr.Article.map((itm: { size: string }) => itm.size?.toLowerCase())
+              pr.Article.map((itm) => itm.size?.toLowerCase())
             )
           )
         ),
