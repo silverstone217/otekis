@@ -85,10 +85,12 @@ const MyShopLayout = async (props: Props) => {
   // Définir les métadonnées
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const metadata: Metadata = {
-    title: capitalizeText(shop.name),
+    title: `${capitalizeText(shop.name)} – Boutique en ligne`,
+
     description: capitalizeText(shop.description),
     openGraph: {
-      title: capitalizeText(shop.name),
+      title: `${capitalizeText(shop.name)} – Boutique`,
+
       description: capitalizeText(shop.description),
       images: [shop.logo],
       type: "website",
@@ -99,6 +101,10 @@ const MyShopLayout = async (props: Props) => {
     },
     alternates: {
       canonical: `https://www.otekis.com/${shop.slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 
