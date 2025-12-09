@@ -58,12 +58,15 @@ const ShopHero = ({
         .map((item) => {
           const productShopItem =
             productsShop.find((pr) => pr.productId === item.id) ?? null;
+
           const benefitItem = productShopItem
-            ? Math.round((productShopItem.percentage * item.price) / 100)
+            ? productShopItem.price! - (item.price ?? 0)
             : 0;
+
           const beneficeAfterDiscountItem = productShopItem?.promotion
             ? applyPromotionOnProfit(benefitItem, productShopItem.promotion)
             : benefitItem;
+
           const totalPriceAfterDiscountItem = productShopItem
             ? item.price + beneficeAfterDiscountItem
             : 0;

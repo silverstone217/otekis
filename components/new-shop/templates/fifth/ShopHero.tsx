@@ -115,7 +115,7 @@ const ShopHero = ({
 
           // benefit
           const benefit = productShop
-            ? Math.round((productShop.percentage! * item.price) / 100)
+            ? productShop.price! - (item.price ?? 0)
             : 0;
 
           const beneficeAfterDiscount = productShop

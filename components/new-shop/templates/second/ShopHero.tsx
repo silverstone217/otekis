@@ -68,12 +68,15 @@ const ShopHero = ({
         .map((item) => {
           const productShopItem =
             productsShop.find((pr) => pr.productId === item.id) ?? null;
+
           const benefitItem = productShopItem
-            ? Math.round((productShopItem.percentage * item.price) / 100)
+            ? productShopItem.price! - (item.price ?? 0)
             : 0;
+
           const beneficeAfterDiscountItem = productShopItem?.promotion
             ? applyPromotionOnProfit(benefitItem, productShopItem.promotion)
             : benefitItem;
+
           const totalPriceAfterDiscountItem = productShopItem
             ? item.price + beneficeAfterDiscountItem
             : 0;
@@ -135,7 +138,7 @@ const ShopHero = ({
             />
             {/* Overlay Dégradé */}
             <div
-              className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-10"
+              className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-10"
               style={{ borderRadius: preference.buttonRadius }}
             >
               <h2 className="text-4xl lg:text-6xl font-extrabold leading-tight tracking-wide line-clamp-3 mb-4">
@@ -199,7 +202,7 @@ const ShopHero = ({
                   sizes="(max-width: 1024px) 50vw, 30vw"
                 />
                 <div
-                  className="absolute inset-0 bg-gradient-to-t from-black/50 
+                  className="absolute inset-0 bg-linear-to-t from-black/50 
                   to-transparent flex flex-col justify-end p-5"
                   style={{ borderRadius: preference.buttonRadius }}
                 >

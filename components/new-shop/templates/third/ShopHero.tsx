@@ -76,7 +76,7 @@ const ShopHero = ({
 
   // benefit
   const benefit = productShop
-    ? Math.round((productShop.percentage! * currentItem.price) / 100)
+    ? productShop.price! - (currentItem.price ?? 0)
     : 0;
 
   const beneficeAfterDiscount = productShop
@@ -88,40 +88,6 @@ const ShopHero = ({
   const discountPercentage = productShop
     ? calculateDiscountPercentage(productShop.price!, totalPriceAfterDiscount)
     : 0;
-
-  // // Calcul du bénéfice
-  // const benefit = useMemo(() => {
-  //   if (!productShop?.percentage || !currentItem) return 0;
-  //   return Math.round((productShop.percentage * currentItem.price) / 100);
-  // }, [productShop?.percentage, currentItem]);
-
-  // // Prix total sans reduction
-  // const totalPrice = useMemo(() => {
-  //   if (!productShop || productShop.price === null || !currentItem || !benefit)
-  //     return 0;
-  //   return benefit + productShop.price;
-  // }, [productShop, currentItem, benefit]);
-
-  // // Bénéfice après promotion
-  // const beneficeAfterDiscount = useMemo(() => {
-  //   if (!productShop?.promotion) return benefit;
-  //   return applyPromotionOnProfit(benefit, productShop.promotion);
-  // }, [benefit, productShop?.promotion]);
-
-  // // Prix total après réduction
-  // const totalPriceAfterDiscount = useMemo(() => {
-  //   if (!currentItem) return 0;
-  //   return currentItem.price + beneficeAfterDiscount;
-  // }, [currentItem, beneficeAfterDiscount]);
-
-  // // Calcul du pourcentage de réduction
-  // const _discountPercentage = useMemo(() => {
-  //   if (!productShop?.price) return 0;
-  //   return calculateDiscountPercentage(
-  //     productShop.price,
-  //     totalPriceAfterDiscount
-  //   );
-  // }, [productShop?.price, totalPriceAfterDiscount]);
 
   // Navigation slides
   const prevSlide = () => {
@@ -174,7 +140,7 @@ const ShopHero = ({
       >
         {itemsSlides.map((item, idx) => (
           <div
-            className="w-full flex-shrink-0 relative"
+            className="w-full shrink-0 relative"
             key={item.id}
             role="group"
             aria-roledescription="slide"
@@ -200,7 +166,7 @@ const ShopHero = ({
             </div>
             {/* Overlay infos */}
             <div
-              className="absolute inset-0 z-10 bg-gradient-to-t 
+              className="absolute inset-0 z-10 bg-linear-to-t 
             from-black/40 to-transparent"
             >
               <div
