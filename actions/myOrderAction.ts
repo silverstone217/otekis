@@ -9,7 +9,7 @@ import {
 import { AllProductsTypes } from "@/utils/data";
 import { ColorsData } from "@/utils/dataAdd";
 import { returnDataValue } from "@/utils/functions";
-import { Order, OrderItem } from "@prisma/client";
+import { Order, OrderItem } from "@/lib/generated/prisma/client";
 import { z } from "zod";
 import { getUser } from "./actions";
 import { pusher } from "@/lib/pusher-server";

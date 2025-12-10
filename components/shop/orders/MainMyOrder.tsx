@@ -269,22 +269,32 @@ const MainMyOrder = ({
                 className="border shadow-sm flex flex-col divide-y divide-gray-200"
               >
                 <div className="w-full p-4 flex flex-col gap-4">
-                  <p>
-                    Votre commande a été annulée, veuilez fournir une des
-                    informations pour vous faire rembourser.
-                  </p>
-                  <CancelOrderDialogMadeByAdmin
-                    disabled={false}
-                    onConfirm={handleUpdateCancelOrder}
-                    borderColor={borderColor}
-                    borderRadius={borderRadius}
-                    paymentMethodRefund={paymentMethodRefund}
-                    refundPhoneNumber={refundPhoneNumber}
-                    refundReceiverName={refundReceiverName}
-                    setRefundPhoneNumber={setRefundPhoneNumber}
-                    setRefundReceiverName={setRefundReceiverName}
-                    myOrder={myOrder}
-                  />
+                  {otekisPrefs && otekisPrefs.paymentMethod === "cash" ? (
+                    <p>
+                      Votre commande a été annulée. Si c'est une erreur veuillez
+                      contatcer le service client pour plus d'informations
+                    </p>
+                  ) : (
+                    <p>
+                      Votre commande a été annulée, veuilez fournir une des
+                      informations pour vous faire rembourser.
+                    </p>
+                  )}
+
+                  {otekisPrefs && otekisPrefs.paymentMethod !== "cash" && (
+                    <CancelOrderDialogMadeByAdmin
+                      disabled={false}
+                      onConfirm={handleUpdateCancelOrder}
+                      borderColor={borderColor}
+                      borderRadius={borderRadius}
+                      paymentMethodRefund={paymentMethodRefund}
+                      refundPhoneNumber={refundPhoneNumber}
+                      refundReceiverName={refundReceiverName}
+                      setRefundPhoneNumber={setRefundPhoneNumber}
+                      setRefundReceiverName={setRefundReceiverName}
+                      myOrder={myOrder}
+                    />
+                  )}
 
                   {/*  */}
                 </div>
