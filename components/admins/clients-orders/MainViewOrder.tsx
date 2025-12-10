@@ -522,7 +522,7 @@ const MainViewOrder = ({
               <span className="font-semibold text-gray-500 w-28">Statut :</span>
               <span>
                 {/* {order.paymentStatus}{" "} */}
-                {order.paymentRefRefund
+                {order.status === "annulé"
                   ? "remboursé"
                   : "en cours de remboursement"}
               </span>

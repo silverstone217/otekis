@@ -4,7 +4,7 @@ import {
   OtekisPreferences,
   Preferences,
   Shop,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 import {
   ChevronRight,
   House,
@@ -209,7 +209,7 @@ const MainMyOrder = ({
           <CardContent className="space-y-6 pt-4">
             {/* Adresse */}
             <div className="flex items-start gap-4 relative">
-              <House className="text-muted-foreground w-6 h-6 flex-shrink-0" />
+              <House className="text-muted-foreground w-6 h-6 shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground font-medium">
                   Adresse de livraison
@@ -219,7 +219,7 @@ const MainMyOrder = ({
             </div>
             {/* Receiver */}
             <div className="flex items-start gap-4">
-              <User className="text-muted-foreground w-6 h-6 flex-shrink-0" />
+              <User className="text-muted-foreground w-6 h-6 shrink-0" />
               <div>
                 <p className="text-xs text-muted-foreground font-medium">
                   Receveur
