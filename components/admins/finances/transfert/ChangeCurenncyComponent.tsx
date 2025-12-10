@@ -18,7 +18,9 @@ import { HandCoins, Landmark, Store } from "lucide-react";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -225,32 +227,10 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
 
         {/* PaymentOrderMethods */}
 
-        <div className="grid w-full max-w-sm items-center gap-3">
-          <Label htmlFor="transfertCurrency">
-            {`Méthode de paiement par défaut `} {paymentMethod}
-          </Label>
-          <div>
-            {PaymentOrderMethods.map((method) => {
-              return (
-                <div key={method.value} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    id={method.value}
-                    name="paymentMethod"
-                    value={method.value}
-                    checked={paymentMethod === method.value}
-                    onChange={() =>
-                      setPaymentMethod(
-                        method.value as "cinetpay" | "cash" | "mpesa" | "bank"
-                      )
-                    }
-                  />
-                  <label htmlFor={method.value}>{method.label}</label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <PaymentMethodSelect
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+        />
       </CardContent>
 
       {/* FOOTER */}
@@ -326,8 +306,8 @@ export const CardInfosSoldes = ({
           className="flex items-center p-4 border border-gray-200 rounded-md 
         shadow-sm w-full"
         >
-          <Store className="text-blue-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <Store className="text-blue-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Boutiques à payer
             </p>
@@ -342,8 +322,8 @@ export const CardInfosSoldes = ({
           className="flex items-center p-4 border border-gray-200 
         rounded-md shadow-sm w-full"
         >
-          <HandCoins className="text-red-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <HandCoins className="text-red-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Montant dû</p>
             <p className="text-xl font-bold text-gray-900 text-center">
               {returnFormatedMoney(amountToPay)}{" "}
@@ -359,8 +339,8 @@ export const CardInfosSoldes = ({
           className="flex items-center p-4 border border-gray-200 
         rounded-md shadow-sm w-full"
         >
-          <Landmark className="text-green-600 size-6 mr-3 flex-shrink-0 " />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <Landmark className="text-green-600 size-6 mr-3 shrink-0 " />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Solde disponible
             </p>
@@ -376,3 +356,42 @@ export const CardInfosSoldes = ({
     </Card>
   );
 };
+
+type PaymentMethod = "cinetpay" | "cash" | "mpesa" | "bank";
+
+export default function PaymentMethodSelect({
+  paymentMethod,
+  setPaymentMethod,
+}: {
+  paymentMethod: PaymentMethod;
+  setPaymentMethod: (m: PaymentMethod) => void;
+}) {
+  return (
+    <div className="grid w-full max-w-sm items-center gap-3">
+      <Label htmlFor="transfertCurrency">
+        {`Méthode de paiement par défaut `}
+        <span className="font-medium">{paymentMethod}</span>
+      </Label>
+
+      <Select
+        value={paymentMethod}
+        onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+      >
+        <SelectTrigger id="paymentMethod" className="w-full">
+          <SelectValue placeholder="Choisir une méthode" />
+        </SelectTrigger>
+
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Méthodes</SelectLabel>
+            {PaymentOrderMethods.map((method) => (
+              <SelectItem key={method.value} value={method.value}>
+                {method.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
