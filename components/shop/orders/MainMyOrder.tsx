@@ -269,8 +269,9 @@ const MainMyOrder = ({
                 className="border shadow-sm flex flex-col divide-y divide-gray-200"
               >
                 <div className="w-full p-4 flex flex-col gap-4">
-                  {otekisPrefs && otekisPrefs.paymentMethod === "cash" ? (
+                  {myOrder && myOrder.paymentMethod === "cash" ? (
                     <p>
+                      <strong className="text-destructive">* </strong>
                       Votre commande a été annulée. Si c'est une erreur veuillez
                       contatcer le service client pour plus d'informations
                     </p>
@@ -281,7 +282,7 @@ const MainMyOrder = ({
                     </p>
                   )}
 
-                  {otekisPrefs && otekisPrefs.paymentMethod !== "cash" && (
+                  {myOrder.paymentMethod !== "cash" && (
                     <CancelOrderDialogMadeByAdmin
                       disabled={false}
                       onConfirm={handleUpdateCancelOrder}
@@ -295,8 +296,6 @@ const MainMyOrder = ({
                       myOrder={myOrder}
                     />
                   )}
-
-                  {/*  */}
                 </div>
               </Card>
             </section>
