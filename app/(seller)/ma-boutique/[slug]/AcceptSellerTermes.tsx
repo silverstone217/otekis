@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { Switch } from "@/components/ui/switch";
 import { SmoothLink } from "@/components/SmoothLink";
 import { Label } from "@/components/ui/label";

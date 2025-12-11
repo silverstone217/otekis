@@ -8,8 +8,13 @@ import { getShopBySlug } from "@/actions/shopActions";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { redirect } from "next/navigation";
 import React from "react";
-import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
+import {
+  exChangeRate,
+  getCompanyPreference,
+  getCurrencySymbol,
+} from "@/actions/companyAction";
 import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
+import BannedUserSeller from "@/components/BannedUserSeller";
 
 type Props = {
   params: Promise<{
@@ -43,31 +48,11 @@ const AddShopProductPage = async (props: Props) => {
     return <NoUserComponent />;
   }
 
-  if (user.isBanned) {
-    return (
-      <div
-        className="w-full min-h-[70dvh] flex flex-col items-center
-       justify-center text-center mx-auto max-w-2xl text-pretty"
-      >
-        <p className="text-xl font-bold">
-          Votre compte a été banni. Vous ne pouvez pas accéder à votre espace de
-          vendeur actuellement.
-        </p>
-        <p className="mt-2 text-gray-600">
-          {` Veuillez contacter votre administrateur pour plus d'information.`}
-        </p>
-        <div className="mt-2 text-gray-600 flex gap-4 flex-wrap item-center justify-start text-sm">
-          <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
-            oteki@gmail.com
-          </p>
-          <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
-            +243-894-785-585
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const otekisPrefs = await getCompanyPreference();
 
+  if (user.isBanned) {
+    return <BannedUserSeller otekisPrefs={otekisPrefs} />;
+  }
   if (!slug) {
     return redirect("/ma-boutique");
   }

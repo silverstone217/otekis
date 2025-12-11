@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Card,
   CardContent,
@@ -9,8 +8,13 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
+import { OtekisPreferences } from "@/lib/generated/prisma/client";
 
-const BannedUserSeller = () => {
+const BannedUserSeller = ({
+  otekisPrefs,
+}: {
+  otekisPrefs: OtekisPreferences | null;
+}) => {
   return (
     <main className="min-h-[70vh] flex items-center justify-center px-4">
       <Card className="max-w-xl w-full text-center p-8">
@@ -34,16 +38,16 @@ const BannedUserSeller = () => {
         <CardContent>
           <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-700">
             <a
-              href="mailto:marketstore.oteki@gmail.com"
+              href={`mailto:${otekisPrefs?.socialEmail || "servigroup.social@gmail.com"}`}
               className="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
             >
-              marketstore.oteki@gmail.com
+              {otekisPrefs?.socialEmail || "servigroup.social@gmail.com"}
             </a>
             <a
               href="tel:+243813350706"
               className="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
             >
-              +243-813-350-706
+              {otekisPrefs?.socialPhone || "+243 83 17 18 338"}
             </a>
           </div>
         </CardContent>

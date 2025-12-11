@@ -5,6 +5,7 @@ import { getUser } from "@/actions/actions";
 import React from "react";
 import { ShopDefaultSelect } from "@/components/seller/SelectWIthOptionsDefaultShop";
 import OverviewMainComponent from "@/components/seller/overview/MainComponent";
+import { getCompanyPreference } from "@/actions/companyAction";
 
 const getShopsByID = async (userId: string) => {
   const shops = await prisma.shop.findMany({
@@ -19,6 +20,8 @@ const DashboardSellerPage = async () => {
   if (!user) {
     return <NoUserComponent />;
   }
+
+  const otekisPrefs = await getCompanyPreference();
 
   if (user.isBanned) {
     return (
@@ -35,10 +38,10 @@ const DashboardSellerPage = async () => {
         </p>
         <div className="mt-2 text-gray-600 flex gap-4 flex-wrap item-center justify-start text-sm">
           <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
-            oteki@gmail.com
+            {otekisPrefs?.socialEmail || "servigroup.social@gmail.com"}
           </p>
           <p className=" text-gray-600 px-3 py-1 border-gray-400 bg-black/10 rounded-xl">
-            +243-894-785-585
+            {otekisPrefs?.socialPhone || "+243 83 17 18 338"}
           </p>
         </div>
       </div>

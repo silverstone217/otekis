@@ -7,6 +7,7 @@ import { getShopsByUserID } from "@/actions/shopActions";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React, { Suspense } from "react";
+import { getCompanyPreference } from "@/actions/companyAction";
 
 const MyShopPage = async () => {
   const user = await getUser();
@@ -15,8 +16,10 @@ const MyShopPage = async () => {
     return <NoUserComponent />;
   }
 
+  const otekisPrefs = await getCompanyPreference();
+
   if (user.isBanned) {
-    return <BannedUserSeller />;
+    return <BannedUserSeller otekisPrefs={otekisPrefs} />;
   }
 
   // const role = user.role;
