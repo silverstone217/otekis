@@ -172,8 +172,7 @@ export default function OverviewMainComponent({
                           {capitalizeText(shop.name)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Créé le{" "}
-                          {new Date(shop.createdAt).toLocaleDateString()}
+                          Créé le {shop.createdAt}
                         </p>
                       </div>
                     </div>
