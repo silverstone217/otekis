@@ -12,7 +12,7 @@ const LoginPage = async () => {
   }
   return (
     <main
-      className="w-full h-[100dvh] grid lg:grid-cols-4 grid-cols-1
+      className="w-full h-dvh grid lg:grid-cols-4 grid-cols-1
   transition-all ease-in-out duration-500
   "
     >

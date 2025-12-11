@@ -25,7 +25,7 @@ const GreetingComponent = () => {
   return (
     <div
       className="h-full w-full from-35%
-  bg-gradient-to-b from-transparent via-overlay3 to-black 
+  bg-linear-to-b from-transparent via-overlay3 to-black 
   transition-all ease-in-out duration-300 text-white"
     >
       {/* images */}
@@ -46,7 +46,7 @@ const GreetingComponent = () => {
       </div>
       {/* text */}
       <div
-        className="bg-gradient-to-b transition-all ease-in-out duration-300
+        className="bg-linear-to-b transition-all ease-in-out duration-300
       from-overlay1 h-full w-full via-transparent to-overlay1 flex flex-col 
        via-45% p-4 items-start justify-between"
       >
@@ -58,13 +58,13 @@ const GreetingComponent = () => {
         </Link>
         <div className="text-balance w-full flex flex-col gap-2 ">
           <div className="flex flex-wrap gap-2 w-full p-4 relative">
-            <Quote className="size-5 flex-shrink-0 absolute top-0 left-0" />
+            <Quote className="size-5 shrink-0 absolute top-0 left-0" />
             <p className="font-normal text-gray-200 px-4">
               {
                 "J’ai toujours voulu créer une entreprise. J’avais ça dans les tripes. J’ai attendu bêtement dix ans avant d’en créer une première. Il ne faut jamais attendre, c’est le premier conseil que je donne aux jeunes."
               }
             </p>
-            <Quote className="size-5 flex-shrink-0 absolute bottom-2 right-0" />
+            <Quote className="size-5 shrink-0 absolute bottom-2 right-0" />
           </div>
           <p className="text-sm opacity-80 px-4">
             <strong>Jean-Baptiste Rudelle</strong>, fondateur de Criteo à l’âge

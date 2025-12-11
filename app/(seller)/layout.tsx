@@ -5,6 +5,7 @@ import { getUser } from "@/actions/actions";
 import React, { ReactNode } from "react";
 // import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 import BannedUserSeller from "@/components/BannedUserSeller";
+import { getCompanyPreference } from "@/actions/companyAction";
 const SellerLayout = async ({ children }: { children: ReactNode }) => {
   const user = await getUser();
   // const isPermitted = user?.role === "seller" || user?.role.includes("admin");
@@ -13,6 +14,8 @@ const SellerLayout = async ({ children }: { children: ReactNode }) => {
   // if (!user) {
   //   return <NoUserComponent />;
   // }
+
+  const otekisPrefs = await getCompanyPreference();
 
   // if (user.isBanned) {
   //   return <BannedUserSeller />;
@@ -38,7 +41,7 @@ const SellerLayout = async ({ children }: { children: ReactNode }) => {
         {!user ? (
           <NoUserComponent />
         ) : isBanned ? (
-          <BannedUserSeller />
+          <BannedUserSeller otekisPrefs={otekisPrefs} />
         ) : (
           <div className="mx-auto max-w-7xl">{children}</div>
         )}
