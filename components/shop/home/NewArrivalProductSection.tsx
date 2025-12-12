@@ -43,12 +43,12 @@ const NewArrivalProductSection = ({
           className="flex gap-2 item-center hover:gap-6 transition-all duration-500 ease-in-out"
         >
           <span className="text-sm opacity-75">Tout voire</span>
-          <MoveRight className="w-8 flex-shrink-0" />
+          <MoveRight className="w-8 shrink-0" />
         </Link>
       </div>
       {/* maps grid */}
-      <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-2 gap-y-4 lg:gap-y-8 lg:gap-8">
-        {products.slice(0, 4).map((product) => (
+      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 gap-y-4 lg:gap-y-8 lg:gap-8">
+        {products.slice(0, 6).map((product) => (
           <ProductCard
             key={product.id}
             product={product}
