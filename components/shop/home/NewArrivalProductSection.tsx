@@ -166,7 +166,7 @@ export const ProductCard = ({
           width={1500}
           height={1500}
           priority
-          className="object-contain h-full w-full group-hover:scale-110
+          className="object-cover h-full w-full group-hover:scale-110
             transition-all duration-500 ease-in-out group-hover:brightness-75
             "
           style={{
