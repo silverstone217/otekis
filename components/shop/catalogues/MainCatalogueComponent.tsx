@@ -314,7 +314,7 @@ const MainCatalogueComponent = ({
       </div>
 
       {/* catalogues products */}
-      <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-4 gap-y-4 lg:gap-y-8 lg:gap-8">
+      <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-4 lg:gap-y-8 lg:gap-8">
         {currentItems.length ? (
           currentItems.map((product) => (
             <ProductCard
