@@ -1,5 +1,5 @@
 "use client";
-import { Product, ProductShop, Shop } from "@prisma/client";
+import { Product, ProductShop, Shop } from "@/lib/generated/prisma/client";
 // import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import noProduct from "@/public/images/noproduct.jpg";

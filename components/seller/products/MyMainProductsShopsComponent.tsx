@@ -1,5 +1,5 @@
 "use client";
-import { Product, ProductShop, Shop } from "@prisma/client";
+import { Product, ProductShop, Shop } from "@/lib/generated/prisma/client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
 import { getProductShopByShopId } from "@/actions/shopActions";
