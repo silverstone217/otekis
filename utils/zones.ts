@@ -20,6 +20,7 @@ export const communesKinshasa = [
   "Ngaba",
   "Ngaliema",
   "Nsele",
+  "Ngiri-Ngiri",
   "Selembao",
   "Ndjili",
 ].sort((a, b) => {
