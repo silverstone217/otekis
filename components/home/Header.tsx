@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   AlignJustify,
-  BookText,
+  BadgeInfo,
   PhoneCall,
-  Shield,
+  Users,
   Store,
   X,
+  BookOpenText,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -41,7 +42,7 @@ const Header = () => {
     `}
     >
       <div
-        className={`w-full max-w-7xl mx-auto flex items-center justify-between gap-4 flex-shrink-0
+        className={`w-full max-w-7xl mx-auto flex items-center justify-between gap-4 shrink-0
       ${isOpen ? "flex-wrap" : ""}
       transition-all duration-500 ease-in-out
       `}
@@ -50,7 +51,7 @@ const Header = () => {
         <Link
           href={"/"}
           className="text-black
-           text-3xl font-extrabold flex-shrink-0 flex items-center justify-center
+           text-3xl font-extrabold shrink-0 flex items-center justify-center
            transition-all duration-500 ease-in-out
            "
         >
@@ -69,6 +70,7 @@ const Header = () => {
           {/* links */}
           <div className="flex items-center justify-end gap-4 flex-1">
             <LinkName href="/dashboard" title="Ma Boutique" />
+            <LinkName href="/documentation" title="Docs" />
             <LinkName href="/a-propos" title="A propos" />
             <LinkName href="#contact" title="Nous Contacter" />
             {user && PERMIT_ROLES.includes(user.role) && (
@@ -98,7 +100,7 @@ const Header = () => {
         </div>
 
         {/* small screen open menu */}
-        <div className="lg:hidden flex-shrink-0">
+        <div className="lg:hidden shrink-0">
           <button
             onClick={toggleMenu}
             className="flex items-center justify-center
@@ -117,14 +119,23 @@ const Header = () => {
                 href={"/ma-boutique"}
                 className="flex gap-4 items-center w-full"
               >
-                <Store className="w-8 flex-shrink-0" />
+                <Store className="w-8 shrink-0" />
                 <span>Ma Boutique</span>
               </Link>
+
+              <Link
+                href={"/documentation"}
+                className="flex gap-4 items-center w-full"
+              >
+                <BookOpenText className="w-8 shrink-0" />
+                <span>Documentation</span>
+              </Link>
+
               <Link
                 href={"/a-propos"}
                 className="flex gap-4 items-center w-full"
               >
-                <BookText className="w-8 flex-shrink-0" />
+                <BadgeInfo className="w-8 shrink-0" />
                 <span>A Propos</span>
               </Link>
               <Link
@@ -136,7 +147,7 @@ const Header = () => {
                   }, 300);
                 }}
               >
-                <PhoneCall className="w-8 flex-shrink-0" />
+                <PhoneCall className="w-8 shrink-0" />
                 <span>Nous Contacter</span>
               </Link>
               {user && PERMIT_ROLES.includes(user.role) && (
@@ -144,7 +155,7 @@ const Header = () => {
                   href={"/overview"}
                   className="flex gap-4 items-center w-full"
                 >
-                  <Shield className="w-8 flex-shrink-0" />
+                  <Users className="w-8 shrink-0" />
                   <span>Staff*</span>
                 </Link>
               )}
@@ -170,7 +181,7 @@ const Header = () => {
                   href={"/dashboard"}
                   className="flex items-center justify-start gap-2"
                 >
-                  <div className="w-12 h-12 flex-shrink-0">
+                  <div className="w-12 h-12 shrink-0">
                     <UserAvatar />
                   </div>
                   <div className="flex flex-col">

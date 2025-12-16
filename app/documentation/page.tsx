@@ -42,6 +42,12 @@ function Page() {
           produits de qualité sélectionnés par nos soins, en toute simplicité et
           avec un minimum de démarches.
         </p>
+
+        <p>
+          Servi Group SARL — Société à responsabilité limitée Siège social :
+          Kinshasa, RDC RCCM : CD/KNG/RCCM/25-B-00820 Identification nationale :
+          01-F4300-N63754X N° d’impôt : 15/01022276M/DGI/DIRAF/DIGR/IM/2025
+        </p>
       </Card>
 
       {/* Avantages */}

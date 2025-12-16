@@ -74,12 +74,21 @@ const Footer = () => {
             Dashboard
           </Link>
           <Link
+            href={"/documentation"}
+            className="font-medium transition-all duration-300 ease-in-out
+          hover:underline hover:opacity-75"
+          >
+            Documentations
+          </Link>
+
+          <Link
             href={"#"}
             className="font-medium transition-all duration-300 ease-in-out
           hover:underline hover:opacity-75"
           >
             FAQ
           </Link>
+
           <Link
             href={"/conditions-et-termes"}
             className="font-medium transition-all duration-300 ease-in-out
@@ -101,6 +110,37 @@ const Footer = () => {
             <Button type="submit">{`S'abonner`}</Button>
           </div>
         </section>
+      </div>
+
+      {/* Informations legales */}
+      <div className="w-full border-t border-white/10 pt-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs opacity-80">
+          <div className="flex flex-col">
+            <span className="font-semibold uppercase tracking-wide">RCCM</span>
+            <span>CD/KNG/RCCM/25-B-00820</span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="font-semibold uppercase tracking-wide">
+              Identification nationale
+            </span>
+            <span>01-F4300-N63754X</span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="font-semibold uppercase tracking-wide">
+              Numéro d’impôt
+            </span>
+            <span>15/01022276M/DGI/DIRAF/DIGR/IM/2025</span>
+          </div>
+
+          <div className="flex flex-col">
+            <span className="font-semibold uppercase tracking-wide">
+              Société
+            </span>
+            <span>Servi Group — SG SARL</span>
+          </div>
+        </div>
       </div>
 
       <div className="w-full text-center">
