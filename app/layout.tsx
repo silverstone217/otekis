@@ -11,6 +11,9 @@ import CinetPayLoader from "@/lib/CinetPayLoader";
 // import { prisma } from "@/lib/prisma";
 import { setupCompanyPrefs } from "@/actions/companyAction";
 // import { OrderCountProvider } from "@/components/admins/clients-orders/OrderCountContext";
+// VERCEL INFO
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const siteCapName = siteName && capitalizeText(siteName);
 
@@ -82,6 +85,8 @@ export default async function RootLayout({
           <main>{children}</main>
           <Toaster />
         </AuthProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
