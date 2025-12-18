@@ -7,6 +7,7 @@ import {
   // calculateDiscountPercentage,
   returnDataValue,
   returnFormatedMoney,
+  toUpperInteger,
 } from "@/utils/functions";
 import { addToCart, deleteItemToCart } from "@/actions/shopActions";
 import {
@@ -125,8 +126,8 @@ const MainCartComponent = ({
     return (
       total +
       (productShop.promotion && productShop.promotion > 0
-        ? totalTotalPriceAfterDiscount * exchange
-        : totalPrice * exchange)
+        ? toUpperInteger(totalTotalPriceAfterDiscount * exchange)
+        : toUpperInteger(totalPrice * exchange))
     );
   }, 0);
 
@@ -613,7 +614,7 @@ const CartItemProduct = ({
                 article || stockMax < 1 ? "opacity-100" : "opacity-50"
               )}
             >
-              <Minus className="w-8 flex-shrink-0" />
+              <Minus className="w-8 shrink-0" />
             </span>
             <p
               className=" font-bold px-2 py-1 border h-8
@@ -639,7 +640,7 @@ const CartItemProduct = ({
                 article || stockMax <= quantity ? "opacity-100" : "opacity-50"
               )}
             >
-              <Plus className="w-8 flex-shrink-0" />
+              <Plus className="w-8 shrink-0" />
             </span>
           </div>
 

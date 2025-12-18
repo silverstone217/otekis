@@ -21,7 +21,11 @@ import {
 import { CreditCard, FileText, Loader } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import Image from "next/image";
-import { returnDataValue, returnFormatedMoney } from "@/utils/functions";
+import {
+  returnDataValue,
+  returnFormatedMoney,
+  toUpperInteger,
+} from "@/utils/functions";
 import { ColorsData } from "@/utils/dataAdd";
 import { PaiementCinetPay } from "./PayWithCinetPay";
 // import DeliveryChoiceComponent from "./DeliveryChoiceComponent";
@@ -477,14 +481,6 @@ const PaymentSheetComponent = ({
             deliveryPaymentMethode={deliveryPaymentMethode}
           />
 
-          {/* <DeliveryChoiceComponent
-            deliveryChoice={deliveryChoice}
-            setDeliveryChoice={setDeliveryChoice}
-            preferences={preferences}
-            address={receiverAddress}
-            deliveryService={deliveryService}
-          /> */}
-
           {/* pay */}
           <div
             className="w-full grid gap-4 p-4 border-2"
@@ -509,7 +505,7 @@ const PaymentSheetComponent = ({
               <span>Livraison</span>
               {typeof deliveryPrice === "number" ? (
                 <span>
-                  {returnFormatedMoney(deliveryPrice)}{" "}
+                  {returnFormatedMoney(toUpperInteger(deliveryPrice))}{" "}
                   <span className="text-xs"> {currency}</span>
                 </span>
               ) : (

@@ -268,3 +268,12 @@ export const returnRealValueWithPercentage = (
   // Coupe à 2 décimales (pas d'arrondi)
   return Math.floor(sum * 100) / 100;
 };
+
+// to upper intenger
+export function toUpperInteger(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+
+  return Math.ceil(value);
+}

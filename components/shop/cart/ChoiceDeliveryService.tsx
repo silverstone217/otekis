@@ -17,6 +17,7 @@ import { DELIVERS_API_KEY } from "@/utils/envVariables";
 import {
   isEmptyString,
   returnRealValueWithPercentage,
+  toUpperInteger,
 } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 
@@ -171,13 +172,17 @@ const ChoiceDeliveryService = ({
     if (selectedService) {
       const newDelPrice =
         currency === "$"
-          ? parseFloat((selectedService.price / exchangeValue).toFixed(2))
-          : parseFloat(selectedService.price.toFixed(2));
+          ? toUpperInteger(
+              parseFloat((selectedService.price / exchangeValue).toFixed(2))
+            )
+          : toUpperInteger(parseFloat(selectedService.price.toFixed(2)));
 
       // PRICE DELIVERY
       setDeliveryPrice(
         deliveryPaymentMethode !== "cash"
-          ? returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+          ? toUpperInteger(
+              returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+            )
           : newDelPrice
       );
 

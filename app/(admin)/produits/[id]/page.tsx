@@ -99,7 +99,7 @@ const ProductSlugPage = async (props: Props) => {
         flex items-center justify-center gap-4
         "
         >
-          <Plus className="w-8 flex-shrink-0" />
+          <Plus className="w-8 shrink-0" />
           <span>Voire les articles</span>
         </Link>
       </div>

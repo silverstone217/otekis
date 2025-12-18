@@ -267,8 +267,8 @@ const ModifyProductForm = ({ product }: Props) => {
         return;
       }
 
-      toast("Produit ajouté avec succès", {
-        description: "Le produit a été enregistré avec succès",
+      toast("Produit modifié avec succès", {
+        description: "La modification du produit a été enregistrée avec succès",
       });
 
       const resData = data.data as Product;
@@ -358,7 +358,7 @@ const ModifyProductForm = ({ product }: Props) => {
                    }
                    `}
                 >
-                  <cat.icon className="w-8 flex-shrink-0 self-center " />
+                  <cat.icon className="w-8 shrink-0 self-center " />
                   <span className="text-sm ">{cat.label}</span>
                 </div>
               ))}
@@ -499,7 +499,7 @@ const ModifyProductForm = ({ product }: Props) => {
                     <span className="text-sm capitalize">
                       {returnDataValue(type, TypeClothesData)}
                     </span>
-                    <ChevronDown className="w-6 flex-shrink-0 opacity-75" />
+                    <ChevronDown className="w-6 shrink-0 opacity-75" />
                   </DialogTrigger>
                   <DialogContent className="bg-white">
                     <DialogHeader>
@@ -546,7 +546,7 @@ const ModifyProductForm = ({ product }: Props) => {
                     <span className="capitalize">
                       {returnDataValue(type, AccessoriesData)}
                     </span>
-                    <ChevronDown className="w-6 flex-shrink-0 opacity-75" />
+                    <ChevronDown className="w-6 shrink-0 opacity-75" />
                   </DialogTrigger>
                   <DialogContent className="bg-white">
                     <DialogHeader>
@@ -593,7 +593,7 @@ const ModifyProductForm = ({ product }: Props) => {
                     <span className="capitalize">
                       {returnDataValue(type, CosmeticsData)}
                     </span>
-                    <ChevronDown className="w-6 flex-shrink-0 opacity-75" />
+                    <ChevronDown className="w-6 shrink-0 opacity-75" />
                   </DialogTrigger>
                   <DialogContent className="bg-white">
                     <DialogHeader>
@@ -644,7 +644,7 @@ const ModifyProductForm = ({ product }: Props) => {
                     <span className="capitalize">
                       {returnDataValue(material, MaterialsAccData)}
                     </span>
-                    <ChevronDown className="w-6 flex-shrink-0 opacity-75" />
+                    <ChevronDown className="w-6 shrink-0 opacity-75" />
                   </DialogTrigger>
                   <DialogContent className="bg-white">
                     <DialogHeader>
