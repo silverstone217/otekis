@@ -1,37 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📦 Otekis - Solution E-commerce Clé en Main
 
-## Getting Started
+**Otekis** est une plateforme SaaS (Software as a Service) innovante conçue pour permettre aux entrepreneurs de lancer leur boutique en ligne instantanément. Notre mission est de supprimer les barrières logistiques : les utilisateurs créent leur boutique et vendent, tandis qu'**Otekis** gère le stockage, les produits et la livraison.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🌟 Concept & Valeurs
+
+Le modèle d'Otekis repose sur la simplification extrême du e-commerce :
+
+- **Vendez sans stock :** Accédez à un catalogue de produits sélectionnés par nos soins.
+- **Personnalisation No-Code :** Modifiez l'apparence de votre boutique via un dashboard intuitif.
+- **Logistique Intégrée :** Nous gérons l'entreposage et l'expédition avec nos partenaires certifiés.
+- **Focus Business :** Concentrez-vous sur le marketing et la relation client, nous faisons le reste.
+
+---
+
+## 🛠 Stack Technique
+
+Ce projet est bâti sur une architecture moderne privilégiant la vitesse et la sécurité :
+
+| Technologie      | Usage                                                |
+| :--------------- | :--------------------------------------------------- |
+| **Next.js v16**  | Framework React (App Router, Server Components)      |
+| **TypeScript**   | Typage statique pour un code robuste                 |
+| **Prisma**       | ORM pour la gestion de la base de données PostgreSQL |
+| **NextAuth.js**  | Authentification sécurisée des marchands             |
+| **Tailwind CSS** | Design responsive et utilitaire                      |
+| **Shadcn UI**    | Composants d'interface haut de gamme                 |
+| **Lucide React** | Bibliothèque d'icônes modernes                       |
+| **Vercel**       | Déploiement et infrastructure Edge                   |
+
+---
+
+## 🚀 Fonctionnalités Clés
+
+### 1. Espace Marchand (Dashboard)
+
+- **Customizer :** Modification des thèmes, logos et couleurs de la boutique.
+- **Gestion du Catalogue :** Sélection de produits parmi la liste mise à disposition par Otekis.
+- **Suivi des Ventes :** Analyse des revenus et des commandes en temps réel.
+
+### 2. Infrastructure Otekis
+
+- **Sourcing :** Produits de haute qualité déjà intégrés.
+- **Fullfillment :** Automatisation de la transmission des commandes vers la logistique.
+- **Livraison :** Suivi automatisé des colis via nos partenaires.
+
+---
+
+## 💻 Installation (Développement)
+
+Pour configurer l'environnement de développement local :
+
+1.  **Cloner le dépôt**
+
+    ```bash
+    git clone [https://github.com/silverstone217/otekis.git](https://github.com/silverstone217/otekis.git)
+    cd otekis-web
+    ```
+
+2.  **Installer les dépendances**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Configuration de l'environnement**
+    Créez un fichier `.env` à la racine :
+
+    ```env
+    DATABASE_URL="postgresql://user:password@localhost:5432/otekis"
+    NEXTAUTH_SECRET="votre_secret_ici"
+    NEXTAUTH_URL="http://localhost:3000"
+    ```
+
+4.  **Base de données**
+
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    ```
+
+5.  **Lancer l'application**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 📂 Structure du Projet
+
+```text
+├── actions/          # Les actions ou fonctions server pour palier aux API Rest
+├── app/              # Routes Next.js (Admin, Storefront, API)
+├── components/       # UI Components (Shadcn + Custom)
+├── hooks/            # Logique React réutilisable
+├── lib/              # Configuration Prisma, Auth et Utilitaires
+├── prisma/           # Schéma de données et migrations
+├── public/           # Assets statiques et images produits
+├── schema/           # Schéma de données zod et validations des donnees
+└── types/            # Définitions TypeScript
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🛡️ Sécurité & Performance
+Server Actions : Utilisation des dernières fonctionnalités de Next.js pour sécuriser les mutations de données.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Zod Validation : Validation stricte des schémas de données côté client et serveur.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Optimisation Image : Traitement dynamique des images produits pour un score Core Web Vitals optimal.
 
-## Learn More
+📄 Licence
+Ce logiciel est la propriété exclusive de Otekis. Toute reproduction ou distribution non autorisée est strictement interdite.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# otekis
+© 2025 Otekis. Propulsé par l'innovation. by SERVI Group
