@@ -113,7 +113,7 @@ const SomeProducts = ({ products }: Props) => {
         className="mt-12 flex justify-center"
       >
         <Link
-          href="/NosProduits"
+          href="/nos-produits"
           className="group flex items-center gap-3 px-8 py-3 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-full font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-750 transition-all shadow-sm active:scale-95"
         >
           Voir tout le catalogue
