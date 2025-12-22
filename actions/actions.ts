@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { roleUserType } from "@/types/auth";
 import { ColorsData, PERMITED_ROLES } from "@/utils/dataAdd";
 import { returnDataValue } from "@/utils/functions";
-import { Article } from "@prisma/client";
+import { Article } from "@/lib/generated/prisma/client";
+import { getCompanyPreference } from "./companyAction";
 
 export const getUser = async () => {
   const session = await auth();
@@ -399,4 +400,32 @@ export const modifyStockArticle = async (
     message: "Stock mis à jour avec succès",
     data: updateArticle,
   };
+};
+
+// GET PRODUCT WITH ARTICLES
+export const getProductsWithArticles = async () => {
+  const prefs = await getCompanyPreference();
+
+  if (!prefs) return [];
+
+  const products = await prisma.product.findMany({
+    include: {
+      Article: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const filteredProducts = products.map((itm) => {
+    const exchange = prefs.currency === "USD" ? 1 : prefs.exchangeRate;
+    const price = itm.price * exchange;
+
+    return {
+      ...itm,
+      price,
+    };
+  });
+
+  return filteredProducts ?? [];
 };
