@@ -327,6 +327,10 @@ export const HeaderTemplateData = [
     label: "Template 5",
     value: "4",
   },
+  {
+    label: "Template 6",
+    value: "5",
+  },
 ];
 
 export const HeroTemplateData = [

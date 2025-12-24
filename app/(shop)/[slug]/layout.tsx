@@ -19,6 +19,7 @@ import ShopHeaderSecond from "@/components/new-shop/templates/second/ShopHeader"
 import ShopHeaderOne from "@/components/new-shop/templates/first/ShopHeader";
 import ShopHeaderFourth from "@/components/new-shop/templates/fourth/ShopHeader";
 import ShopHeaderFifth from "@/components/new-shop/templates/fifth/ShopHeader";
+import ShopHeaderSixth from "@/components/new-shop/templates/sixth/ShopHeader";
 
 // HEROS
 import ShopHeroOne from "@/components/new-shop/templates/first/ShopHero";
@@ -36,6 +37,7 @@ export const HEADERS_DATA = [
   ShopHeaderThird,
   ShopHeaderFourth,
   ShopHeaderFifth,
+  ShopHeaderSixth,
 ];
 
 // HEADERS DATA
@@ -178,7 +180,11 @@ const MyShopLayout = async (props: Props) => {
         className={cn(
           "overflow-x-hidden ",
           getMyFont?.className,
-          Number(Header) === 3 || Number(Header) === 4 ? "pt-0" : "pt-14"
+          Number(Header) === 3 || Number(Header) === 4
+            ? "pt-0"
+            : Number(Header) === 5
+              ? "pt-24"
+              : "pt-14"
         )}
         key={shop.id}
       >

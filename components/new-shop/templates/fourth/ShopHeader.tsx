@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CartIcons, MenuIcons, textColorData } from "@/utils/preferences";
 import Image from "next/image";
 import { ShopAllDataLinks } from "@/utils/shopData";
-import { X } from "lucide-react";
+import { X, ShoppingBag, User, Home, ArrowRight } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";
@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { IconLikeComponent } from "@/types/data";
+import { cn } from "@/lib/utils";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -33,32 +34,16 @@ const ShopHeader = ({
   getMyFont,
   preferences: preference,
 }: ShopHeaderType) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const user = useCurrentUser();
 
   useEffect(() => {
     setIsClient(true);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // update logo
-  useEffect(() => {
-    const updateFavicon = (iconURL: string): void => {
-      let favicon = document.querySelector(
-        'link[rel="icon"]'
-      ) as HTMLLinkElement;
-
-      if (!favicon) {
-        favicon = document.createElement("link");
-        favicon.rel = "icon";
-        document.head.appendChild(favicon);
-      }
-
-      favicon.href = iconURL;
-    };
-
-    if (shop.logo) updateFavicon(shop.logo);
-  }, [shop]);
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
@@ -70,90 +55,71 @@ const ShopHeader = ({
     [preference?.menuIcon]
   );
 
-  const LinksData =
-    ShopAllDataLinks[
-      shop.category as "cosmetiques" | "vetements" | "accessoires"
-    ] ?? ShopAllDataLinks["cosmetiques"];
-
-  //   MenuIcons
-
   if (!isClient) return null;
 
   return (
     <header
-      className={`px-4 lg:px-6 xl:px-8 z-50
-    pt-4
-    fixed top-0 left-0 right-0 
-    transition-all duration-500 ease-in-out
-    ${getMyFont?.className}
-    overflow-hidden 
-`}
-      //   style={{
-      //     backgroundColor: preference?.background ?? backgroundColors.white,
-      //     color: preference?.textColor ?? textColorData.light,
-      //   }}
+      className={cn(
+        "fixed top-0 left-0 right-0 z-100 transition-all duration-500 h-24 flex items-center justify-center pointer-events-none",
+        getMyFont?.className
+      )}
     >
-      {/* container */}
+      {/* Barre flottante (Floating Pill) */}
       <div
-        className={`flex items-center h-14 shadow w-full transition-all duration-500 ease-in-out
-      max-w-sm mx-auto border px-4 justify-between backdrop-blur-2xl 
-      ${shop.cover && "bg-white/20"}
-      `}
+        className={cn(
+          "flex items-center justify-between w-[92%] max-w-lg h-14 px-5 transition-all duration-500 border pointer-events-auto",
+          scrolled ? "-translate-y-2.5 scale-95 shadow-2xl" : "shadow-xl"
+        )}
         style={{
-          borderRadius: preference.buttonRadius,
+          borderRadius: preference.buttonRadius || "9999px",
+          backgroundColor: `${preference?.background}F2` || "#ffffffF2", // Opacité 95%
+          color: preference?.textColor || textColorData.light,
+          borderColor: `${preference?.textColor}15`,
+          backdropFilter: "blur(12px)",
         }}
       >
-        {/* links */}
-        <div>
-          <Link
-            href={`/${shop.slug}`}
-            className="flex item-center justify-center gap-2 h-full place-items-center
-            
-            "
-          >
-            {preference.logo === "name" ? (
-              <h1
-                style={{
-                  color: preference?.textColor ?? textColorData.light,
-                }}
-                className="text-md font-bold tracking-tight capitalize line-clamp-1"
-              >
-                {shop.name}
-              </h1>
-            ) : (
+        {/* Logo / Nom */}
+        <Link
+          href={`/${shop.slug}`}
+          className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+        >
+          {preference.logo === "name" ? (
+            <span className="font-black text-sm tracking-tighter uppercase italic truncate max-w-[120px]">
+              {shop.name}
+            </span>
+          ) : (
+            <div
+              className="relative w-8 h-8 overflow-hidden"
+              style={{ borderRadius: "50%" }}
+            >
               <Image
                 src={shop.logo}
                 alt={shop.name}
-                width={800}
-                height={800}
-                priority
-                className="w-8 h-8 object-cover"
-                style={{
-                  borderRadius: preference.buttonRadius,
-                }}
+                fill
+                className="object-cover"
               />
-            )}
-          </Link>
-        </div>
+            </div>
+          )}
+        </Link>
 
-        {/* icons and btn */}
-
-        <div className="flex items-center gap-2.5">
-          {/* cart icon */}
+        {/* Actions centrales/droite */}
+        <div className="flex items-center gap-1">
           <Link
             href={`/${shop.slug}/panier`}
-            className="flex items-center justify-center "
+            className="p-2.5 relative hover:bg-black/5 transition-all active:scale-90"
+            style={{ borderRadius: "50%" }}
           >
-            <IconCart className="w-8 flex-shrink-0  opacity-75" />
+            <IconCart className="w-5 h-5" />
+            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
           </Link>
 
-          {/* menu icon */}
+          <Separator orientation="vertical" className="h-6 mx-1 opacity-20" />
+
           <SheetMenuNav
             IconMenu={IconMenu}
-            isOpen={isOpen}
             preferences={preference}
-            setIsOpen={setIsOpen}
             shop={shop}
+            user={user}
           />
         </div>
       </div>
@@ -161,94 +127,117 @@ const ShopHeader = ({
   );
 };
 
-type SheetMenuNavType = {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  shop: Shop;
-  preferences: Preferences;
-  IconMenu: IconLikeComponent;
-};
-
+/* --- COMPOSANT SHEET AMELIORÉ --- */
 const SheetMenuNav = ({
-  isOpen,
-  setIsOpen,
   shop,
   preferences,
   IconMenu,
-}: SheetMenuNavType) => {
+  user,
+}: {
+  shop: Shop;
+  preferences: Preferences;
+  IconMenu: IconLikeComponent;
+  user: any;
+}) => {
+  const [open, setOpen] = useState(false);
   const LinksData =
     ShopAllDataLinks[
       shop.category as "cosmetiques" | "vetements" | "accessoires"
     ] ?? ShopAllDataLinks["cosmetiques"];
 
-  const user = useCurrentUser();
-
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button onClick={() => setIsOpen(!isOpen)} aria-label="Ouvrir le menu">
-          {isOpen ? (
-            <X />
-          ) : (
-            <IconMenu
-              style={{
-                borderRadius: preferences.buttonRadius,
-                borderColor: preferences.textColor,
-                color: preferences.textColor,
-              }}
-            />
-          )}
+        <button
+          className="p-2.5 hover:bg-black/5 transition-all active:scale-90"
+          style={{ borderRadius: "50%" }}
+        >
+          <IconMenu className="w-fit h-fit" />
         </button>
       </SheetTrigger>
-      <SheetContent className="w-full h-svh overflow-y-auto overflow-x-hidden ">
-        <SheetHeader>
-          <SheetTitle>{capitalizeText(shop.name)}</SheetTitle>
-          <SheetDescription
-            hidden={shop.description ? false : true}
-            className="line-clamp-2"
-          >
-            {capitalizeText(shop.description)}
-          </SheetDescription>
-        </SheetHeader>
 
-        {/* separ */}
-        <Separator className="bg-gray-500 w-full my-4" />
+      <SheetContent
+        side="bottom"
+        className="h-[85vh] rounded-t-[2.5rem] border-t-0 p-0 overflow-hidden flex flex-col"
+        style={{
+          backgroundColor: preferences.background,
+          color: preferences.textColor,
+        }}
+      >
+        {/* Barre de drag (esthétique) */}
+        <div className="w-12 h-1.5 bg-current opacity-10 rounded-full mx-auto mt-4 shrink-0" />
 
-        {/* content */}
-        <div className="w-full flex flex-col gap-4 px-4">
-          <h2 className="font-bold text-lg">MENU</h2>
-
-          {/* Links */}
-          <div className="flex flex-col gap-2.5">
-            {LinksData.map((lk, idx) => (
-              <Link
-                href={`/${shop.slug}${lk.value}`}
-                key={idx}
-                onClick={() => setIsOpen(false)}
+        <div className="p-8 flex-1 overflow-y-auto">
+          <SheetHeader className="text-left mb-8">
+            <div className="flex items-center gap-4">
+              <div
+                className="w-14 h-14 relative shrink-0"
+                style={{ borderRadius: preferences.buttonRadius }}
               >
-                <span className="font-medium">{lk.label}</span>
-              </Link>
-            ))}
-          </div>
-
-          {/* auth btn */}
-          <div className="mt-4 w-full flex flex-col ">
-            {user ? (
-              <div className="flex items-center gap-2.5 w-full">
-                <AvatarUser />
-                <div>
-                  <p className="font-medium line-clamp-1">
-                    {user?.name && capitalizeText(user?.name)}
-                  </p>
-                  <p className="opacity-75 text-xs line-clamp-1">
-                    {user?.email}
-                  </p>
-                </div>
+                <Image
+                  src={shop.logo}
+                  alt="logo"
+                  fill
+                  className="object-cover rounded-[inherit]"
+                />
               </div>
-            ) : (
-              <AuthPopup />
-            )}
+              <div>
+                <SheetTitle className="text-2xl font-bold italic">
+                  {capitalizeText(shop.name)}
+                </SheetTitle>
+                <SheetDescription className="line-clamp-1 opacity-60">
+                  {shop.description || "Bienvenue dans notre boutique"}
+                </SheetDescription>
+              </div>
+            </div>
+          </SheetHeader>
+
+          <div className="space-y-8">
+            {/* Liens de Navigation */}
+            <div className="grid grid-cols-1 gap-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-2 ml-1 text-current">
+                Navigation
+              </p>
+              {LinksData.map((lk, idx) => (
+                <Link
+                  href={`/${shop.slug}${lk.value}`}
+                  key={idx}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-current/3 hover:bg-current/[0.07] transition-all group"
+                >
+                  <span className="font-semibold text-lg">{lk.label}</span>
+                  <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              ))}
+            </div>
+
+            {/* Section Utilisateur */}
+            <div className="pt-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-4 ml-1 text-current">
+                Compte
+              </p>
+              {user ? (
+                <div className="flex items-center gap-4 p-4 rounded-3xl border border-current/10">
+                  <AvatarUser />
+                  <div className="flex-1 overflow-hidden">
+                    <p className="font-bold truncate">{user.name}</p>
+                    <p className="text-xs opacity-50 truncate">{user.email}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full py-2">
+                  <AuthPopup />
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Footer du menu */}
+        <div className="p-8 bg-current/3 mt-auto">
+          <p className="text-center text-[10px] opacity-40 uppercase tracking-widest font-bold">
+            Expédition disponible partout • {shop.name}
+          </p>
         </div>
       </SheetContent>
     </Sheet>
