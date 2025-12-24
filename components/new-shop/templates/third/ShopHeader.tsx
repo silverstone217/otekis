@@ -12,7 +12,6 @@ import { X, ArrowRight } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";
-import { Separator } from "@/components/ui/separator";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { ShopAllDataLinks } from "@/utils/shopData";
 import { ShopHeaderType } from "../first/ShopHeader";

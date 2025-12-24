@@ -15,6 +15,8 @@ import {
   calculateDiscountPercentage,
   returnFormatedMoney,
 } from "@/utils/functions";
+import { cn } from "@/lib/utils";
+import { ArrowRight, ShoppingBag, ShoppingCart } from "lucide-react";
 
 export type ShopHeroType = {
   shop: Shop;
@@ -35,7 +37,6 @@ const ShopHero = ({
   currency,
   exchange,
 }: ShopHeroType) => {
-  // const [index] = useState(0);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -61,7 +62,7 @@ const ShopHero = ({
     return luminanceColor(preference.background);
   }, [preference.background]);
 
-  // Prendre les 4 premiers produits avec leurs infos prix, promos, etc
+  // Logique de données (prix, réductions, etc.)
   const itemsSlides = useMemo(
     () =>
       filteredProducts
@@ -103,7 +104,7 @@ const ShopHero = ({
 
   if (
     !isClient ||
-    itemsSlides.length < 2 ||
+    itemsSlides.length < 3 ||
     products.length < 3 ||
     productsShop.length < 3
   )
@@ -111,144 +112,112 @@ const ShopHero = ({
 
   return (
     <div
-      className={`relative w-full min-h-[70svh] overflow-hidden 
-        transition-all duration-500 ease-in-out px-4 pb-6 max-w-7xl mx-auto ${
-          Number(preference.Header) === 3 ? "pt-20" : "pt-0"
-        } ${getMyFont.variable}`}
-      style={{ fontFamily: getMyFont.style.fontFamily }}
+      className={cn(
+        "relative w-full overflow-hidden transition-all duration-500 ease-in-out px-4 pb-12 max-w-7xl mx-auto",
+        Number(preference.Header) === 3 ? "pt-24" : "pt-6",
+        getMyFont.className
+      )}
     >
-      {itemsSlides.length >= 3 && (
+      <div className="grid lg:grid-cols-6 grid-cols-1 gap-6 lg:h-[70svh] w-full">
+        {/* --- PRODUIT PRINCIPAL (GAUCHE) --- */}
         <div
-          className="grid lg:grid-cols-6 grid-cols-1 gap-5 lg:h-[65svh] w-full text-white"
-          style={{ color: "white" }}
+          className="lg:col-span-4 w-full h-[55svh] lg:h-full relative shadow-2xl overflow-hidden group"
+          style={{ borderRadius: preference.buttonRadius }}
         >
-          {/* Grande image colonne gauche */}
-          <div
-            className="lg:col-span-4 w-full h-[55svh] lg:h-[65svh] rounded-2xl relative shadow-2xl overflow-hidden"
-            style={{ borderRadius: preference.buttonRadius }}
-          >
-            <Image
-              src={itemsSlides[0].image}
-              alt={itemsSlides[0].name}
-              fill
-              className="object-cover transition-transform duration-700 ease-in-out hover:scale-105"
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              unoptimized
-            />
-            {/* Overlay Dégradé */}
-            <div
-              className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex flex-col justify-end p-10"
-              style={{ borderRadius: preference.buttonRadius }}
+          <Image
+            src={itemsSlides[0].image}
+            alt={itemsSlides[0].name}
+            fill
+            className="object-cover transition-transform duration-1000 ease-in-out group-hover:scale-110"
+            priority
+            sizes="(max-width: 1024px) 100vw, 60vw"
+            unoptimized
+          />
+
+          {/* Overlay avec dégradé riche */}
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-12">
+            {itemsSlides[0].discountPercentageItem > 0 && (
+              <div className="mb-4 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit animate-pulse tracking-widest uppercase">
+                Offre Limitée -{itemsSlides[0].discountPercentageItem}%
+              </div>
+            )}
+
+            <h2 className="text-4xl md:text-6xl font-black leading-[0.9] tracking-tighter text-white uppercase italic mb-4 max-w-2xl">
+              {capitalizeText(itemsSlides[0].name)}
+            </h2>
+
+            <p className="text-white/70 text-sm md:text-base max-w-lg line-clamp-2 mb-8 font-light">
+              {capitalizeText(itemsSlides[0].description)}
+            </p>
+
+            <Link
+              href={`/${shop.slug}/catalogues/${itemsSlides[0].id}`}
+              className="flex items-center gap-4 w-fit transition-all duration-300 active:scale-95 group/btn"
+              style={{
+                backgroundColor: preference.buttonColor,
+                borderRadius: preference.buttonRadius,
+                color: preference.buttonTextColor,
+                padding: "1rem 2rem",
+              }}
             >
-              <h2 className="text-4xl lg:text-6xl font-extrabold leading-tight tracking-wide line-clamp-3 mb-4">
-                {capitalizeText(itemsSlides[0].name)}
-              </h2>
-              <p className="text-sm lg:text-base opacity-80 line-clamp-2 md:line-clamp-3 mb-6">
-                {capitalizeText(itemsSlides[0].description)}
-              </p>
-              <Link
-                href={`/${shop.slug}/catalogues/${itemsSlides[0].id}`}
-                className="flex items-center bg-primary hover:bg-primary-dark 
-                transition-colors duration-300 text-white font-semibold 
-                py-3 px-12 rounded-xl shadow-lg"
-                style={{
-                  backgroundColor: preference.buttonColor,
-                  borderRadius: preference.buttonRadius,
-                  color: preference.buttonTextColor,
-                }}
-              >
-                <span>Acheter</span>
-                <span className="ml-2">
+              <div className="flex flex-col items-start leading-none">
+                <span className="text-[10px] uppercase font-bold opacity-70 mb-1">
+                  Acheter
+                </span>
+                <span className="text-xl font-black tracking-tight">
                   {returnFormatedMoney(
                     itemsSlides[0].totalPriceAfterDiscountItem * exchange
                   )}
-                  <span className="ml-1 text-xs">{currency}</span>
+                  <small className="ml-1 text-sm uppercase">{currency}</small>
                 </span>
-                {itemsSlides[0].discountPercentageItem > 0 &&
-                  itemsSlides[0].price * exchange !==
-                    itemsSlides[0].productShopPrice * exchange && (
-                    <span
-                      className={`ml-auto text-[8px] md:text-[10px] ${
-                        luminance === "dark" ? "text-red-400" : "text-red-600"
-                      }`}
-                    >
-                      -{itemsSlides[0].discountPercentageItem} %
-                    </span>
-                  )}
-              </Link>
-            </div>
-          </div>
-
-          {/* Deux petites images colonne droite */}
-          <div className="col-span-1 lg:col-span-2 grid grid-cols-2 lg:grid-cols-1 gap-5">
-            {[itemsSlides[1], itemsSlides[2]].map((item) => (
-              <div
-                key={item.id}
-                className="relative w-full h-[25svh] lg:h-[32svh] rounded-xl 
-                shadow-lg overflow-hidden cursor-pointer 
-                transition-transform duration-500 hover:scale-[1.03]"
-                style={{
-                  borderRadius: preference.buttonRadius,
-                  border: `2px solid ${preference.buttonColor}`,
-                }}
-              >
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 1024px) 50vw, 30vw"
-                />
-                <div
-                  className="absolute inset-0 bg-linear-to-t from-black/50 
-                  to-transparent flex flex-col justify-end p-5"
-                  style={{ borderRadius: preference.buttonRadius }}
-                >
-                  <h3
-                    className="text-lg lg:text-xl font-bold line-clamp-2 
-                  tracking-wide mb-2 text-white"
-                  >
-                    {capitalizeText(item.name)}
-                  </h3>
-                  <Link
-                    href={`/${shop.slug}/catalogues/${item.id}`}
-                    className="flex items-center justify-center font-medium text-white border-2 
-                    border-white py-1 px-6 rounded-lg hover:bg-white hover:text-black 
-                    transition-colors duration-300  text-center w-full text-[10px] md:text-xs
-                    "
-                    style={{ borderRadius: preference.buttonRadius }}
-                  >
-                    <span>Acheter</span>
-                    <span className="ml-2 text-[8px] md:text-sm">
-                      {returnFormatedMoney(
-                        item.totalPriceAfterDiscountItem * exchange
-                      )}
-                      <span className="ml-1 text-[8px] md:text-[10px]">
-                        {currency}
-                      </span>
-                    </span>
-                    {item.discountPercentageItem > 0 &&
-                      item.price * exchange !==
-                        item.productShopPrice * exchange && (
-                        <span
-                          className={`ml-auto text-[10px] hidden md:block ${
-                            luminance === "dark"
-                              ? "text-red-400"
-                              : "text-red-600"
-                          }`}
-                        >
-                          -{item.discountPercentageItem} %
-                        </span>
-                      )}
-                  </Link>
-                </div>
               </div>
-            ))}
+              <div className="h-8 w-px bg-white/20 mx-2" />
+              <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
+            </Link>
           </div>
         </div>
-      )}
+
+        {/* --- PRODUITS SECONDAIRES (DROITE) --- */}
+        <div className="col-span-1 lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+          {[itemsSlides[1], itemsSlides[2]].map((item) => (
+            <div
+              key={item.id}
+              className="relative w-full h-[30svh] lg:h-full group overflow-hidden shadow-lg border border-black/5"
+              style={{ borderRadius: preference.buttonRadius }}
+            >
+              <Image
+                src={item.image}
+                alt={item.name}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                sizes="(max-width: 1024px) 50vw, 30vw"
+              />
+
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-6">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-3 line-clamp-1 tracking-tight uppercase italic">
+                  {capitalizeText(item.name)}
+                </h3>
+
+                <Link
+                  href={`/${shop.slug}/catalogues/${item.id}`}
+                  className="group/small flex items-center justify-between bg-white/10 hover:bg-white backdrop-blur-md border border-white/20 px-4 py-2.5 transition-all duration-500"
+                  style={{ borderRadius: preference.buttonRadius }}
+                >
+                  <span className="text-white group-hover/small:text-black font-bold text-sm tracking-tighter">
+                    {returnFormatedMoney(
+                      item.totalPriceAfterDiscountItem * exchange
+                    )}{" "}
+                    {currency}
+                  </span>
+                  <div className="p-1.5 bg-white rounded-full text-black">
+                    <ShoppingCart size={14} />
+                  </div>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
