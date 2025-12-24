@@ -88,16 +88,31 @@ Promise<Metadata> {
   }
 
   return {
-    title: capitalizeText(shop.name),
+    title: `${capitalizeText(shop.name)} – Boutique en ligne`,
     description: capitalizeText(shop.description),
     openGraph: {
-      title: capitalizeText(shop.name),
+      title: `${capitalizeText(shop.name)} – Boutique`,
+      siteName: "Otekis",
       description: capitalizeText(shop.description),
-      images: [shop.logo],
+      images: [
+        {
+          url: shop.logo, // Assure-toi que c'est une URL absolue
+          width: 800,
+          height: 600,
+        },
+      ],
       type: "website",
+      url: "https://www.otekis.com/" + shop.slug,
     },
     icons: {
       icon: shop.logo,
+    },
+    alternates: {
+      canonical: `https://www.otekis.com/${shop.slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }

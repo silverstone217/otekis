@@ -49,10 +49,17 @@ Promise<Metadata> {
     description: capitalizeText(shop.description),
     openGraph: {
       title: capitalizeText(shop.name),
+      siteName: "Otekis",
       description: capitalizeText(shop.description),
-      images: [shop.logo],
+      images: [
+        {
+          url: shop.logo, // Assure-toi que c'est une URL absolue
+          width: 800,
+          height: 600,
+        },
+      ],
       type: "website",
-      url: "https://www.otekis.com/" + shop.slug + "/commandes",
+      url: "https://www.otekis.com/" + shop.slug,
     },
     icons: {
       icon: shop.logo,
