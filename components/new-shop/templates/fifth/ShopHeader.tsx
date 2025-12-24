@@ -4,14 +4,7 @@ import Link from "next/link";
 import { CartIcons, MenuIcons, textColorData } from "@/utils/preferences";
 import Image from "next/image";
 import { ShopAllDataLinks } from "@/utils/shopData";
-import {
-  X,
-  ChevronRight,
-  LayoutGrid,
-  User,
-  ShoppingBag,
-  Info,
-} from "lucide-react";
+import { X, ChevronRight, LayoutGrid } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";
@@ -44,6 +37,25 @@ const ShopHeader = ({
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // update favicon
+  useEffect(() => {
+    const updateFavicon = (iconURL: string): void => {
+      let favicon = document.querySelector(
+        'link[rel="icon"]'
+      ) as HTMLLinkElement;
+
+      if (!favicon) {
+        favicon = document.createElement("link");
+        favicon.rel = "icon";
+        document.head.appendChild(favicon);
+      }
+
+      favicon.href = iconURL;
+    };
+
+    if (shop.logo) updateFavicon(shop.logo);
+  }, [shop]);
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],

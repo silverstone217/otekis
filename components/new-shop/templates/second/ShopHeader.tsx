@@ -35,6 +35,25 @@ const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // update favicon
+  useEffect(() => {
+    const updateFavicon = (iconURL: string): void => {
+      let favicon = document.querySelector(
+        'link[rel="icon"]'
+      ) as HTMLLinkElement;
+
+      if (!favicon) {
+        favicon = document.createElement("link");
+        favicon.rel = "icon";
+        document.head.appendChild(favicon);
+      }
+
+      favicon.href = iconURL;
+    };
+
+    if (shop.logo) updateFavicon(shop.logo);
+  }, [shop]);
+
   const IconCart = useMemo(
     () => CartIcons[preference.cartIcon ? parseInt(preference.cartIcon) : 0],
     [preference.cartIcon]
@@ -120,7 +139,7 @@ const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
             )}
           </div>
 
-          <div className="h-6 w-[1px] bg-gray-300/30 hidden md:block mx-1" />
+          <div className="h-6 w-px bg-gray-300/30 hidden md:block mx-1" />
 
           {/* Panier avec animation badge */}
           <Link
@@ -158,7 +177,7 @@ const LinkShop = ({
     >
       {label}
       <span
-        className="absolute -bottom-1 left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full"
+        className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
         style={{ backgroundColor: textColor }}
       />
     </Link>

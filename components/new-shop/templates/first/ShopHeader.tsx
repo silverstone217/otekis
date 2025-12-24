@@ -37,6 +37,25 @@ const ShopHeader = ({
     setIsClient(true);
   }, []);
 
+  // update favicon
+  useEffect(() => {
+    const updateFavicon = (iconURL: string): void => {
+      let favicon = document.querySelector(
+        'link[rel="icon"]'
+      ) as HTMLLinkElement;
+
+      if (!favicon) {
+        favicon = document.createElement("link");
+        favicon.rel = "icon";
+        document.head.appendChild(favicon);
+      }
+
+      favicon.href = iconURL;
+    };
+
+    if (shop.logo) updateFavicon(shop.logo);
+  }, [shop]);
+
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
     [preference?.cartIcon]
