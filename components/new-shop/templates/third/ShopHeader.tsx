@@ -8,7 +8,7 @@ import {
   textColorData,
 } from "@/utils/preferences";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { X, ArrowRight } from "lucide-react";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";
@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { ShopAllDataLinks } from "@/utils/shopData";
 import { ShopHeaderType } from "../first/ShopHeader";
+import { cn } from "@/lib/utils";
 
 const ShopHeader = ({
   shop,
@@ -26,21 +27,6 @@ const ShopHeader = ({
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => setIsClient(true), []);
-
-  // update logo in favicon
-  useEffect(() => {
-    if (!shop.logo) return;
-    const updateFavicon = (iconURL: string) => {
-      let favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-      if (!favicon) {
-        favicon = document.createElement("link");
-        favicon.rel = "icon";
-        document.head.appendChild(favicon);
-      }
-      favicon.href = iconURL;
-    };
-    updateFavicon(shop.logo);
-  }, [shop.logo]);
 
   const IconCart = useMemo(
     () => CartIcons[preference.cartIcon ? parseInt(preference.cartIcon) : 0],
@@ -57,70 +43,85 @@ const ShopHeader = ({
     [preference.background]
   );
 
+  // Amélioration du Glassmorphism pour le menu
   const bgGlass =
     bgIsLightOrDark === "light"
-      ? "bg-black/30 backdrop-blur-xl"
-      : "bg-white/20 backdrop-blur-xl";
+      ? "bg-white/95 backdrop-blur-2xl"
+      : "bg-black/90 backdrop-blur-2xl";
 
   if (!isClient) return null;
 
   return (
     <header
-      className={`px-4 lg:px-6 xl:px-8 z-50 h-16 shadow fixed top-0 left-0 right-0 
-        transition-all duration-500 ease-in-out flex items-center`}
+      className={`px-6 lg:px-12 z-100 h-20 fixed top-0 left-0 right-0 transition-all duration-500 flex items-center ${getMyFont?.className}`}
       style={{
         backgroundColor: preference?.background ?? backgroundColors.white,
         color: preference?.textColor ?? textColorData.light,
       }}
     >
-      <div className="flex relative items-center justify-between w-full">
-        {/* Logo */}
-        <Link href={`/${shop.slug}`} className="flex items-center gap-2 h-full">
+      <div className="flex items-center justify-between w-full max-w-[1800px] mx-auto">
+        {/* Logo - Plus imposant */}
+        <Link
+          href={`/${shop.slug}`}
+          className="relative z-110 transition-transform active:scale-95"
+        >
           {preference.logo === "name" ? (
-            <h1
-              style={{ color: preference?.textColor ?? textColorData.light }}
-              className="text-xl font-bold tracking-wide capitalize"
-            >
+            <h1 className="text-2xl font-black tracking-tighter uppercase italic">
               {shop.name}
             </h1>
           ) : (
-            <Image
-              src={shop.logo}
-              alt={shop.name}
-              width={40}
-              height={40}
-              priority
-              className="w-8 h-8 object-cover"
+            <div
+              className="relative w-10 h-10 md:w-12 md:h-12 overflow-hidden border border-black/5"
               style={{ borderRadius: preference.buttonRadius }}
-            />
+            >
+              <Image
+                src={shop.logo}
+                alt={shop.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           )}
         </Link>
 
-        {/* Cart + Menu */}
-        <div className="flex items-center gap-4">
-          <Link href={`/${shop.slug}/panier`}>
-            <IconCart className="w-7 opacity-80 hover:opacity-100 transition" />
+        {/* Actions - Style minimaliste */}
+        <div className="flex items-center gap-2 md:gap-6 relative z-110">
+          <Link
+            href={`/${shop.slug}/panier`}
+            className="p-2 hover:bg-black/5 rounded-full transition-colors"
+          >
+            <IconCart className="w-6 h-6" />
           </Link>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            aria-label="Ouvrir le menu"
-            className="p-2 rounded-md hover:bg-black/10 transition"
+            className={`flex items-center gap-2 px-3 py-1.5 border 
+            border-current rounded-full 
+            transition-all duration-300 
+            ${bgIsLightOrDark === "dark" ? "hover:bg-black hover:text-white" : "hover:bg-white hover:text-black"} 
+            active:scale-95
+            `}
+            style={{ borderColor: `${preference.textColor}40` }}
           >
-            {isOpen ? <X /> : <IconMenu />}
+            <span className="text-xs font-bold uppercase hidden md:block">
+              {isOpen ? "Fermer" : "Menu"}
+            </span>
+            {isOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <IconMenu className="w-fit h-fit" />
+            )}
           </button>
         </div>
 
-        {/* Nav Menu */}
-        {/* Nav Menu */}
+        {/* Overlay Menu - Animation Slide Down */}
         <div
-          className={`fixed top-16 left-0 right-0 bottom-0 z-40 transform transition-all duration-500 ease-in-out
-    ${
-      isOpen
-        ? "translate-y-0 opacity-100 pointer-events-auto"
-        : "-translate-y-full opacity-0 pointer-events-none"
-    }
-    ${bgGlass}`}
+          className={cn(
+            "fixed inset-0 z-100 transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)]",
+            isOpen ? "translate-y-0" : "-translate-y-full",
+            bgGlass
+          )}
         >
           <MenuNavHeader
             setIsOpen={setIsOpen}
@@ -134,8 +135,6 @@ const ShopHeader = ({
     </header>
   );
 };
-
-export default ShopHeader;
 
 type MenuNavHeaderType = ShopHeaderType & {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -154,69 +153,91 @@ const MenuNavHeader = ({
     ] ?? ShopAllDataLinks["cosmetiques"];
 
   const user = useCurrentUser();
-  const textColor =
-    bgIsLightOrDark === "dark" ? "text-slate-900" : "text-slate-100";
+
+  // Couleurs dynamiques basées sur le fond
+  const contrastColor =
+    bgIsLightOrDark === "dark" ? "text-white" : "text-black";
+  const mutedColor =
+    bgIsLightOrDark === "dark" ? "text-white/50" : "text-black/50";
 
   return (
-    <div
-      className={`flex flex-col md:flex-row gap-6 w-full h-full p-6 
-        md:p-8 overflow-y-auto ${textColor}`}
-      style={{ borderRadius: preference.buttonRadius }}
-    >
-      {/* Sticky Menu Title */}
-      <div className="sticky top-0 bg-transparent backdrop-blur-xl pb-3 z-10 px-1">
-        <h2
-          className="font-bold text-xl tracking-tight cursor-pointer"
-          onClick={() => setIsOpen(false)}
-        >
-          MENU
-        </h2>
-        <Separator
-          className={`my-2.5 ${
-            bgIsLightOrDark === "dark" ? "bg-gray-500" : "bg-gray-300"
-          }`}
-        />
-      </div>
-
-      {/* Links */}
-      <nav className="flex-1">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {LinksData.map((lk, idx) => (
-            <Link
-              href={`/${shop.slug}${lk.value}`}
-              key={idx}
-              onClick={() => setIsOpen(false)}
-              className="px-3 py-2 rounded-lg font-medium text-lg 
-              hover:scale-105 active:scale-95 transition-all duration-300 ease-in-out
-              hover:bg-black/10"
-            >
-              {lk.label}
-            </Link>
-          ))}
+    <div className="h-full flex flex-col max-w-7xl mx-auto px-6 pt-32 pb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 flex-1">
+        {/* Navigation Section */}
+        <div className="space-y-8">
+          <p
+            className={`text-xs font-bold uppercase tracking-[0.3em] ${mutedColor}`}
+          >
+            Explorez la collection
+          </p>
+          <nav className="flex flex-col space-y-4 md:space-y-6">
+            {LinksData.map((lk, idx) => (
+              <Link
+                href={`/${shop.slug}${lk.value}`}
+                key={idx}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "text-4xl md:text-6xl font-bold tracking-tighter transition-all duration-300 hover:pl-4 flex items-center group",
+                  contrastColor
+                )}
+              >
+                {lk.label}
+                <ArrowRight className="ml-4 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all w-8 h-8 md:w-12 md:h-12" />
+              </Link>
+            ))}
+          </nav>
         </div>
-      </nav>
 
-      {/* User / Auth */}
-      <div className="mt-auto flex flex-col gap-4">
-        <Separator
-          className={`${
-            bgIsLightOrDark === "dark" ? "bg-gray-500" : "bg-gray-300"
-          }`}
-        />
-        {user ? (
-          <div className="flex items-center gap-3">
-            <AvatarUser />
-            <div>
-              <p className="font-semibold line-clamp-1">
-                {user?.name && capitalizeText(user?.name)}
+        {/* Info & Profile Section */}
+        <div className="flex flex-col justify-between border-l border-current/10 pl-0 lg:pl-12">
+          <div className="space-y-6">
+            <p
+              className={`text-xs font-bold uppercase tracking-[0.3em] ${mutedColor}`}
+            >
+              Votre Compte
+            </p>
+            {user ? (
+              <div className="group cursor-pointer p-6 rounded-2xl bg-current/5 hover:bg-current/10 transition-colors">
+                <div className="flex items-center gap-4">
+                  <AvatarUser />
+                  <div>
+                    <p className={`font-bold text-lg ${contrastColor}`}>
+                      {user?.name && capitalizeText(user?.name)}
+                    </p>
+                    <p className={`text-sm ${mutedColor}`}>{user?.email}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="scale-125 origin-left py-4">
+                <AuthPopup />
+              </div>
+            )}
+          </div>
+
+          {/* Shop Card */}
+          <div className="hidden lg:block relative aspect-video overflow-hidden rounded-3xl group">
+            <Image
+              src={shop.logo}
+              alt="shop"
+              fill
+              className="object-cover grayscale hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent flex flex-col justify-end p-8 text-white">
+              <h3 className="text-2xl font-bold uppercase italic">
+                {shop.name}
+              </h3>
+              <p className="text-sm opacity-70">
+                Découvrez l'univers unique de notre boutique.
               </p>
-              <p className="opacity-70 text-sm line-clamp-1">{user?.email}</p>
             </div>
           </div>
-        ) : (
-          <AuthPopup />
-        )}
+        </div>
       </div>
+
+      {/* <div className="my-12 opacity-10" /> */}
     </div>
   );
 };
+
+export default ShopHeader;

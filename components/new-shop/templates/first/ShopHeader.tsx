@@ -9,14 +9,14 @@ import {
 } from "@/utils/preferences";
 import Image from "next/image";
 import { ShopAllDataLinks } from "@/utils/shopData";
-import { X } from "lucide-react";
+import { X, ShoppingBag } from "lucide-react"; // Ajout de ShoppingBag au cas où
 import { useCurrentUser } from "@/hooks/UserAuth";
 import { AuthPopup } from "@/components/SignUserInPopUp";
 import AvatarUser from "@/components/AvatarUser";
 import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Separator } from "@/components/ui/separator";
-import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
+import { capitalizeText } from "@/utils/shopFunctions";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -37,25 +37,6 @@ const ShopHeader = ({
     setIsClient(true);
   }, []);
 
-  // update favicon
-  useEffect(() => {
-    const updateFavicon = (iconURL: string): void => {
-      let favicon = document.querySelector(
-        'link[rel="icon"]'
-      ) as HTMLLinkElement;
-
-      if (!favicon) {
-        favicon = document.createElement("link");
-        favicon.rel = "icon";
-        document.head.appendChild(favicon);
-      }
-
-      favicon.href = iconURL;
-    };
-
-    if (shop.logo) updateFavicon(shop.logo);
-  }, [shop]);
-
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
     [preference?.cartIcon]
@@ -71,156 +52,170 @@ const ShopHeader = ({
       shop.category as "cosmetiques" | "vetements" | "accessoires"
     ] ?? ShopAllDataLinks["cosmetiques"];
 
-  const bgIsLightOrDark = useMemo(
-    () => luminanceColor(preference.background),
-    [preference.background]
-  );
-
   if (!isClient) return null;
 
   return (
     <>
-      {/* HEADER FIXE */}
+      {/* HEADER PRINCIPAL */}
       <header
-        className={`px-4 lg:px-6 xl:px-8 z-50
-        h-14 shadow
-        fixed top-0 left-0 right-0 
-        transition-all duration-500 ease-in-out
-        ${getMyFont?.className}
-        flex items-center justify-between`}
+        className={`fixed top-0 left-0 right-0 z-60 h-16 transition-all duration-300 ${getMyFont?.className} 
+        border-b border-white/10 backdrop-blur-md`}
         style={{
-          backgroundColor: preference?.background ?? backgroundColors.white,
+          backgroundColor: `${preference?.background ?? backgroundColors.white}ee`, // Ajout d'une légère transparence
           color: preference?.textColor ?? textColorData.light,
         }}
       >
-        {/* bouton menu */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Ouvrir le menu"
-          className="flex items-center justify-center"
-        >
-          {isOpen ? (
-            <X className="w-7 h-7" />
-          ) : (
-            <IconMenu
-              style={{
-                borderRadius: preference.buttonRadius,
-                color: preference.textColor,
-              }}
-            />
-          )}
-        </button>
-
-        {/* logo */}
-        <Link
-          href={`/${shop.slug}`}
-          className="flex items-center justify-center gap-2"
-        >
-          {preference.logo === "name" ? (
-            <h1
-              style={{
-                color: preference?.textColor ?? textColorData.light,
-              }}
-              className="text-xl font-semibold tracking-wide capitalize"
+        <div className="max-w-7xl mx-auto h-full px-4 md:px-8 flex items-center justify-between">
+          {/* Gauche : Menu Toggle */}
+          <div className="flex-1 flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 -ml-2 hover:bg-black/5 transition-colors duration-200"
+              style={{ borderRadius: preference.buttonRadius }}
             >
-              {shop.name}
-            </h1>
-          ) : (
-            <Image
-              src={shop.logo}
-              alt={shop.name}
-              width={800}
-              height={800}
-              priority
-              className="w-8 h-8 object-cover"
-              style={{
-                borderRadius: preference.buttonRadius,
-              }}
-            />
-          )}
-        </Link>
-
-        {/* panier */}
-        <Link
-          href={`/${shop.slug}/panier`}
-          className="flex items-center justify-center"
-        >
-          <IconCart className="w-7 h-7 opacity-75" />
-        </Link>
-      </header>
-
-      {/* MENU OVERLAY */}
-      <div
-        className={`fixed top-14 left-0 right-0 bottom-0 z-40
-        transition-all duration-500 ease-in-out
-        ${
-          isOpen
-            ? "translate-y-0 opacity-100 pointer-events-auto"
-            : "-translate-y-full opacity-0 pointer-events-none"
-        }
-        `}
-        style={{
-          backgroundColor: preference?.background ?? backgroundColors.white,
-          color: preference?.textColor ?? textColorData.light,
-        }}
-      >
-        <div className="p-4 flex flex-col gap-6 overflow-y-auto">
-          {/* liens */}
-          <div className="flex flex-col gap-3">
-            {LinksData.map((lk, idx) => (
-              <Link
-                href={`/${shop.slug}${lk.value}`}
-                key={idx}
-                onClick={() => setIsOpen(false)}
-                className="font-medium text-lg hover:opacity-80 transition"
-              >
-                {lk.label}
-              </Link>
-            ))}
+              {isOpen ? (
+                <X className="w-6 h-6 animate-in fade-in zoom-in duration-300" />
+              ) : (
+                <IconMenu className="w-fit h-6 transition-transform active:scale-90" />
+              )}
+            </button>
           </div>
 
-          <Separator className="bg-gray-500" />
-
-          {/* infos shop */}
-          <div className="flex flex-col gap-3">
-            <div className="text-sm">
-              Boutique <strong className="capitalize">{shop.name}</strong>
-            </div>
-            <Image
-              src={shop.logo}
-              alt="Logo de la boutique"
-              width={600}
-              height={600}
-              priority
-              className="w-full h-40 object-cover border border-gray-500"
-              style={{
-                borderRadius: preference.buttonRadius,
-              }}
-            />
-          </div>
-
-          <Separator className="bg-gray-500" />
-
-          {/* auth */}
-          <div className="mt-2">
-            {user ? (
-              <div className="flex items-center gap-2.5">
-                <AvatarUser />
-                <div>
-                  <p className="font-medium line-clamp-1">
-                    {user?.name && capitalizeText(user?.name)}
-                  </p>
-                  <p className="opacity-75 text-xs line-clamp-1">
-                    {user?.email}
-                  </p>
+          {/* Centre : Logo (Plus grand et centré) */}
+          <div className="flex-2 flex justify-center">
+            <Link
+              href={`/${shop.slug}`}
+              className="group transition-transform duration-300 hover:scale-105"
+            >
+              {preference.logo === "name" ? (
+                <h1 className="text-xl md:text-2xl font-bold tracking-tighter uppercase italic">
+                  {shop.name}
+                </h1>
+              ) : (
+                <div
+                  className="relative w-10 h-10 md:w-12 md:h-12 overflow-hidden"
+                  style={{ borderRadius: preference.buttonRadius }}
+                >
+                  <Image
+                    src={shop.logo}
+                    alt={shop.name}
+                    fill
+                    priority
+                    className="object-cover"
+                  />
                 </div>
-              </div>
-            ) : (
-              <AuthPopup />
-            )}
+              )}
+            </Link>
+          </div>
+
+          {/* Droite : Panier & Auth (Desktop) */}
+          <div className="flex-1 flex items-center justify-end gap-4">
+            <Link
+              href={`/${shop.slug}/panier`}
+              className="relative p-2 hover:bg-black/5 transition-all"
+              style={{ borderRadius: preference.buttonRadius }}
+            >
+              <IconCart className="w-6 h-6" />
+              {/* Badge optionnel si vous avez un state panier */}
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </Link>
           </div>
         </div>
+      </header>
+
+      {/* MENU OVERLAY (FULLSCREEN MODERN) */}
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+          isOpen ? "visible" : "invisible"
+        }`}
+      >
+        {/* Backdrop sombre */}
+        <div
+          className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setIsOpen(false)}
+        />
+
+        {/* Contenu du Menu */}
+        <nav
+          className={`absolute top-0 left-0 w-full md:w-[400px] h-full shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.32,0,0.67,0)] ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          style={{
+            backgroundColor: preference?.background ?? backgroundColors.white,
+            color: preference?.textColor ?? textColorData.light,
+          }}
+        >
+          <div className="flex flex-col h-full pt-20 p-8">
+            {/* Liens de navigation avec animation décalée */}
+            <div className="space-y-6">
+              <p className="text-[10px] uppercase tracking-[0.2em] opacity-50 font-bold">
+                Navigation
+              </p>
+              <div className="flex flex-col gap-4">
+                {LinksData.map((lk, idx) => (
+                  <Link
+                    href={`/${shop.slug}${lk.value}`}
+                    key={idx}
+                    onClick={() => setIsOpen(false)}
+                    className="text-3xl font-light hover:translate-x-2 transition-transform duration-300 block"
+                  >
+                    {lk.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-auto space-y-8">
+              <Separator className="opacity-10" />
+
+              {/* User Section */}
+              <div className="py-4">
+                {user ? (
+                  <div className="flex items-center gap-4 p-3 bg-black/5 rounded-xl">
+                    <AvatarUser />
+                    <div className="overflow-hidden">
+                      <p className="font-semibold truncate">
+                        {user?.name && capitalizeText(user?.name)}
+                      </p>
+                      <p className="text-xs opacity-60 truncate">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="scale-110 origin-left">
+                    <AuthPopup />
+                  </div>
+                )}
+              </div>
+
+              {/* Shop Footer Info */}
+              <div className="flex items-center gap-4 pb-8">
+                <div
+                  className="relative w-12 h-12 shrink-0 border border-black/10"
+                  style={{ borderRadius: preference.buttonRadius }}
+                >
+                  <Image
+                    src={shop.logo}
+                    alt="logo"
+                    fill
+                    className="object-cover p-1"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs opacity-50 uppercase tracking-widest">
+                    Boutique Officielle
+                  </p>
+                  <p className="font-bold capitalize">{shop.name}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
       </div>
+
+      {/* Spacer pour éviter que le contenu passe sous le header fixe */}
+      <div className="h-16" />
     </>
   );
 };
