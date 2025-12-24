@@ -82,15 +82,17 @@ const MyShopLayout = async (props: Props) => {
     return <IsShopBanOrNotPublished />;
   }
 
+  const title = `${capitalizeText(shop.name)} – Boutique en ligne`;
+
   // Définir les métadonnées
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const metadata: Metadata = {
-    title: `${capitalizeText(shop.name)} – Boutique en ligne`,
+    title,
 
     description: capitalizeText(shop.description),
     openGraph: {
       title: `${capitalizeText(shop.name)} – Boutique`,
-      siteName: "Otekis",
+      siteName: capitalizeText(shop.name),
       description: capitalizeText(shop.description),
       images: [
         {
@@ -102,9 +104,16 @@ const MyShopLayout = async (props: Props) => {
       type: "website",
       url: "https://www.otekis.com/" + shop.slug,
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: capitalizeText(shop.description),
+      images: [shop.logo],
+    },
     icons: {
       icon: shop.logo,
     },
+    metadataBase: new URL("https://www.otekis.com"),
     alternates: {
       canonical: `https://www.otekis.com/${shop.slug}`,
     },

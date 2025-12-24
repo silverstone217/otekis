@@ -55,7 +55,7 @@ Promise<Metadata> {
     description: capitalizeText(shop.description),
     openGraph: {
       title: capitalizeText(shop.name) + " - catalogues",
-      siteName: "Otekis",
+      siteName: capitalizeText(shop.name),
       description: capitalizeText(shop.description),
       images: [
         {

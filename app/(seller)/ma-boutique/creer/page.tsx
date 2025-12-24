@@ -4,6 +4,57 @@ import { getUser } from "@/actions/actions";
 import React from "react";
 import { getCompanyPreference } from "@/actions/companyAction";
 import BannedUserSeller from "@/components/BannedUserSeller";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Créer une boutique en ligne — Otekis",
+  description:
+    "Créez votre boutique en ligne sur Otekis et commencez à vendre facilement en RDC, sans gérer les stocks ni la livraison.",
+
+  keywords: [
+    "créer boutique en ligne",
+    "ouvrir boutique en ligne RDC",
+    "ecommerce RDC",
+    "vendeur en ligne",
+    "otekis",
+    "créer shop",
+    "business en ligne RDC",
+  ],
+
+  alternates: {
+    canonical: "https://www.otekis.com/ma-boutique/creer",
+  },
+
+  openGraph: {
+    type: "website",
+    title: "Créer une boutique en ligne — Otekis",
+    description:
+      "Lancez votre boutique en ligne sur Otekis et vendez vos produits facilement en RDC.",
+    url: "https://www.otekis.com/ma-boutique/creer",
+    siteName: "Otekis",
+    images: [
+      {
+        url: "https://www.otekis.com/images/oteki-logo.png",
+        width: 800,
+        height: 600,
+        alt: "Créer une boutique en ligne sur Otekis",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Créer une boutique en ligne — Otekis",
+    description:
+      "Créez votre boutique en ligne sur Otekis et commencez à vendre en RDC.",
+    images: ["https://www.otekis.com/images/oteki-logo.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 const NewShopPage = async () => {
   const user = await getUser();

@@ -41,6 +41,7 @@ Promise<Metadata> {
     return {
       title: "Boutique non trouvée",
       description: "La boutique que vous recherchez n'existe pas.",
+      robots: { index: false },
     };
   }
 
@@ -49,7 +50,7 @@ Promise<Metadata> {
     description: capitalizeText(shop.description),
     openGraph: {
       title: capitalizeText(shop.name),
-      siteName: "Otekis",
+      siteName: capitalizeText(shop.name),
       description: capitalizeText(shop.description),
       images: [
         {
