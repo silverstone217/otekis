@@ -142,14 +142,14 @@ const ShopHero = ({
                   alt={item.name}
                   fill
                   className={cn(
-                    "object-cover transition-transform duration-[6000ms] ease-out",
+                    "object-cover transition-transform duration-6000 ease-out",
                     isActive ? "scale-110" : "scale-100"
                   )}
                   priority={isActive}
                   unoptimized
                 />
                 {/* Overlay pour assurer le contraste sur l'image en mobile */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent sm:hidden" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent sm:hidden" />
               </div>
 
               {/* SECTION TEXTE ET CONTENU */}

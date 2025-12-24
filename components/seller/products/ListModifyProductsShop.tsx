@@ -283,9 +283,11 @@ export const ListAddProductCard = ({
   );
   const isInShop = !!isInShopProduct;
   const promotion = isInShopProduct?.promotion || 0;
-  const benefit = isInShopProduct?.percentage
-    ? Math.round((isInShopProduct.percentage * product.price) / 100)
+
+  const benefit = isInShopProduct
+    ? isInShopProduct.price! - (product.price ?? 0)
     : 0;
+
   const beneficeAfterDiscount = applyPromotionOnProfit(benefit, promotion);
   const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
   const articles = product.Article as { stock: number }[];
