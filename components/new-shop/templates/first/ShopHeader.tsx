@@ -252,7 +252,7 @@ const ShopHeader = ({
       </div>
 
       {/* Spacer pour éviter que le contenu passe sous le header fixe */}
-      <div className="h-16" />
+      {/* <div className="h-16" /> */}
     </>
   );
 };

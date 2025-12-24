@@ -108,7 +108,7 @@ const ShopHeader = ({
           scrolled ? "-translate-y-2.5 scale-95 shadow-2xl" : "shadow-xl"
         )}
         style={{
-          borderRadius: preference.buttonRadius || "9999px",
+          borderRadius: preference.buttonRadius,
           backgroundColor: `${preference?.background}F2` || "#ffffffF2", // Opacité 95%
           color: preference?.textColor || textColorData.light,
           borderColor: `${preference?.textColor}15`,
@@ -199,11 +199,21 @@ const SheetMenuNav = ({
         style={{
           backgroundColor: preferences.background,
           color: preferences.textColor,
+          zIndex: 999,
         }}
       >
-        {/* Barre de drag (esthétique) */}
-        <div className="w-12 h-1.5 bg-current opacity-10 rounded-full mx-auto mt-4 shrink-0" />
+        {/* Barre de drag avec bouton fermer intégré */}
+        <div className="w-full flex flex-col items-center py-4 shrink-0">
+          <div className="w-12 h-1.5 bg-current opacity-10 rounded-full mb-2" />
+          <button
+            onClick={() => setOpen(false)}
+            className="text-[10px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity"
+          >
+            Fermer
+          </button>
+        </div>
 
+        {/* Contenu principal du menu */}
         <div className="p-8 flex-1 overflow-y-auto">
           <SheetHeader className="text-left mb-8">
             <div className="flex items-center gap-4">
@@ -219,10 +229,18 @@ const SheetMenuNav = ({
                 />
               </div>
               <div>
-                <SheetTitle className="text-2xl font-bold italic">
+                <SheetTitle
+                  className="text-2xl font-bold italic "
+                  style={{
+                    color: preferences.textColor,
+                  }}
+                >
                   {capitalizeText(shop.name)}
                 </SheetTitle>
-                <SheetDescription className="line-clamp-1 opacity-60">
+                <SheetDescription
+                  className="line-clamp-1 opacity-40"
+                  style={{ color: preferences.textColor }}
+                >
                   {shop.description || "Bienvenue dans notre boutique"}
                 </SheetDescription>
               </div>

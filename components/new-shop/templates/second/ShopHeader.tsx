@@ -235,7 +235,7 @@ const SmallDevicesLinksPart = ({
     <Sheet>
       <SheetTrigger asChild>
         <button className="p-2 -ml-2">
-          <IconMenu className="w-6 h-6" />
+          <IconMenu className="w-fit h-6" />
         </button>
       </SheetTrigger>
 

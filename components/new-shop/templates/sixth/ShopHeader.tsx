@@ -99,7 +99,7 @@ const ShopHeader = ({
             backgroundColor: `${preference.background}CC`, // Transparent
             color: preference.textColor,
             borderColor: `${preference.textColor}1A`, // 10% d'opacité
-            borderRadius: preference.buttonRadius === "0px" ? "0px" : "9999px",
+            borderRadius: preference.buttonRadius,
           }}
         >
           {/* GAUCHE : Bouton Menu Minimal */}
@@ -114,7 +114,10 @@ const ShopHeader = ({
                 <IconMenu size={20} />
               )}
             </div>
-            <span className="text-[10px] ml-0.5 font-bold uppercase tracking-[0.2em] hidden md:block">
+            <span
+              className="text-[10px] ml-0.5 font-bold uppercase tracking-[0.2em] 
+            block"
+            >
               {isOpen ? "Close" : ""}
             </span>
           </button>

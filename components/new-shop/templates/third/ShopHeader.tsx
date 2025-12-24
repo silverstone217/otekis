@@ -102,7 +102,17 @@ const ShopHeader = ({
           className="relative z-110 transition-transform active:scale-95"
         >
           {preference.logo === "name" ? (
-            <h1 className="text-2xl font-black tracking-tighter uppercase italic">
+            <h1
+              className={`text-2xl font-black tracking-tighter uppercase italic
+               ${
+                 isOpen && bgIsLightOrDark !== "dark"
+                   ? " text-black"
+                   : isOpen && bgIsLightOrDark === "dark"
+                     ? "text-white"
+                     : "bg-transparent text-current"
+               }
+            `}
+            >
               {shop.name}
             </h1>
           ) : (
@@ -125,7 +135,16 @@ const ShopHeader = ({
         <div className="flex items-center gap-2 md:gap-6 relative z-110">
           <Link
             href={`/${shop.slug}/panier`}
-            className="p-2 hover:bg-black/5 rounded-full transition-colors"
+            className={`p-2 hover:bg-black/5 rounded-full transition-all
+                ${
+                  isOpen && bgIsLightOrDark !== "dark"
+                    ? " text-black"
+                    : isOpen && bgIsLightOrDark === "dark"
+                      ? "text-white"
+                      : "bg-transparent text-current"
+                }
+               ease-in-out duration-300
+              `}
           >
             <IconCart className="w-6 h-6" />
           </Link>
@@ -135,10 +154,20 @@ const ShopHeader = ({
             className={`flex items-center gap-2 px-3 py-1.5 border 
             border-current rounded-full 
             transition-all duration-300 
-            ${bgIsLightOrDark === "dark" ? "hover:bg-black hover:text-white" : "hover:bg-white hover:text-black"} 
+            ${bgIsLightOrDark === "dark" && isOpen ? "hover:bg-black hover:text-white" : "hover:bg-white hover:text-black"} 
             active:scale-95
+             ${
+               isOpen && bgIsLightOrDark !== "dark"
+                 ? " text-black"
+                 : isOpen && bgIsLightOrDark === "dark"
+                   ? "text-white"
+                   : "bg-transparent text-current"
+             }
             `}
-            style={{ borderColor: `${preference.textColor}40` }}
+            style={{
+              borderColor: `${preference.textColor}40`,
+              borderRadius: preference.buttonRadius,
+            }}
           >
             <span className="text-xs font-bold uppercase hidden md:block">
               {isOpen ? "Fermer" : "Menu"}
