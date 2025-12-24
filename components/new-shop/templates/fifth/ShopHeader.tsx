@@ -38,24 +38,42 @@ const ShopHeader = ({
     setIsClient(true);
   }, []);
 
-  // update favicon
+  // update favicon and title
   useEffect(() => {
+    if (!shop) return;
+
+    // 1. Mettre à jour le TITRE de la page
+    if (shop.name) {
+      document.title = `${shop.name} | Boutique Officielle`;
+    }
+
+    // 2. Mettre à jour le FAVICON
     const updateFavicon = (iconURL: string): void => {
-      let favicon = document.querySelector(
-        'link[rel="icon"]'
-      ) as HTMLLinkElement;
+      // Chercher tous les types de favicon possibles (icon, shortcut icon, apple-touch-icon)
+      const selectors = ['link[rel="icon"]', 'link[rel="shortcut icon"]'];
+      let faviconFound = false;
 
-      if (!favicon) {
-        favicon = document.createElement("link");
-        favicon.rel = "icon";
-        document.head.appendChild(favicon);
+      selectors.forEach((selector) => {
+        const element = document.querySelector(selector) as HTMLLinkElement;
+        if (element) {
+          element.href = iconURL;
+          faviconFound = true;
+        }
+      });
+
+      // Si aucun n'existe, on le crée
+      if (!faviconFound) {
+        const newFavicon = document.createElement("link");
+        newFavicon.rel = "icon";
+        newFavicon.href = iconURL;
+        document.head.appendChild(newFavicon);
       }
-
-      favicon.href = iconURL;
     };
 
-    if (shop.logo) updateFavicon(shop.logo);
-  }, [shop]);
+    if (shop.logo) {
+      updateFavicon(shop.logo);
+    }
+  }, [shop.logo, shop.name]);
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],

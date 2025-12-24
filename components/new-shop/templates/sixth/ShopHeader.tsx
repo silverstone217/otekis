@@ -30,6 +30,43 @@ const ShopHeader = ({
 
   useEffect(() => setIsClient(true), []);
 
+  // update favicon and title
+  useEffect(() => {
+    if (!shop) return;
+
+    // 1. Mettre à jour le TITRE de la page
+    if (shop.name) {
+      document.title = `${shop.name} | Boutique Officielle`;
+    }
+
+    // 2. Mettre à jour le FAVICON
+    const updateFavicon = (iconURL: string): void => {
+      // Chercher tous les types de favicon possibles (icon, shortcut icon, apple-touch-icon)
+      const selectors = ['link[rel="icon"]', 'link[rel="shortcut icon"]'];
+      let faviconFound = false;
+
+      selectors.forEach((selector) => {
+        const element = document.querySelector(selector) as HTMLLinkElement;
+        if (element) {
+          element.href = iconURL;
+          faviconFound = true;
+        }
+      });
+
+      // Si aucun n'existe, on le crée
+      if (!faviconFound) {
+        const newFavicon = document.createElement("link");
+        newFavicon.rel = "icon";
+        newFavicon.href = iconURL;
+        document.head.appendChild(newFavicon);
+      }
+    };
+
+    if (shop.logo) {
+      updateFavicon(shop.logo);
+    }
+  }, [shop.logo, shop.name]);
+
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
     [preference?.cartIcon]
