@@ -27,6 +27,7 @@ import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategor
 import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
 import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
 import { HEADERS_DATA } from "./layout";
+import { cn } from "@/lib/utils";
 
 // HEROS DATA
 const HEROS_DATA = [
@@ -226,18 +227,54 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
       {/* desc shop */}
       <div className="p4-8"></div>
       {preferences.showDescription && (
-        <div
-          className="w-full lg:text-center p-4  text-pretty text-2xl 
-      font-bold min-h-[70dvh] md:min-h-[60dvh] xl:min-h-[50dvh] overflow-hidden 
-      box-border flex items-center justify-center 
-      line-clamp-6 xl:leading-[50px] md:leading-10
-      "
+        <section
+          className="w-full relative overflow-hidden flex items-center justify-center px-6 py-20 lg:py-32"
+          style={{ backgroundColor: preferences.background }}
         >
-          <p>
-            {capitalizeText(shop.description.slice(0, 310))}
-            {shop.description.length > 313 && "..."}
-          </p>
-        </div>
+          {/* Décoration en arrière-plan (Optionnel : un grand texte très pâle) */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none select-none">
+            <span className="text-[20vw] font-black uppercase tracking-tighter italic">
+              {shop.name}
+            </span>
+          </div>
+
+          <div
+            className={cn(
+              "relative z-10 max-w-5xl mx-auto text-center space-y-8",
+              getMyFont?.className
+            )}
+          >
+            {/* Petit indicateur visuel */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="h-px w-8 bg-current opacity-30" />
+              <span className="text-[10px] uppercase tracking-[0.4em] opacity-50 font-bold">
+                À propos de nous
+              </span>
+              <div className="h-px w-8 bg-current opacity-30" />
+            </div>
+
+            {/* Texte de description principal */}
+            <blockquote
+              className="text-2xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-[1.2] md:leading-[1.1] text-balance"
+              style={{ color: preferences.textColor }}
+            >
+              <span className="opacity-100 italic font-serif mr-2">“</span>
+              {capitalizeText(shop.description.slice(0, 310))}
+              {shop.description.length > 310 && "..."}
+              <span className="opacity-100 italic font-serif ml-1">”</span>
+            </blockquote>
+
+            {/* Signature ou Nom du Shop */}
+            <div className="pt-6">
+              <p
+                className="text-sm font-black uppercase tracking-widest italic"
+                style={{ color: preferences.buttonColor }}
+              >
+                — {shop.name}
+              </p>
+            </div>
+          </div>
+        </section>
       )}
       <div className="py-4"></div>
       {/* new arrivals */}
