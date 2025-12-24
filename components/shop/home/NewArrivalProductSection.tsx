@@ -155,11 +155,12 @@ export const ProductCard = ({
     >
       {/* CONTENEUR IMAGE */}
       <div
-        className="relative aspect-3/4 w-full overflow-hidden shadow-sm border 
-        border-black/3"
+        className="relative  w-full overflow-hidden shadow-sm border 
+        border-black/3 "
         style={{
           backgroundColor: bgImage,
           borderRadius: preferences.buttonRadius,
+          aspectRatio: "3 / 4",
         }}
       >
         {/* L'image avec zoom plus fluide */}
@@ -169,7 +170,7 @@ export const ProductCard = ({
           fill
           priority
           className="object-cover transition-transform duration-700 
-          ease-out group-hover:scale-110"
+          ease-out group-hover:scale-110 "
           unoptimized
         />
 
