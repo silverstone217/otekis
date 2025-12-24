@@ -26,6 +26,7 @@ import ShopCategorySecond from "@/components/new-shop/templates/second/ShopCateg
 import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategorySection";
 import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
 import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
+import { HEADERS_DATA } from "./layout";
 
 // HEROS DATA
 const HEROS_DATA = [
@@ -180,6 +181,9 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
   // console.log(articleFirst);
 
+  // HEADER
+  const Header = Number(preferences.Header) ?? 1;
+
   // Hero
   const Hero = preferences.Hero;
   const CurrentHero = HEROS_DATA[Number(Hero)] ?? HEROS_DATA[0];
@@ -203,6 +207,8 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         currency={currency}
         exchange={exchange}
       />
+
+      {Header === 3 && <div className="py-10" />}
 
       <CurrentCategory
         shop={shop}

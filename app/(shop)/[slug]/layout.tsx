@@ -30,7 +30,7 @@ import NotShopStatusFind, {
 } from "@/components/shop/NotPublishedComponent";
 
 // HEADERS DATA
-const HEADERS_DATA = [
+export const HEADERS_DATA = [
   ShopHeaderOne,
   ShopHeaderSecond,
   ShopHeaderThird,
