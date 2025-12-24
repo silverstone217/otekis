@@ -15,6 +15,8 @@ import {
   calculateDiscountPercentage,
   returnFormatedMoney,
 } from "@/utils/functions";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 
 export type ShopHeroType = {
   shop: Shop;
@@ -42,7 +44,6 @@ const ShopHero = ({
     setIsClient(true);
   }, []);
 
-  // Clone et shuffle sans muter l'original
   const shuffleArray = (array: Product[]) => {
     const copy = [...array];
     if (copy.length > 0) {
@@ -54,51 +55,13 @@ const ShopHero = ({
     return copy ?? [];
   };
 
-  // Produits mélangés
-  const filteredProducts = useMemo(() => {
-    return shuffleArray(products);
-  }, [products]);
-
-  // Prendre les 4 premiers produits
+  const filteredProducts = useMemo(() => shuffleArray(products), [products]);
   const itemsSlides = useMemo(
     () => filteredProducts.slice(0, 4),
     [filteredProducts]
   );
 
-  // Sécuriser currentItem
-  const currentItem = itemsSlides[index] ?? null;
-
-  // Trouver une seule fois le produit shop associé
-  const productShop = useMemo(() => {
-    if (!currentItem) return null;
-    return productsShop.find((pr) => pr.productId === currentItem.id) ?? null;
-  }, [currentItem, productsShop]);
-
-  // benefit
-  const benefit = productShop
-    ? productShop.price! - (currentItem.price ?? 0)
-    : 0;
-
-  const beneficeAfterDiscount = productShop
-    ? applyPromotionOnProfit(benefit!, productShop.promotion!)
-    : 0;
-
-  const totalPriceAfterDiscount = currentItem.price + beneficeAfterDiscount;
-
-  const discountPercentage = productShop
-    ? calculateDiscountPercentage(productShop.price!, totalPriceAfterDiscount)
-    : 0;
-
-  // Navigation slides
-  const prevSlide = () => {
-    setIndex((prev) => (prev === 0 ? itemsSlides.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
-    setIndex((prev) => (prev === itemsSlides.length - 1 ? 0 : prev + 1));
-  };
-
-  // Autoplay toutes les 10s
+  // Autoplay
   useEffect(() => {
     if (itemsSlides.length === 0) return;
     const interval = setInterval(() => {
@@ -107,181 +70,163 @@ const ShopHero = ({
     return () => clearInterval(interval);
   }, [itemsSlides.length]);
 
-  // Header position
-  const Header = preference.Header;
-
-  if (
-    !isClient ||
-    itemsSlides.length < 2 ||
-    products.length < 3 ||
-    productsShop.length < 3
-  )
-    return null;
+  if (!isClient || itemsSlides.length < 2) return null;
 
   return (
-    <div
-      className={`relative w-full h-[87svh] lg:h-[80svh] xl:h-[85svh] 
-        overflow-hidden transition-all duration-500 ease-in-out shadow-xl  
-        ${getMyFont?.className}`}
-      aria-roledescription="carousel"
-      aria-label="Produits en vedette"
-      style={{
-        borderRadius: preference.buttonRadius,
-      }}
+    <section
+      className={cn(
+        "relative w-full h-[85svh] lg:h-[80svh] overflow-hidden group shadow-2xl",
+        getMyFont?.className
+      )}
+      style={{ borderRadius: preference.buttonRadius }}
     >
-      {/* Slides */}
+      {/* Slides Container */}
       <div
-        className="h-full w-full flex transition-transform 
-        duration-700 ease-in-out text-white"
-        style={{
-          transform: `translateX(-${index * 100}%)`,
-          borderRadius: preference.buttonRadius,
-        }}
+        className="h-full w-full flex transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        style={{ transform: `translateX(-${index * 100}%)` }}
       >
-        {itemsSlides.map((item, idx) => (
-          <div
-            className="w-full shrink-0 relative"
-            key={item.id}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${idx + 1} sur ${itemsSlides.length}`}
-            aria-hidden={index !== idx}
-            style={{
-              borderRadius: preference.buttonRadius,
-            }}
-          >
-            <div className="relative w-full h-full overflow-hidden">
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={1800}
-                height={2000}
-                className="object-cover w-full h-full"
-                priority={idx === 0}
-                style={{
-                  borderRadius: preference.buttonRadius,
-                }}
-                unoptimized
-              />
-            </div>
-            {/* Overlay infos */}
-            <div
-              className="absolute inset-0 z-10 bg-linear-to-t 
-            from-black/40 to-transparent"
-            >
-              <div
-                className="flex flex-col justify-end px-8
-              md:px-10 py-10 gap-8 w-full lg:w-[450px] h-full"
-              >
-                <h2
-                  className="text-pretty text-3xl lg:text-4xl xl:text-5xl 
-                font-bold line-clamp-3 tracking-wide"
-                >
-                  {item.name && capitalizeText(item.name)}
-                </h2>
-                <p className="text-sm opacity-80 line-clamp-3">
-                  {item.description && capitalizeText(item.description)}
-                </p>
-                <Link
-                  href={`/${shop.slug}/catalogues/${item.id}`}
-                  className="font-medium lg:px-10 md:px-8 px-6 py-2 shadow-md 
-                  transition-all duration-500 
-                  ease-in-out hover:opacity-70 flex items-center justify-center 
-                  gap-2
-                  text-sm lg:text-md
-                  "
-                  style={{
-                    textDecoration: "none",
-                    backgroundColor: preference.buttonColor,
-                    color: preference.buttonTextColor,
-                    borderRadius: preference.buttonRadius,
-                  }}
-                >
-                  <span>Acheter</span>
+        {itemsSlides.map((item, idx) => {
+          // Calculs spécifiques à chaque slide à l'intérieur du map
+          const pShop = productsShop.find((p) => p.productId === item.id);
+          const benefit = pShop ? pShop.price! - (item.price ?? 0) : 0;
+          const promoBenef = pShop
+            ? applyPromotionOnProfit(benefit, pShop.promotion!)
+            : 0;
+          const priceAfter = item.price + promoBenef;
+          const hasPromo =
+            pShop?.promotion &&
+            pShop.promotion !== 0 &&
+            pShop.price * exchange !== priceAfter * exchange;
 
-                  {productShop?.promotion &&
-                  productShop?.promotion !== 0 &&
-                  productShop.price * exchange !==
-                    totalPriceAfterDiscount * exchange ? (
-                    <span>
-                      <span className="opacity-70 mr-2">
-                        <s>
-                          {returnFormatedMoney(productShop.price * exchange)}
-                        </s>{" "}
-                        <span className="text-xs">{currency}</span>
-                      </span>
-                      {"  "}
-                      {"  "}
-                      {returnFormatedMoney(
-                        totalPriceAfterDiscount * exchange
-                      )}{" "}
-                      <span className="text-xs">{currency}</span>
-                    </span>
-                  ) : (
-                    <span>
-                      {returnFormatedMoney(
-                        (productShop?.price || 0) * exchange
-                      )}{" "}
-                      <span className="text-xs">{currency}</span>
+          return (
+            <div
+              key={item.id}
+              className="w-full shrink-0 h-full relative overflow-hidden"
+            >
+              {/* Image avec zoom progressif */}
+              <div
+                className={cn(
+                  "absolute inset-0 transition-transform duration-[10s] ease-linear",
+                  index === idx ? "scale-110" : "scale-100"
+                )}
+              >
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                  priority={idx === 0}
+                  unoptimized
+                />
+              </div>
+
+              {/* Overlay progressif */}
+              <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/20 to-transparent z-10" />
+
+              {/* Content */}
+              <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-20 max-w-4xl">
+                <div
+                  className={cn(
+                    "transition-all duration-1000 delay-300",
+                    index === idx
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-10 opacity-0"
+                  )}
+                >
+                  {hasPromo && (
+                    <span className="inline-block px-3 py-1 mb-6 bg-red-600 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm">
+                      Offre Spéciale
                     </span>
                   )}
-                </Link>
+
+                  <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase italic mb-6">
+                    {capitalizeText(item.name)}
+                  </h2>
+
+                  <p className="text-white/70 text-sm md:text-lg max-w-md mb-10 line-clamp-3 font-light leading-relaxed">
+                    {capitalizeText(item.description)}
+                  </p>
+
+                  <Link
+                    href={`/${shop.slug}/catalogues/${item.id}`}
+                    className="flex items-center gap-6 w-fit py-4 px-8 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl shadow-black/40"
+                    style={{
+                      backgroundColor: preference.buttonColor,
+                      color: preference.buttonTextColor,
+                      borderRadius: preference.buttonRadius,
+                    }}
+                  >
+                    <span className="uppercase font-bold tracking-widest text-xs">
+                      Découvrir
+                    </span>
+                    <div className="h-4 w-px bg-current/20" />
+                    <span className="font-black text-lg">
+                      {hasPromo ? (
+                        <span className="flex items-center gap-2">
+                          <s className="opacity-50 text-sm font-light">
+                            {returnFormatedMoney(pShop!.price * exchange)}
+                          </s>
+                          {returnFormatedMoney(priceAfter * exchange)}
+                        </span>
+                      ) : (
+                        returnFormatedMoney((pShop?.price || 0) * exchange)
+                      )}
+                      <small className="ml-1 text-[10px]">{currency}</small>
+                    </span>
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Prev/Next Buttons */}
+      {/* Navigation - Boutons stylisés qui apparaissent au hover du slider */}
       <button
-        onClick={prevSlide}
-        className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/70 hover:bg-white shadow rounded-full p-2"
-        aria-label="Produit précédent"
+        onClick={() =>
+          setIndex((prev) => (prev === 0 ? itemsSlides.length - 1 : prev - 1))
+        }
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:text-black"
       >
-        <svg width="24" height="24" fill="none" aria-hidden="true">
-          <path
-            d="M15 19l-7-7 7-7"
-            stroke="#333"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/70 
-        hover:bg-white shadow rounded-full p-2"
-        aria-label="Produit suivant"
-      >
-        <svg width="24" height="24" fill="none" aria-hidden="true">
-          <path
-            d="M9 5l7 7-7 7"
-            stroke="#333"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ChevronLeft size={24} />
       </button>
 
-      {/* Pagination Dots */}
-      <div
-        className="absolute bottom-3 left-1/2 transform -translate-x-1/2 
-      bg-white/30 backdrop-blur-md rounded-full px-2 py-1 flex space-x-1 shadow-md"
+      <button
+        onClick={() =>
+          setIndex((prev) => (prev === itemsSlides.length - 1 ? 0 : prev + 1))
+        }
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:text-black"
       >
+        <ChevronRight size={24} />
+      </button>
+
+      {/* Custom Pagination Line */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
         {itemsSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            aria-label={`Aller à la slide ${i + 1}`}
-            aria-current={index === i ? "true" : undefined}
-            className={`w-2 h-2 rounded-full transition-colors duration-300 outline-none focus:ring-2 focus:ring-primary
-        ${index === i ? "bg-primary" : "bg-gray-300 hover:bg-gray-400"}`}
-          />
+            className="group relative h-1 transition-all duration-500"
+            style={{ width: index === i ? "40px" : "12px" }}
+          >
+            <div
+              className={cn(
+                "absolute inset-0 rounded-full transition-all duration-500",
+                index === i ? "bg-white" : "bg-white/30"
+              )}
+            />
+          </button>
         ))}
       </div>
-    </div>
+
+      {/* Scroll Indicator (Decoration) */}
+      <div className="absolute bottom-10 right-10 z-30 hidden lg:flex items-center gap-4 rotate-90 origin-right translate-y-full opacity-20">
+        <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-white">
+          Slide 0{index + 1}
+        </span>
+        <div className="w-12 h-px bg-white" />
+      </div>
+    </section>
   );
 };
 
