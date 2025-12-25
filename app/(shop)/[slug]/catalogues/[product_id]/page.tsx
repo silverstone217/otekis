@@ -237,9 +237,7 @@ const page = async (props: Props) => {
   const isInCart = carts.some((cart) => cart.productShopId === productShop.id);
 
   // benefit
-  const benefit = Number(
-    Math.round((productShop.percentage! * product.price) / 100)
-  );
+  const benefit = productShop ? productShop.price! - (product.price ?? 0) : 0;
 
   const beneficeAfterDiscount = applyPromotionOnProfit(
     benefit!,

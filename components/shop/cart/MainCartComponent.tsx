@@ -105,10 +105,8 @@ const MainCartComponent = ({
 
     const product = products.find((p) => p.id === productShop.productId);
 
-    const benefit = Number(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      Math.round((productShop?.percentage * product?.price!) / 100)
-    );
+    const benefit =
+      productShop && product ? productShop.price! - (product.price ?? 0) : 0;
 
     const beneficeAfterDiscount = applyPromotionOnProfit(
       benefit,
@@ -191,9 +189,10 @@ const MainCartComponent = ({
         const quantity = cart.quantity ?? 1;
 
         // benefit
-        const benefit = Math.round(
-          (productShop.percentage * product.price) / 100
-        );
+        const benefit =
+          productShop && product
+            ? productShop.price! - (product.price ?? 0)
+            : 0;
 
         const beneficeAfterDiscount = applyPromotionOnProfit(
           benefit,
@@ -418,10 +417,8 @@ const CartItemProduct = ({
   const productShop = productsShop.find((sp) => sp.productId === product.id);
 
   // benefit
-  const benefit = Number(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    Math.round((productShop?.percentage! * product.price) / 100)
-  );
+  const benefit =
+    productShop && product ? productShop.price! - (product.price ?? 0) : 0;
 
   const beneficeAfterDiscount = applyPromotionOnProfit(
     benefit,

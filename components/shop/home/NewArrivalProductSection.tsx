@@ -98,11 +98,8 @@ export const ProductCard = ({
 }) => {
   // --- TES FONCTIONS ET CALCULS (INCHANGÉS) ---
   const benefit = useMemo(
-    () =>
-      product.price > 0
-        ? Number(Math.round((productShopPercentage! * product.price) / 100))
-        : 0,
-    [product.price, productShopPercentage]
+    () => (productShopPrice ? productShopPrice - (product.price ?? 0) : 0),
+    [product.price, productShopPrice]
   );
 
   const beneficeAfterDiscount = useMemo(
