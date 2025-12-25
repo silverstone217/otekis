@@ -37,8 +37,11 @@ const ShopCategorySection = ({
     >
       {DataCat.map((item, idx) => (
         <div
-          className="group relative w-full h-[65vh] xl:h-[80vh] overflow-hidden border-r border-b border-black/5 last:border-r-0"
+          className="group relative w-full aspect-3/4 xl:aspect-video overflow-hidden border-r border-b border-black/5 last:border-r-0"
           key={idx}
+          style={{
+            aspectRatio: "3 / 4",
+          }}
         >
           {/* IMAGE 1 (Standard) */}
           <div
@@ -56,7 +59,10 @@ const ShopCategorySection = ({
           </div>
 
           {/* IMAGE 2 (Hover) */}
-          <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out scale-110 group-hover:scale-100">
+          <div
+            className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 
+          transition-all duration-700 ease-in-out scale-110 group-hover:scale-100"
+          >
             <Image
               src={item.image2}
               alt={item.title}
