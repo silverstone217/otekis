@@ -44,6 +44,12 @@ const nextConfig = {
     CINET_PAY_SECRET_KEY_CDF: process.env.CINET_PAY_SECRET_KEY_CDF,
     CINET_PAY_SITE_ID_CDF: process.env.CINET_PAY_SITE_ID_CDF,
 
+    // Flexpaie API Keys
+    FLEXPAIE_TOKEN: process.env.FLEXPAIE_TOKEN,
+    FLEXPAIE_URL_API: process.env.FLEXPAIE_URL_API,
+    FLEXPAIE_URL_API_CHECK_ORDER: process.env.FLEXPAIE_URL_API_CHECK_ORDER,
+    FLEXPAIE_MERCHANT_CODE: process.env.FLEXPAIE_MERCHANT_CODE,
+
     // pusher api keys
     PUSHER_APPID: process.env.PUSHER_APPID,
     PUSHER_KEY: process.env.PUSHER_KEY,

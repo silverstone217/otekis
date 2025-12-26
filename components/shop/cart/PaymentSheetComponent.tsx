@@ -38,6 +38,7 @@ import SelectZones from "./SelectZone";
 import ChoiceDeliveryService from "./ChoiceDeliveryService";
 import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
 import PaymentWithCash from "./PaymentWithCash";
+import PaymentFlexpaie from "./PaymentFlexpaie";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -636,6 +637,39 @@ const PaymentSheetComponent = ({
           {/* payment btn  */}
           {paymentMethod === "cinetpay" ? (
             <PaiementCinetPay
+              carts={carts}
+              isUserBanned={isUserBanned}
+              isUserShopBanned={isUserShopBanned}
+              productsShop={productsShop}
+              shop={shop}
+              shopPreferences={preferences}
+              totalPrice={totalPrice}
+              receiverInfo={{
+                name: receiver,
+                address: `${receiverAddress}, ${quartier}, ${commune}`,
+                tel: receiverPhone,
+                description,
+              }}
+              deliveryPrice={
+                deliveryPaymentMethode === "cash" ? 0 : deliveryPrice
+              }
+              deliveryPaymentMethode={deliveryPaymentMethode}
+              ArticlesToBuy={ArticlesToBuy}
+              modalOpen={modalOpen}
+              setModalOpen={setModalOpen}
+              deliveryChoiceId={deliveryChoiceSysteme?.id}
+              currency={currency}
+              setIsBuyingGeneralTermsAccepted={setIsBuyingGeneralTermsAccepted}
+              setIsBuyingTermsAccepted={setIsBuyingTermsAccepted}
+              isBuyingGeneralTermsAccepted={isBuyingGeneralTermsAccepted}
+              isBuyingTermsAccepted={isBuyingTermsAccepted}
+              isBuying={isBuying}
+              setIsBuying={setIsBuying}
+              isValidAddress={isValidAddress}
+              paymentMethod={paymentMethod}
+            />
+          ) : paymentMethod === "flexpaie" ? (
+            <PaymentFlexpaie
               carts={carts}
               isUserBanned={isUserBanned}
               isUserShopBanned={isUserShopBanned}

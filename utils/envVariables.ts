@@ -14,3 +14,10 @@ export const RESEND_API_KEY = process.env.RESEND_API_KEY!;
 
 // DELIVERS API KEY
 export const DELIVERS_API_KEY = process.env.DELIVERS_API_KEY!;
+
+// FLEXPAIE API
+export const FLEXPAIE_TOKEN = process.env.FLEXPAIE_TOKEN!;
+export const FLEXPAIE_URL_API = process.env.FLEXPAIE_URL_API!;
+export const FLEXPAIE_URL_API_CHECK_ORDER =
+  process.env.FLEXPAIE_URL_API_CHECK_ORDER!;
+export const FLEXPAIE_MERCHANT_CODE = process.env.FLEXPAIE_MERCHANT_CODE!;
