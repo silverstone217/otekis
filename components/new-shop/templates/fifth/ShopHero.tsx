@@ -98,7 +98,7 @@ const ShopHero = ({
       )}
     >
       <div
-        className="relative w-full h-[80svh] sm:h-[65svh] lg:h-[55svh] overflow-hidden shadow-2xl transition-all duration-500"
+        className="relative w-full h-[80svh] sm:h-[65svh] lg:h-[70svh] overflow-hidden shadow-2xl transition-all duration-500"
         style={{
           borderRadius: preferences.buttonRadius,
           backgroundColor: preferences.background, // Utilise votre variable background
