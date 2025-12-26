@@ -33,8 +33,9 @@ const ShopCategorySection = ({
   return (
     <section
       className={cn(
-        "py-20 my-10 max-w-7xl mx-auto px-6 shadow-2xl transition-all duration-500 border",
-        getMyFont.className
+        "py-20 my-10 lg:pb-0 w-full max-w-7xl mx-auto px-6 lg:px-0 shadow-2xl transition-all duration-500 border",
+        getMyFont.className,
+        "lg:shadow-none lg:border-0"
       )}
       style={{
         borderRadius: preferences.buttonRadius,
