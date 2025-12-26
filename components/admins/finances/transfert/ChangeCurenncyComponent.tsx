@@ -60,7 +60,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
   );
 
   const [paymentMethod, setPaymentMethod] = useState(
-    companyPrefs?.paymentMethod || "cinetpay"
+    companyPrefs?.paymentMethod || "flexpaie"
   );
 
   const [loading, setLoading] = useState(false);
@@ -357,7 +357,7 @@ export const CardInfosSoldes = ({
   );
 };
 
-type PaymentMethod = "cinetpay" | "cash" | "mpesa" | "bank";
+type PaymentMethod = "cinetpay" | "cash" | "mpesa" | "bank" | "flexpaie";
 
 export default function PaymentMethodSelect({
   paymentMethod,

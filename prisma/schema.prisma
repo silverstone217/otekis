@@ -285,7 +285,7 @@ model Order {
   ShipmentNumber      String?
   paymentRef          String? // reference du paiement
   paymentRefRefund    String? // reference du remboursement
-  paymentMethod       String  @default("cinetpay")
+  paymentMethod       String  @default("flexpaie") //cinetpay, mpesa, cash, flexpaie, bank
   paymentMethodRefund String  @default("mpesa")
   paymentStatus       String  @default("en attente de paiement")
   currency            String  @default("USD")
@@ -334,7 +334,7 @@ model OrderItem {
 model Facture {
   id String @id @default(cuid())
 
-  paymentMethod      String @default("cinetpay")
+  paymentMethod      String @default("flexpaie") //cinetpay, mpesa, cash, bank, flexpaie
   status             String @default("en attente")
   PaymentRef         String
   orderId            String
@@ -546,6 +546,7 @@ enum PaymentMethodOrder {
   mpesa
   bank
   cash
+  flexpaie
 }
 
 model OtekisPreferences {
@@ -559,10 +560,10 @@ model OtekisPreferences {
   cinetPayPercentage     String             @default("3") // 3%
   delayRefund            Int                @default(2)
   delayTransferableMoney Int                @default(4)
-  paymentMethod          PaymentMethodOrder @default(cinetpay) // cinetpay, mpesa, bank
+  paymentMethod          PaymentMethodOrder @default(flexpaie) // cinetpay, mpesa, bank, flexpaie
 
-  socialEmail String @default("marketstore.oteki@gmail.com")
-  socialPhone String @default("813350706")
+  socialEmail String @default("servigroup.social@gmail.com")
+  socialPhone String @default("822550150")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

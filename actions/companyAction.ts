@@ -66,7 +66,7 @@ type ChangeCurrencyParams = {
   cinetPayPercentage: number;
   delayTransferableMoney: number;
   delayRefund: number;
-  paymentMethod: "cinetpay" | "cash" | "mpesa" | "bank";
+  paymentMethod: "cinetpay" | "cash" | "mpesa" | "bank" | "flexpaie";
 };
 export const changeCurrencies = async ({
   productCurrency,

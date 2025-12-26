@@ -29,4 +29,8 @@ export const PaymentOrderMethods = [
     label: "Carte Bancaire",
     value: "bank",
   },
+  {
+    label: "Flexpaie",
+    value: "flexpaie",
+  },
 ];
