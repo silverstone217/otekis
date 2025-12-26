@@ -31,7 +31,7 @@ const ShopCategorySection = ({
   return (
     <section
       className={cn(
-        "w-full grid grid-cols-1 md:grid-cols-3 overflow-hidden",
+        "w-full grid grid-cols-1 md:grid-cols-3 overflow-hidden pt-20 pb-14",
         getMyFont?.className
       )}
     >
