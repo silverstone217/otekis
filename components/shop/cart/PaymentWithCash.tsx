@@ -183,17 +183,15 @@ const PaymentWithCash = ({
         orderItems,
       };
 
-      toast.success(
-        "Votre commande a été effectuée avec succès, en attente de validation de la commande"
-      );
-
       const result = await newOrderAction(formData);
 
       if (result.error) {
         toast.error(result.message);
         return;
       }
-      toast.success(result.message);
+      toast.success(
+        "Votre commande a été effectuée avec succès, en attente de validation de la commande"
+      );
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);
 

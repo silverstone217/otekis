@@ -208,13 +208,17 @@ const PaymentFlexpaie = ({
         body: JSON.stringify(flexpaieData),
       });
 
+      console.log("Flexpaie response:", response);
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'initialisation du paiement");
+      }
+
       //   GET RESPONSE
       const data = (await response.json()) as PaymentFlexpaieResponseType;
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Erreur lors de l'initialisation du paiement"
-        );
-      }
+
+      console.log("Flexpaie data:", data);
+
       // Paiement accepté, préparer les données de commande
       const paymentCode = data.code;
 
@@ -249,26 +253,23 @@ const PaymentFlexpaie = ({
         orderItems,
       };
 
-      toast.success(
-        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
-      );
-
       const result = await newOrderAction(formData);
 
       if (result.error) {
         toast.error(result.message);
         return;
       }
-      toast.success(result.message);
+
+      toast.success(
+        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
+      );
+
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);
 
       router.refresh();
 
       setModalOpen(true);
-
-      // Optionnel : redirection ou mise à jour UI
-      // router.push("/commande/success");
     } catch (error: any) {
       console.error(error);
       toast.error("Une erreur est survenue lors du paiement", {
@@ -314,7 +315,7 @@ const PaymentFlexpaie = ({
           <CreditCard className="w-8 h-8" />
         )}
         <span>
-          {!loading ? "Payer maintenant" : "en cours de traitement...."}
+          {!loading ? "Payer maintenant " : "en cours de traitement...."}
         </span>
       </button>
     </SheetClose>

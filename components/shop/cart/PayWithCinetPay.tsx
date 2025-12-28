@@ -267,17 +267,15 @@ export function PaiementCinetPay({
         orderItems,
       };
 
-      toast.success(
-        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
-      );
-
       const result = await newOrderAction(formData);
 
       if (result.error) {
         toast.error(result.message);
         return;
       }
-      toast.success(result.message);
+      toast.success(
+        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
+      );
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);
 
