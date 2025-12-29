@@ -102,7 +102,10 @@ const ShopHeader = ({
         {/* LOGO SECTION */}
         <Link href={`/${shop.slug}`} className="flex items-center gap-3 group">
           {preference.logo === "name" ? (
-            <h1 className="text-lg font-extrabold tracking-tight uppercase leading-none">
+            <h1
+              className="text-lg font-extrabold tracking-tight uppercase 
+            leading-none line-clamp-1"
+            >
               {shop.name}
             </h1>
           ) : (

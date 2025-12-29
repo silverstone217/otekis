@@ -125,7 +125,10 @@ const ShopHeader = ({
               className="group transition-transform duration-300 hover:scale-105"
             >
               {preference.logo === "name" ? (
-                <h1 className="text-xl md:text-2xl font-bold tracking-tighter uppercase italic">
+                <h1
+                  className="text-xl md:text-2xl font-bold tracking-tighter 
+                uppercase italic line-clamp-1"
+                >
                   {shop.name}
                 </h1>
               ) : (

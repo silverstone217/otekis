@@ -98,7 +98,7 @@ const ShopHero = ({
       )}
     >
       <div
-        className="relative w-full h-[80svh] sm:h-[65svh] lg:h-[70svh] overflow-hidden shadow-2xl transition-all duration-500"
+        className="relative w-full h-[80svh] sm:h-[65svh] xl:h-[70svh] overflow-hidden shadow-2xl transition-all duration-500"
         style={{
           borderRadius: preferences.buttonRadius,
           backgroundColor: preferences.background, // Utilise votre variable background
@@ -129,14 +129,14 @@ const ShopHero = ({
             <div
               key={item.id}
               className={cn(
-                "absolute inset-0 flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-5 w-full h-full transition-all duration-1000 ease-in-out",
+                "absolute inset-0 flex flex-col sm:grid sm:grid-cols-2 xl:grid-cols-5 w-full h-full transition-all duration-1000 ease-in-out",
                 isActive
                   ? "opacity-100 translate-x-0 z-10"
                   : "opacity-0 translate-x-full z-0"
               )}
             >
               {/* SECTION IMAGE */}
-              <div className="relative col-span-1 lg:col-span-2 h-[40%] sm:h-full overflow-hidden">
+              <div className="relative col-span-1 xl:col-span-2 h-[40%] sm:h-full overflow-hidden">
                 <Image
                   src={item.image}
                   alt={item.name}
@@ -153,7 +153,7 @@ const ShopHero = ({
               </div>
 
               {/* SECTION TEXTE ET CONTENU */}
-              <div className="flex flex-col justify-center p-8 md:p-12 lg:col-span-3 space-y-6 relative">
+              <div className="flex flex-col justify-center p-8 xl:p-12 xl:col-span-3 space-y-6 relative">
                 {/* Titre et Description */}
                 <div
                   className={cn(
@@ -164,14 +164,14 @@ const ShopHero = ({
                   )}
                 >
                   {discountPercentage > 0 && (
-                    <div className="flex items-center gap-2 mb-4 text-red-500 font-bold text-xs uppercase tracking-widest animate-pulse">
+                    <div className="flex items-center gap-2 mb-2 text-red-500 font-bold text-xs uppercase tracking-widest animate-pulse">
                       <Sparkles size={14} />
                       Offre Spéciale -{discountPercentage}%
                     </div>
                   )}
 
                   <h3
-                    className="text-4xl md:text-5xl lg:text-6xl line-clamp-3
+                    className="text-4xl xl:text-5xl line-clamp-2
                     font-black leading-none tracking-tighter uppercase italic mb-4"
                     style={{ color: adaptiveTextColor }}
                   >
@@ -179,7 +179,7 @@ const ShopHero = ({
                   </h3>
 
                   <p
-                    className="text-sm md:text-base lg:text-lg line-clamp-3 
+                    className="text-sm  xl:text-lg line-clamp-3 
                     font-light leading-relaxed max-w-xl"
                     style={{ color: adaptiveMutedColor }}
                   >

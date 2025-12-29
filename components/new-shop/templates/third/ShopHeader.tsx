@@ -110,7 +110,8 @@ const ShopHeader = ({
                    : isOpen && bgIsLightOrDark === "dark"
                      ? "text-white"
                      : "bg-transparent text-current"
-               }
+               },
+               line-clamp-1
             `}
             >
               {shop.name}

@@ -28,7 +28,7 @@ const getProductsByCategory = async (category: string) => {
     include: { Article: true },
     orderBy: { createdAt: "desc" },
   });
-  return products;
+  return products ? products : [];
 };
 
 const getProductShopsByShopId = async (shopId: string) => {

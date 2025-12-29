@@ -121,7 +121,10 @@ const ShopHeader = ({
           className="flex items-center gap-2 hover:opacity-70 transition-opacity"
         >
           {preference.logo === "name" ? (
-            <span className="font-black text-sm tracking-tighter uppercase italic truncate max-w-[120px]">
+            <span
+              className="font-black text-sm tracking-tighter uppercase 
+            italic truncate max-w-[120px] line-clamp-1"
+            >
               {shop.name}
             </span>
           ) : (

@@ -128,7 +128,10 @@ const ShopHeader = ({
             className="absolute left-1/2 -translate-x-1/2 flex items-center"
           >
             {preference.logo === "name" ? (
-              <h1 className="text-lg font-light tracking-[0.3em] uppercase transition-letter-spacing duration-500 hover:tracking-[0.5em]">
+              <h1
+                className="text-lg font-light tracking-[0.3em] uppercase line-clamp-1
+              transition-letter-spacing duration-500 hover:tracking-[0.5em]"
+              >
                 {shop.name}
               </h1>
             ) : (
