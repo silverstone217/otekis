@@ -4,12 +4,12 @@ import {
   FLEXPAIE_URL_API_CHECK_ORDER,
 } from "@/utils/envVariables";
 
-export async function checkFlexpaiePaymentAfter30s(
-  paymentRef: string
+export async function checkFlexpaiePaymentAfterDelais(
+  paymentRef: string,
+  delaySeconds: number
 ): Promise<boolean> {
   // 1️⃣ attendre 30 secondes côté serveur
-  await new Promise((resolve) => setTimeout(resolve, 30000));
-
+  await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
   try {
     const response = await fetch(
       `${FLEXPAIE_URL_API_CHECK_ORDER}${paymentRef}`,

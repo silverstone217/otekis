@@ -32,7 +32,7 @@ import {
 import { SheetClose } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
 import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
-import { checkFlexpaiePaymentAfter30s } from "@/actions/flexpaieAction";
+import { checkFlexpaiePaymentAfterDelais } from "@/actions/flexpaieAction";
 
 type Props = {
   shop: Shop;
@@ -242,8 +242,10 @@ const PaymentFlexpaie = ({
       toast.info(data.message || "Valider le paiement sur votre mobile.");
 
       // WAIT 30 SECONDS BEFORE CALLING THE NEW ORDER ACTION TO ENSURE PAYMENT IS PROCESSED
-      const isPaymentSuccessful =
-        await checkFlexpaiePaymentAfter30s(paymentRef);
+      const isPaymentSuccessful = await checkFlexpaiePaymentAfterDelais(
+        paymentRef,
+        35
+      );
 
       if (!isPaymentSuccessful) {
         toast.error(
