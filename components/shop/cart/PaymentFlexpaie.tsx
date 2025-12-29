@@ -27,10 +27,12 @@ import {
   FLEXPAIE_MERCHANT_CODE,
   FLEXPAIE_TOKEN,
   FLEXPAIE_URL_API,
+  FLEXPAIE_URL_API_CHECK_ORDER,
 } from "@/utils/envVariables";
 import { SheetClose } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
 import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
+import { checkFlexpaiePaymentAfter30s } from "@/actions/flexpaieAction";
 
 type Props = {
   shop: Shop;
@@ -179,6 +181,10 @@ const PaymentFlexpaie = ({
         return;
       }
 
+      toast.info(
+        "Vous avez 30 secondes pour valider le paiement sur votre mobile."
+      );
+
       const amount =
         deliveryPaymentMethode === "cash"
           ? totalPrice
@@ -208,7 +214,7 @@ const PaymentFlexpaie = ({
         body: JSON.stringify(flexpaieData),
       });
 
-      console.log("Flexpaie response:", response);
+      // console.log("Flexpaie response:", response);
 
       if (!response.ok) {
         throw new Error("Erreur lors de l'initialisation du paiement");
@@ -217,7 +223,7 @@ const PaymentFlexpaie = ({
       //   GET RESPONSE
       const data = (await response.json()) as PaymentFlexpaieResponseType;
 
-      console.log("Flexpaie data:", data);
+      // console.log("Flexpaie data:", data);
 
       // Paiement accepté, préparer les données de commande
       const paymentCode = data.code;
@@ -230,6 +236,23 @@ const PaymentFlexpaie = ({
       }
 
       const paymentRef = data.orderNumber;
+
+      toast.info("Paiement en cours de traitement, veuillez patienter...");
+
+      toast.info(data.message || "Valider le paiement sur votre mobile.");
+
+      // WAIT 30 SECONDS BEFORE CALLING THE NEW ORDER ACTION TO ENSURE PAYMENT IS PROCESSED
+      const isPaymentSuccessful =
+        await checkFlexpaiePaymentAfter30s(paymentRef);
+
+      if (!isPaymentSuccessful) {
+        toast.error(
+          "Le paiement n'a pas été confirmé. Veuillez vérifier votre transaction ou réessayer."
+        );
+        setLoading(false);
+        setIsBuying(false);
+        return;
+      }
 
       // after payment make order
       const formData: OrderCinetPaytype = {
