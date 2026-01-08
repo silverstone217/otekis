@@ -38,6 +38,7 @@ interface DeliveryChoiceProps {
   exchange: number;
   exchangeValue: number;
   cinetPayPercentage: number;
+  isBuying: boolean;
 }
 
 // ORIGIN ADDRESS
@@ -88,6 +89,7 @@ const ChoiceDeliveryService = ({
   exchangeValue,
   cinetPayPercentage,
   deliveryPaymentMethode,
+  isBuying,
 }: DeliveryChoiceProps) => {
   const [companies, setCompanies] = useState<DeliveryService[]>([]);
   const [loading, setLoading] = useState(false);
@@ -220,7 +222,7 @@ const ChoiceDeliveryService = ({
       <Select
         value={deliveryChoice}
         onValueChange={(val) => setDeliveryChoice(val)}
-        disabled={isEmptyString(quartier) || loading}
+        disabled={isEmptyString(quartier) || loading || isBuying}
       >
         <SelectTrigger
           className="w-full"

@@ -102,6 +102,7 @@ const PaymentSheetComponent = ({
 }: Props) => {
   const [receiver, setReceiver] = useState(user?.name ?? "");
   const [receiverPhone, setReceiverPhone] = useState(user?.tel ?? "");
+  const [paymentPhone, setPaymentPhone] = useState(user?.tel ?? "");
   const [receiverAddress, setReceiverAddress] = useState(user?.address ?? "");
   const [description, setDescription] = useState("");
   const [isBuyingGeneralTermsAccepted, setIsBuyingGeneralTermsAccepted] =
@@ -241,6 +242,7 @@ const PaymentSheetComponent = ({
                 autoCorrect="off"
                 spellCheck={false}
                 aria-describedby="recNameHelp"
+                disabled={isBuying}
                 style={{
                   color: preferences.textColor,
                   backgroundColor:
@@ -257,7 +259,7 @@ const PaymentSheetComponent = ({
                 htmlFor="recTel"
                 className="text-gray-700 opacity-80 font-medium"
               >
-                Téléphone du receveur *
+                {`Téléphone du receveur *`}
               </label>
 
               <div className="w-full relative mt-1">
@@ -300,6 +302,7 @@ const PaymentSheetComponent = ({
                         ? "rgba(255, 255, 255, 0.15)"
                         : "rgba(19, 19, 19, 0.05)",
                   }}
+                  disabled={isBuying}
                 />
               </div>
 
@@ -309,6 +312,68 @@ const PaymentSheetComponent = ({
                 &nbsp;(ex. <span className="font-mono">817596369</span>).
               </p>
             </div>
+
+            {/* NUMBER FOR FLEXPAIE ONLY */}
+            {paymentMethod === "flexpaie" && (
+              <div className="w-full flex flex-col text-sm">
+                <label
+                  htmlFor="paymentTel"
+                  className="text-gray-700 opacity-80 font-medium"
+                >
+                  {`Numero de paiment(Mpesa, orange money) *`}
+                </label>
+
+                <div className="w-full relative mt-1">
+                  {/* Préfixe fixe */}
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 
+              text-gray-100 font-semibold tracking-wide text-sm 
+              px-3 py-1 rounded-l-md border-r border-gray-300 select-none"
+                    style={{
+                      backgroundColor:
+                        luminance === "light" ? "#3b3b3b" : "#e5e7eb",
+                      color: luminance === "light" ? "white" : "#1f2937",
+                    }}
+                  >
+                    +243
+                  </span>
+
+                  {/* Champ de saisie */}
+                  <input
+                    type="tel"
+                    id="paymentTel"
+                    name="paymentTel"
+                    placeholder="817596369"
+                    className="w-full border-b-2 border-gray-300 
+      focus:border-blue-600 focus:outline-none py-2 pl-16
+      transition-colors"
+                    value={paymentPhone}
+                    onChange={(e) => setPaymentPhone(e.target.value)}
+                    required
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    aria-describedby="paymentTelHelp"
+                    minLength={9}
+                    maxLength={9}
+                    style={{
+                      color: preferences.textColor,
+                      backgroundColor:
+                        luminance === "dark"
+                          ? "rgba(255, 255, 255, 0.15)"
+                          : "rgba(19, 19, 19, 0.05)",
+                    }}
+                    disabled={isBuying}
+                  />
+                </div>
+
+                {/* Texte d’aide clair */}
+                <p id="paymentTelHelp" className="text-xs text-gray-500 mt-1">
+                  Entrez uniquement les 9 chiffres après <strong>+243</strong>
+                  &nbsp;(ex. <span className="font-mono">817596369</span>).
+                </p>
+              </div>
+            )}
 
             {/* Client address */}
             <div className="w-full flex flex-col text-sm">
@@ -335,6 +400,7 @@ const PaymentSheetComponent = ({
                 autoCorrect="off"
                 spellCheck={false}
                 aria-describedby="recAddressHelp"
+                disabled={isBuying}
                 style={{
                   color: preferences.textColor,
                   backgroundColor:
@@ -353,7 +419,7 @@ const PaymentSheetComponent = ({
             <SelectZones
               commune={commune}
               quartier={quartier}
-              loading={false}
+              loading={isBuying}
               setCommune={setCommune}
               setQuartier={setQuartier}
             />
@@ -480,6 +546,7 @@ const PaymentSheetComponent = ({
             exchangeValue={exchangeValue}
             cinetPayPercentage={cinetPayPercentage}
             deliveryPaymentMethode={deliveryPaymentMethode}
+            isBuying={isBuying}
           />
 
           {/* pay */}
@@ -682,6 +749,7 @@ const PaymentSheetComponent = ({
                 address: `${receiverAddress}, ${quartier}, ${commune}`,
                 tel: receiverPhone,
                 description,
+                paymentPhone,
               }}
               deliveryPrice={
                 deliveryPaymentMethode === "cash" ? 0 : deliveryPrice

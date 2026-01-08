@@ -52,6 +52,7 @@ type Props = {
     name: string;
     address: string;
     description?: string;
+    paymentPhone: string;
   };
   deliveryPrice: number | string;
   ArticlesToBuy: ArticleToBuyType[];
@@ -171,9 +172,9 @@ const PaymentFlexpaie = ({
         "Vous avez 30 secondes pour valider le paiement sur votre mobile."
       );
 
-      toast.info("Paiement en cours de traitement, veuillez patienter...");
-
-      toast.info("Valider le paiement sur votre mobile.");
+      setTimeout(() => {
+        toast.info("Valider le paiement sur votre mobile.");
+      }, 700);
 
       // after payment make order
       const formData: ServerPaymentType = {
@@ -239,6 +240,7 @@ const PaymentFlexpaie = ({
         !receiverInfo.name ||
         typeof deliveryPrice === "string" ||
         receiverInfo.tel.length !== 9 ||
+        receiverInfo.paymentPhone.length !== 9 ||
         !isValidAddress ||
         !isBuyingTermsAccepted
         // !isBuyingGeneralTermsAccepted

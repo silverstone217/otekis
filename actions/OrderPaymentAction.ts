@@ -49,6 +49,7 @@ export type ServerPaymentType = {
     name: string;
     address: string;
     description?: string;
+    paymentPhone: string;
   };
   currencyMoney: "CDF" | "USD";
   deliveryChoiceId: string | undefined;
@@ -147,8 +148,8 @@ export const handleServerPayment = async (data: ServerPaymentType) => {
       type: "1",
       phone:
         receiverInfo.tel.length === 9
-          ? "243" + receiverInfo.tel
-          : receiverInfo.tel,
+          ? "243" + receiverInfo.paymentPhone
+          : receiverInfo.paymentPhone,
       reference: transaction_id,
       amount: amount.toString(),
       currency: currencyMoney,
