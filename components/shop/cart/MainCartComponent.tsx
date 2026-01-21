@@ -111,7 +111,7 @@ const MainCartComponent = ({
     const beneficeAfterDiscount = applyPromotionOnProfit(
       benefit,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      productShop?.promotion!
+      productShop?.promotion!,
     );
 
     const totalPriceAfterDiscount = product
@@ -134,7 +134,7 @@ const MainCartComponent = ({
 
   const leftAvailableProducts = combinedItems.flatMap((combinedItem) => {
     const product = products.find(
-      (pr) => pr.id === combinedItem.productShop.productId
+      (pr) => pr.id === combinedItem.productShop.productId,
     );
 
     // Vérifiez si le produit existe
@@ -144,7 +144,7 @@ const MainCartComponent = ({
 
     // Filtrer les articles dont le stock est supérieur à 0
     const availableArticles = product.Article.filter(
-      (ar) => ar.stock > 0 && combinedItem.articleId === ar.id
+      (ar) => ar.stock > 0 && combinedItem.articleId === ar.id,
     );
 
     return availableArticles; // Retourner les articles disponibles
@@ -170,19 +170,19 @@ const MainCartComponent = ({
       .map((cart) => {
         // get product
         const product = products.find((prod) =>
-          prod.Article.some((art) => art.id === cart.articleId)
+          prod.Article.some((art) => art.id === cart.articleId),
         );
         if (!product) return null;
 
         // get article
         const article = product.Article.find(
-          (art) => art.id === cart.articleId
+          (art) => art.id === cart.articleId,
         );
         if (!article) return null;
 
         // get product from the shop
         const productShop = productsShop.find(
-          (sp) => sp.productId === product.id
+          (sp) => sp.productId === product.id,
         );
         if (!productShop) return null;
 
@@ -196,7 +196,7 @@ const MainCartComponent = ({
 
         const beneficeAfterDiscount = applyPromotionOnProfit(
           benefit,
-          productShop.promotion!
+          productShop.promotion!,
         );
 
         const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
@@ -400,7 +400,7 @@ const CartItemProduct = ({
   exchange,
 }: CartItemProductType) => {
   const product = products.find((prod) =>
-    prod.Article.some((art) => art.id === cart.articleId)
+    prod.Article.some((art) => art.id === cart.articleId),
   );
 
   const [quantity, setQuantity] = useState(cart.quantity ?? 1);
@@ -423,7 +423,7 @@ const CartItemProduct = ({
   const beneficeAfterDiscount = applyPromotionOnProfit(
     benefit,
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    productShop?.promotion!
+    productShop?.promotion!,
   );
 
   const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
@@ -608,7 +608,7 @@ const CartItemProduct = ({
               className={cn(
                 `px-1 py-0.5 rounded hover:bg-overlay4 h-8
                 text-white flex items-center justify-center bg-black`,
-                article || stockMax < 1 ? "opacity-100" : "opacity-50"
+                article || stockMax < 1 ? "opacity-100" : "opacity-50",
               )}
             >
               <Minus className="w-8 shrink-0" />
@@ -634,7 +634,7 @@ const CartItemProduct = ({
               className={cn(
                 `px-1 py-0.5 rounded hover:bg-overlay4 h-8
                 text-white flex items-center justify-center bg-black`,
-                article || stockMax <= quantity ? "opacity-100" : "opacity-50"
+                article || stockMax <= quantity ? "opacity-100" : "opacity-50",
               )}
             >
               <Plus className="w-8 shrink-0" />
@@ -645,7 +645,7 @@ const CartItemProduct = ({
           <p
             className={cn(
               stockMax > quantity ? "" : "text-red-400",
-              "opacity-80"
+              "opacity-80",
             )}
           >
             {stockMax} restantes

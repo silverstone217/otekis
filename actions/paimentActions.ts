@@ -15,6 +15,8 @@ import {
   getCompanyPreference,
   getCurrencySymbol,
 } from "./companyAction";
+import { Resend } from "resend";
+import { RESEND_API_KEY } from "@/utils/envVariables";
 
 type ItemTypeToBuy = {
   productId: string;
@@ -150,21 +152,21 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
   const shopAmount = validated.totalAmount - totalProdMinPrice * exChange;
   const shopAmountReducedPercentage = returnNumberByPercent(
     cinetPayPercentage,
-    shopAmount
+    shopAmount,
   );
 
   // company amount calculate total amount after cinetpay percentage taken
   const compAmount = validated.totalAmount;
   const compAmountReducedPercentage = returnNumberByPercent(
     cinetPayPercentage,
-    compAmount
+    compAmount,
   );
 
   // deliveryPrice after cinetpay percentage taken
   const deliveryAmount = validated.deliveryPrice;
   const deliveryAmountReducedPercentage = returnNumberByPercent(
     cinetPayPercentage,
-    deliveryAmount
+    deliveryAmount,
   );
 
   // company benefit after cinetpay percentage taken
@@ -336,9 +338,118 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
     where: { status: "en cours de traitement" },
   });
   await pusher.trigger("orders-channel", "order-count-updated", { count });
+
+  // SEND NOTIFICATION TO ADMIN ABOUT NEW ORDER WITH RESEND
+  // Email d’alerte interne (admin / employés)
+  sendNewOrderAlertEmail({
+    orderId: newOrder.id,
+    totalAmount: validated.totalAmount,
+    currency,
+    clientName: validated.receiverName,
+    clientPhone: validated.receiverTel,
+    shopId: validated.shopId,
+  });
+
   return {
     error: false,
     message: "Commande créée avec succès",
     data: newOrder,
   };
 };
+
+// CALL RESEND
+
+const resend = new Resend(RESEND_API_KEY);
+interface SendNewOrderAlertProps {
+  orderId: string;
+  totalAmount: number;
+  currency: string;
+  clientName: string;
+  clientPhone: string;
+  shopId: string;
+}
+
+export async function sendNewOrderAlertEmail({
+  orderId,
+  totalAmount,
+  currency,
+  clientName,
+  clientPhone,
+  shopId,
+}: SendNewOrderAlertProps) {
+  try {
+    await resend.emails.send({
+      from: "Otekis <contact@otekis.com>",
+      to: [
+        "servigroup.social@gmail.com",
+        "stephuni35@gmail.com",
+        "ngabankumusalem@gmail.com",
+      ], // employés / admins
+      subject: `🛒 Nouvelle commande reçue — #${orderId}`,
+      html: `
+        <div style="font-family: Arial, Helvetica, sans-serif; background-color:#f5f7fa; padding:24px;">
+          <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:24px;">
+            
+            <h2 style="margin-top:0; color:#1f2937;">
+              Nouvelle commande reçue
+            </h2>
+
+            <p style="color:#374151;">
+              Une nouvelle commande vient d’être enregistrée sur la plateforme.
+            </p>
+
+            <table style="width:100%; border-collapse: collapse; margin-top:16px;">
+              <tr>
+                <td style="padding:8px 0; color:#6b7280;">Référence commande</td>
+                <td style="padding:8px 0;"><strong>#${orderId}</strong></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:#6b7280;">Client</td>
+                <td style="padding:8px 0;">${clientName}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:#6b7280;">Téléphone</td>
+                <td style="padding:8px 0;">${clientPhone}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:#6b7280;">Montant total</td>
+                <td style="padding:8px 0;">
+                  <strong>${totalAmount} ${currency}</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:#6b7280;">Boutique</td>
+                <td style="padding:8px 0;">${shopId}</td>
+              </tr>
+            </table>
+
+            <div style="margin-top:24px;">
+              <a 
+                href="https://www.otekis.com/commandes/id/${orderId}"
+                style="
+                  display:inline-block;
+                  padding:12px 20px;
+                  background:#2563eb;
+                  color:#ffffff;
+                  text-decoration:none;
+                  border-radius:6px;
+                  font-weight:600;
+                "
+              >
+                Voir la commande
+              </a>
+            </div>
+
+            <hr style="margin:32px 0; border:none; border-top:1px solid #e5e7eb;" />
+
+            <p style="font-size:13px; color:#9ca3af;">
+              Cet email est généré automatiquement par le système Otekis.
+            </p>
+          </div>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Erreur envoi email alerte nouvelle commande :", error);
+  }
+}

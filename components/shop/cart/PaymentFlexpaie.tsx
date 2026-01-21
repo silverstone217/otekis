@@ -152,7 +152,7 @@ const PaymentFlexpaie = ({
 
     router.push = (...args) => {
       toast.warning(
-        "Un paiement est en cours. Veuillez attendre sa confirmation."
+        "Un paiement est en cours. Veuillez attendre sa confirmation.",
       );
     };
 
@@ -169,7 +169,7 @@ const PaymentFlexpaie = ({
 
     try {
       toast.info(
-        "Vous avez 30 secondes pour valider le paiement sur votre mobile."
+        "Vous avez 30 secondes pour valider le paiement sur votre mobile.",
       );
 
       setTimeout(() => {
@@ -200,7 +200,7 @@ const PaymentFlexpaie = ({
       }
 
       toast.success(
-        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
+        "Votre paiement a été effectué avec succès, en attente de validation de la commande",
       );
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);

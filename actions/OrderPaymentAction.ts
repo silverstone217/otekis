@@ -14,8 +14,10 @@ import {
   FLEXPAIE_MERCHANT_CODE,
   FLEXPAIE_TOKEN,
   FLEXPAIE_URL_API,
+  RESEND_API_KEY,
 } from "@/utils/envVariables";
 import { checkFlexpaiePaymentAfterDelais } from "./flexpaieAction";
+import { Resend } from "resend";
 
 export interface PaymentFlexpaieDataType {
   merchant: string;
@@ -193,7 +195,7 @@ export const handleServerPayment = async (data: ServerPaymentType) => {
     // WAIT 30 SECONDS BEFORE CALLING THE NEW ORDER ACTION TO ENSURE PAYMENT IS PROCESSED
     const isPaymentSuccessful = await checkFlexpaiePaymentAfterDelais(
       paymentRef,
-      35
+      35,
     );
     if (!isPaymentSuccessful) {
       return {
