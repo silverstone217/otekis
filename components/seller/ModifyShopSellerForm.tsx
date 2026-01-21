@@ -116,6 +116,11 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
         storage,
         `oteki/shops/logos/${v4().replace(/-/g, "")}`,
       );
+
+      if (shop.logo) {
+        await deleteObject(ref(storage, shop.logo));
+      }
+
       const snapshot = await uploadBytes(storageRef, logo);
       const url = await getDownloadURL(snapshot.ref);
 
