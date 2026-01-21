@@ -19,7 +19,7 @@ export const getShopBySlug = async (slug: string) => {
 // STATS with benefit
 export const getShopsByUserIDWithStats = async (
   userId: string,
-  currency: "USD" | "CDF"
+  currency: "USD" | "CDF",
 ) => {
   const shops = await prisma.shop.findMany({
     where: { userId },
@@ -40,12 +40,12 @@ export const getShopsByUserIDWithStats = async (
   const filteredShops = shops.map((shop) => {
     const { orders, shopProfitWaited, withdrawalHistory } = shop;
     const profitsTable = shopProfitWaited.filter(
-      (profit) => profit.isProcessed && profit.currency === currency
+      (profit) => profit.isProcessed && profit.currency === currency,
     );
     const salesCount = profitsTable.length;
     const totalProfit = profitsTable.reduce(
       (acc, profit) => acc + profit.amount,
-      0
+      0,
     );
     const availableBalance =
       currency === "USD" ? shop.benefit : shop.benefitCDF;
@@ -63,9 +63,71 @@ export const getShopsByUserIDWithStats = async (
 };
 
 // image cover update
+export const updateShopLogo = async (
+  shopId: string,
+  logo: string | undefined | null,
+) => {
+  try {
+    const user = await getUser();
+    if (!user) {
+      return {
+        message: "Pas authorisé à faire ça!",
+        error: true,
+        data: null,
+      };
+    }
+
+    const shop = await prisma.shop.findUnique({
+      where: { id: shopId },
+    });
+
+    if (!shop) {
+      return {
+        message: "Cette boutique n'existe pas!",
+        error: true,
+        data: null,
+      };
+    }
+
+    const isHisShop = shop.userId === user.id;
+
+    if (!isHisShop) {
+      return {
+        message: "Pas authorisé à faire ça!",
+        error: true,
+        data: null,
+      };
+    }
+    if (!logo) {
+      return {
+        message: "Logo invalide",
+        error: true,
+        data: null,
+      };
+    }
+    const updateShop = await prisma.shop.update({
+      where: { id: shopId },
+      data: { logo: logo },
+    });
+    return {
+      message: "Logo mis à jour avec succès",
+      error: false,
+      data: updateShop,
+    };
+  } catch (error) {
+    console.error("Error updating shop logo:", error);
+    return {
+      message: "Erreur lors de la mise à jour du logo",
+      error: true,
+      data: null,
+    };
+  }
+};
+
+// image cover update
 export const updateShopCover = async (
   shopId: string,
-  cover: string | undefined | null
+  cover: string | undefined | null,
 ) => {
   const user = await getUser();
   if (!user) {
@@ -503,7 +565,7 @@ export const deleteShop = async (shopId: string) => {
   ];
 
   const ordersInProgress = shop.orders.filter((order) =>
-    ORDERS_STATUS.includes(order.status)
+    ORDERS_STATUS.includes(order.status),
   );
 
   if (ordersInProgress.length > 0) {
@@ -729,8 +791,8 @@ export async function addTypeProducts({
       .filter(
         (product) =>
           !productsShop.some(
-            (shopProduct) => shopProduct.productId === product.id
-          )
+            (shopProduct) => shopProduct.productId === product.id,
+          ),
       )
       .filter((pr) => pr.category === shop.category);
 

@@ -96,7 +96,7 @@ const MyShopBySlugPage = async (props: Props) => {
         "
         >
           <span>Voire ma boutique</span>
-          <Store className="flex-shrink-0 w-8" />
+          <Store className="shrink-0 w-8" />
         </Link>
       </div>
 

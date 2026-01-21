@@ -37,6 +37,7 @@ import {
   deleteShop,
   sellerBanOrPublish,
   updateShopCover,
+  updateShopLogo,
 } from "@/actions/shopActions";
 
 import { cn } from "@/lib/utils";
@@ -73,7 +74,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
     (
       e: React.DragEvent,
       setFile: React.Dispatch<React.SetStateAction<File | null>>,
-      type: "cover" | "logo"
+      type: "cover" | "logo",
     ) => {
       e.preventDefault();
       if (loading) return;
@@ -98,7 +99,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
         toast.error("Merci de déposer une image valide.");
       }
     },
-    [loading]
+    [loading],
   );
 
   const handleDragOver = (e: React.DragEvent) => e.preventDefault();
@@ -113,10 +114,19 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
     try {
       const storageRef = ref(
         storage,
-        `oteki/shops/logos/${v4().replace(/-/g, "")}`
+        `oteki/shops/logos/${v4().replace(/-/g, "")}`,
       );
       const snapshot = await uploadBytes(storageRef, logo);
       const url = await getDownloadURL(snapshot.ref);
+
+      const result = await updateShopLogo(shop.id, url);
+
+      if (result.error) {
+        toast.error(result.message || "Erreur lors de la mise à jour du logo");
+        // await deleteObject(ref(storage, url));
+        setLoading(false);
+        return;
+      }
 
       toast.success("Le logo a été chargé avec succès !");
       setVisualizeLogo(url);
@@ -227,7 +237,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
     paymentPhone === shop.paymentPhone;
 
   return (
-    <div className="w-full grid grid-cols-1 lg:grid-cols-6 gap-6 min-h-[24rem]">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-6 gap-6 min-h-96">
       {/* Infos et champs */}
       <div className="lg:col-span-4 space-y-8">
         <BorderWrapper>
@@ -250,13 +260,13 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
                         "flex flex-col items-center justify-center rounded-md border-2 px-5 py-4 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1",
                         isSelected
                           ? "border-primary bg-primary bg-opacity-10 text-primary"
-                          : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
+                          : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary",
                       )}
                       onClick={() => {
                         if (loading) return;
                         if (cat.value === category) return;
                         toast.error(
-                          "La categorie de la boutique n'est pas modifiable."
+                          "La categorie de la boutique n'est pas modifiable.",
                         );
                       }}
                       aria-pressed={isSelected}
@@ -292,7 +302,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
                   minLength={10}
                   maxLength={5000}
                   disabled={loading}
-                  className="min-h-[10rem]"
+                  className="min-h-40"
                   aria-label="Description de la boutique"
                 />
               </div>
@@ -618,7 +628,7 @@ export const DangerZoneSection: React.FC<Props> = ({ shop }) => {
                 "w-full flex items-center justify-center gap-2",
                 isPublished
                   ? "border-red-600 hover:bg-red-600 hover:text-white"
-                  : ""
+                  : "",
               )}
               disabled={loading || !shop}
             >
