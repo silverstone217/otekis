@@ -131,38 +131,36 @@ const MyShopLayout = async (props: Props) => {
 
   const getMyFont = FontsList.find((font) => font.name === myFont)?.component;
 
-  const category = shop.category;
-
-  if (!ReadyShopCategory.includes(category)) {
-    return (
-      <div
-        style={{
-          backgroundColor: preferences?.background ?? backgroundColors.white,
-          color: preferences?.textColor ?? textColorData.light,
-        }}
-        className={cn("pt-14 overflow-x-hidden ", getMyFont?.className)}
-        key={shop.id}
-      >
-        <div className="min-h-[70dvh] w-full flex items-center justify-center flex-col px-4 text-pretty">
-          <h1 className="lg:text-5xl text-4xl font-bold mb-4">
-            Page en construction...
-          </h1>
-          <p className=":lg:text-lg text-md mb-2">
-            {`Nous travaillons actuellement sur cette fonctionnalité.`}
-          </p>
-          <p className="text-sm mb-6">
-            {`Veuillez nous excusez pour la gêne occasionnelle.`}
-          </p>
-          <a
-            href={`/`}
-            className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
-          >
-            {`Retourner à l'accueil`}
-          </a>
-        </div>
-      </div>
-    );
-  }
+  // if (!ReadyShopCategory.includes(category)) {
+  //   return (
+  //     <div
+  //       style={{
+  //         backgroundColor: preferences?.background ?? backgroundColors.white,
+  //         color: preferences?.textColor ?? textColorData.light,
+  //       }}
+  //       className={cn("pt-14 overflow-x-hidden ", getMyFont?.className)}
+  //       key={shop.id}
+  //     >
+  //       <div className="min-h-[70dvh] w-full flex items-center justify-center flex-col px-4 text-pretty">
+  //         <h1 className="lg:text-5xl text-4xl font-bold mb-4">
+  //           Page en construction...
+  //         </h1>
+  //         <p className=":lg:text-lg text-md mb-2">
+  //           {`Nous travaillons actuellement sur cette fonctionnalité.`}
+  //         </p>
+  //         <p className="text-sm mb-6">
+  //           {`Veuillez nous excusez pour la gêne occasionnelle.`}
+  //         </p>
+  //         <a
+  //           href={`/`}
+  //           className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
+  //         >
+  //           {`Retourner à l'accueil`}
+  //         </a>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   // HEADER
   const Header = preferences.Header;
   const CurrentHeader = HEADERS_DATA[Number(Header)] ?? HEADERS_DATA[0];
@@ -184,7 +182,7 @@ const MyShopLayout = async (props: Props) => {
             ? "pt-0"
             : Number(Header) === 5
               ? "pt-24"
-              : "pt-14"
+              : "pt-14",
         )}
         key={shop.id}
       >
