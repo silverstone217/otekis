@@ -24,7 +24,7 @@ type Props = {
 
 const getProductsByCategory = async (category: string) => {
   const products = await prisma.product.findMany({
-    where: { category },
+    // where: { category },
     include: { Article: true },
     orderBy: { createdAt: "desc" },
   });
@@ -72,7 +72,7 @@ const AddShopProductPage = async (props: Props) => {
 
   // Récupérer les IDs des produits dans productsShop
   const productIdsInShop = new Set(
-    productsShop.map((product) => product.productId)
+    productsShop.map((product) => product.productId),
   );
 
   // Créer un tableau trié

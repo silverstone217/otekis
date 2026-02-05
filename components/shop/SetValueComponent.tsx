@@ -1,7 +1,7 @@
-import { Preferences } from "@prisma/client";
 import React from "react";
 import { Label } from "../ui/label";
 import { luminanceColor } from "@/utils/shopFunctions";
+import { Preferences } from "@/lib/generated/prisma/client";
 
 type Props = {
   value: string;
@@ -65,7 +65,10 @@ const SetValueComponent = ({
             setValue("");
           }}
           style={{
-            borderColor: value === "" ? preferences.buttonColor : "transparent",
+            borderColor:
+              value === "" || value === undefined || value === "all"
+                ? preferences.buttonColor
+                : "transparent",
             borderRadius: preferences.buttonRadius,
             color: preferences.textColor,
             backgroundColor:

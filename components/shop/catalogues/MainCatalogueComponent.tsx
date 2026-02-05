@@ -32,6 +32,9 @@ import PaginationSection from "@/components/PaginationSection";
 import { useRouter, useSearchParams } from "next/navigation";
 import SetValueComponent from "../SetValueComponent";
 import { luminanceColor } from "@/utils/shopFunctions";
+import { ShopCategorySellerType } from "@/types/data";
+import { CategorySellerFilter } from "@/components/CategoryAndTypesFilter";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   shop: Shop;
@@ -56,6 +59,8 @@ const MainCatalogueComponent = ({
   const brandSearch = searchParams.get("brand");
 
   const [searchText, setSearchText] = useState(brandSearch ?? "");
+  const [category, setCategory] = useState<ShopCategorySellerType>("all");
+
   const [type, setType] = useState(search ?? "");
   const [state, setState] = useState("");
   const [quality, setQuality] = useState("");
@@ -115,17 +120,21 @@ const MainCatalogueComponent = ({
               .includes(debouncedSearchText.toLowerCase()) ||
             (pr.type &&
               returnDataValue(pr.type, TargetData).includes(
-                debouncedSearchText.toLowerCase()
+                debouncedSearchText.toLowerCase(),
               )) ||
             (pr.material &&
               returnDataValue(pr.material, MaterialsAccData)
                 .toLowerCase()
-                .includes(debouncedSearchText.toLowerCase()))
+                .includes(debouncedSearchText.toLowerCase())),
         )
+
+        .filter((pr) => (category === "all" ? true : pr.category === category))
+
         .filter((pr) => {
-          if (type === "") {
+          if (type === "" || !type || type === "all") {
             return true;
           }
+
           if (type === "chaussures") return pr.type === "shoes";
           if (type === "vetements") return pr.type !== "shoes";
           if (type === "bijoux" && pr.type)
@@ -135,11 +144,7 @@ const MainCatalogueComponent = ({
           return pr.type?.includes(type);
         })
         .filter((pr) => pr.state && pr.state.includes(state))
-        .filter((pr) =>
-          shop.category === "accessoires"
-            ? pr.material && pr.material.includes(material)
-            : true
-        )
+
         .filter((pr) => {
           if (target === "unisex") {
             return (
@@ -181,18 +186,18 @@ const MainCatalogueComponent = ({
       debouncedSearchText,
       type,
       state,
-      shop.category,
+      category,
       material,
       target,
       quality,
       color,
       size,
-    ]
+    ],
   );
 
   const currentItems = useMemo(
     () => filteredProducts.slice(firstIndex, lastItemIndex),
-    [filteredProducts, firstIndex, lastItemIndex]
+    [filteredProducts, firstIndex, lastItemIndex],
   );
 
   const SizesData =
@@ -201,11 +206,11 @@ const MainCatalogueComponent = ({
         Array.from(
           new Set(
             products.flatMap((pr) =>
-              pr.Article.map((itm) => itm.size?.toLowerCase())
-            )
-          )
+              pr.Article.map((itm) => itm.size?.toLowerCase()),
+            ),
+          ),
         ),
-      [products]
+      [products],
     ) ?? [];
 
   // const VolumesData =
@@ -300,6 +305,7 @@ const MainCatalogueComponent = ({
           quality={quality}
           setQuality={setQuality}
           state={state}
+          category={category}
           setState={setState}
           setColor={setColor}
           setSize={setSize}
@@ -309,6 +315,7 @@ const MainCatalogueComponent = ({
           SizesData={SizesData}
           material={material}
           setMaterial={setMaterial}
+          setCategory={setCategory}
           shop={shop}
         />
       </div>
@@ -369,6 +376,7 @@ type FilterTopTypes = {
   color: string;
   size: string;
   material: string;
+  category: ShopCategorySellerType;
   setSize: React.Dispatch<React.SetStateAction<string>>;
   setColor: React.Dispatch<React.SetStateAction<string>>;
   setState: React.Dispatch<React.SetStateAction<string>>;
@@ -378,6 +386,7 @@ type FilterTopTypes = {
   preferences: Preferences;
   SizesData: (string | undefined)[];
   setMaterial: React.Dispatch<React.SetStateAction<string>>;
+  setCategory: React.Dispatch<React.SetStateAction<ShopCategorySellerType>>;
   shop: Shop;
 };
 const TopFilterProductShop = ({
@@ -387,6 +396,7 @@ const TopFilterProductShop = ({
   quality,
   color,
   size,
+  category,
   setSize,
   setColor,
   setState,
@@ -398,6 +408,7 @@ const TopFilterProductShop = ({
   shop,
   material,
   setMaterial,
+  setCategory,
 }: FilterTopTypes) => {
   const router = useRouter();
 
@@ -410,7 +421,7 @@ const TopFilterProductShop = ({
         "
         >
           <span>Filtres</span>
-          <SlidersHorizontal className="w-8 flex-shrink-0" />
+          <SlidersHorizontal className="w-8 shrink-0" />
         </div>
       </SheetTrigger>
       <SheetContent
@@ -434,6 +445,58 @@ const TopFilterProductShop = ({
           className="grid gap-4 p-4 grid-cols-1"
         >
           {/* infos produit */}
+
+          {/* CATEGORY */}
+          <div className="w-full grid gap-1.5 mb-2">
+            <label htmlFor="category-filter" className="text-sm">
+              Par catégorie
+            </label>
+            <CategorySellerFilter
+              category={category}
+              setCategory={setCategory}
+              setType={setType}
+              className="w-full"
+            />
+          </div>
+
+          <Separator />
+
+          {/* type with comp clothes */}
+          {shop.category === "vetements" && (
+            <SetValueComponent
+              title="Par Type"
+              TypeData={TypeClothesData}
+              setValue={setType}
+              value={type}
+              preferences={preferences}
+              All="Tout"
+            />
+          )}
+
+          {/* type with comp cosmetics */}
+          {shop.category === "cosmetiques" && (
+            <SetValueComponent
+              title="Par Type"
+              TypeData={CosmeticsData}
+              setValue={setType}
+              value={type}
+              preferences={preferences}
+              All="Tout"
+            />
+          )}
+
+          {/* type with comp accs */}
+          {shop.category === "accessoires" && (
+            <SetValueComponent
+              title="Par Type"
+              TypeData={AccessoriesData}
+              setValue={setType}
+              value={type}
+              preferences={preferences}
+              All="Tout"
+            />
+          )}
+
           {/* color */}
           <div className="pb-4 border-b">
             <Label>Par Couleur</Label>
@@ -514,6 +577,7 @@ const TopFilterProductShop = ({
               </span>
             </div>
           </div>
+
           {/* size */}
           <div className="pb-4 border-b">
             <Label>
@@ -579,43 +643,7 @@ const TopFilterProductShop = ({
             </div>
           </div>
 
-          {/* type with comp clothes */}
-          {shop.category === "vetements" && (
-            <SetValueComponent
-              title="Par Type"
-              TypeData={TypeClothesData}
-              setValue={setType}
-              value={type}
-              preferences={preferences}
-              All="Tout"
-            />
-          )}
-
-          {/* type with comp cosmetics */}
-          {shop.category === "cosmetiques" && (
-            <SetValueComponent
-              title="Par Type"
-              TypeData={CosmeticsData}
-              setValue={setType}
-              value={type}
-              preferences={preferences}
-              All="Tout"
-            />
-          )}
-
-          {/* type with comp accs */}
-          {shop.category === "accessoires" && (
-            <SetValueComponent
-              title="Par Type"
-              TypeData={AccessoriesData}
-              setValue={setType}
-              value={type}
-              preferences={preferences}
-              All="Tout"
-            />
-          )}
-
-          {/* public cible with comp */}
+          {/* pmaterials for accessories shop */}
           {shop.category === "accessoires" && (
             <SetValueComponent
               title="Par Matiere"

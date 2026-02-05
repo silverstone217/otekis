@@ -21,11 +21,12 @@ import ShopHeroFifth from "@/components/new-shop/templates/fifth/ShopHero";
 import ShopHeroSixth from "@/components/new-shop/templates/sixth/ShopHero";
 
 // CATEGORIES
-import ShopCategoryOne from "@/components/new-shop/templates/first/ShopCategorySection";
-import ShopCategorySecond from "@/components/new-shop/templates/second/ShopCategorySection";
-import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategorySection";
-import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
-import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
+// import ShopCategoryOne from "@/components/new-shop/templates/first/ShopCategorySection";
+// import ShopCategorySecond from "@/components/new-shop/templates/second/ShopCategorySection";
+// import ShopCategoryThird from "@/components/new-shop/templates/third/ShopCategorySection";
+// import ShopCategoryFourth from "@/components/new-shop/templates/fourth/ShopCategorySection";
+// import ShopcategoryFifth from "@/components/new-shop/templates/fifth/ShopCategorySection";
+
 import { HEADERS_DATA } from "./layout";
 import { cn } from "@/lib/utils";
 
@@ -40,13 +41,13 @@ const HEROS_DATA = [
 ];
 
 // CATEGORIES DATA
-const CATEGORIES_DATA = [
-  ShopCategoryOne,
-  ShopCategorySecond,
-  ShopCategoryThird,
-  ShopCategoryFourth,
-  ShopcategoryFifth,
-];
+// const CATEGORIES_DATA = [
+//   ShopCategoryOne,
+//   ShopCategorySecond,
+//   ShopCategoryThird,
+//   ShopCategoryFourth,
+//   ShopcategoryFifth,
+// ];
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -72,7 +73,7 @@ const getProducts = async () => {
 };
 
 export async function generateMetadata(
-  props: Props
+  props: Props,
 ): // parent: ResolvingMetadata
 Promise<Metadata> {
   const params = await props.params;
@@ -141,14 +142,14 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
   const filteredProducts = () => {
     const productIdsInShop = productsShop.map((ps) => ps.productId);
     const filtered = products.filter((product) =>
-      productIdsInShop.includes(product.id)
+      productIdsInShop.includes(product.id),
     );
 
     const sortedProductShops = productsShop
       .filter((ps) => productIdsInShop.includes(ps.productId))
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
 
     // const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>
@@ -157,17 +158,17 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
     function isOutOfStock(product: ProductsTypeWithArticles) {
       if (!product.Article || product.Article.length === 0) return true;
       return product.Article.every(
-        (a: { stock: number | null }) => a.stock == null || a.stock <= 0
+        (a: { stock: number | null }) => a.stock == null || a.stock <= 0,
       );
     }
 
     const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>
-      filtered.find((product) => product.id === sortedPS.productId)
+      filtered.find((product) => product.id === sortedPS.productId),
     );
 
     // Filtre explicitement les undefined (narrowing TypeScript garanti)
     const definedProducts = sortedFilteredProducts.filter(
-      (p): p is ProductsTypeWithArticles => p !== undefined
+      (p): p is ProductsTypeWithArticles => p !== undefined,
     );
 
     return definedProducts.sort((a, b) => {
@@ -190,9 +191,9 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
   const CurrentHero = HEROS_DATA[Number(Hero)] ?? HEROS_DATA[0];
 
   // Category
-  const Category = preferences.Category;
-  const CurrentCategory =
-    CATEGORIES_DATA[Number(Category)] ?? CATEGORIES_DATA[0];
+  // const Category = preferences.Category;
+  // const CurrentCategory =
+  //   CATEGORIES_DATA[Number(Category)] ?? CATEGORIES_DATA[0];
 
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
@@ -211,13 +212,13 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
       {Header === 3 && <div className="py-10" />}
 
-      <CurrentCategory
+      {/* <CurrentCategory
         shop={shop}
         preferences={preferences}
         products={filteredProducts() as Product[]}
         productsShop={productsShop}
         getMyFont={getMyFont!}
-      />
+      /> */}
 
       {/* <HeroShopBottomSectionByCat
         shop={shop}
@@ -241,7 +242,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
           <div
             className={cn(
               "relative z-10 max-w-5xl mx-auto text-center space-y-8",
-              getMyFont?.className
+              getMyFont?.className,
             )}
           >
             {/* Petit indicateur visuel */}

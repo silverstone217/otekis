@@ -591,3 +591,9 @@ export const AllProductsTypes = [
   ...AccessoriesData,
   ...CosmeticsData,
 ];
+
+export const AllProductsTypesWithCategory = [
+  ...TypeClothesData.map((type) => ({ ...type, category: "vetements" })),
+  ...AccessoriesData.map((type) => ({ ...type, category: "accessoires" })),
+  ...CosmeticsData.map((type) => ({ ...type, category: "cosmetiques" })),
+];

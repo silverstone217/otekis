@@ -50,7 +50,7 @@ type Props = {
 
 const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
   const router = useRouter();
-  const [category] = useState(shop.category ?? "");
+  const [category] = useState(shop.category ?? "all");
   const [name, setName] = useState(shop.name ?? "");
   const [description, setDescription] = useState(shop.description ?? "");
 
@@ -248,7 +248,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
         <BorderWrapper>
           <div className="space-y-6">
             {/* Catégories */}
-            <div>
+            {/* <div>
               <Label className="text-lg font-semibold mb-4">
                 Catégorie de votre boutique{" "}
                 <span className="text-destructive">*</span>
@@ -282,7 +282,7 @@ const ModifyShopSellerForm: React.FC<Props> = ({ shop }) => {
                   );
                 })}
               </div>
-            </div>
+            </div> */}
 
             {/* Infos Shop */}
             <div>

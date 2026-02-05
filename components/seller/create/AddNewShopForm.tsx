@@ -26,7 +26,7 @@ import { SmoothLink } from "@/components/SmoothLink";
 import { canUserCreateShop } from "@/actions/shopActions";
 
 const AddNewShopForm = () => {
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [logo, setLogo] = useState<File | null>(null);
@@ -45,7 +45,7 @@ const AddNewShopForm = () => {
   const handleDrop = useCallback(
     (
       e: React.DragEvent,
-      setFile: React.Dispatch<React.SetStateAction<File | null>>
+      setFile: React.Dispatch<React.SetStateAction<File | null>>,
     ) => {
       e.preventDefault();
       if (loading) return;
@@ -64,7 +64,7 @@ const AddNewShopForm = () => {
         toast.error("Merci de déposer une image valide.");
       }
     },
-    [loading]
+    [loading],
   );
 
   const handleDragOver = (e: React.DragEvent) => e.preventDefault();
@@ -163,7 +163,7 @@ const AddNewShopForm = () => {
         <BorderWrapper>
           <div className="space-y-8">
             {/* CATEGORY */}
-            <div>
+            {/* <div>
               <Label className="text-lg font-semibold mb-3 block">
                 Catégorie de votre boutique{" "}
                 <span className="text-destructive">*</span>
@@ -211,7 +211,7 @@ const AddNewShopForm = () => {
                 <strong>Obligatoire :</strong> seulement vêtements, cosmétiques
                 et accessoires sont disponibles.
               </p>
-            </div>
+            </div> */}
 
             {/* SHOP INFO */}
             <div>
@@ -320,7 +320,7 @@ const AddNewShopForm = () => {
                       // Vérifier la taille du logo : max 2MB
                       if (file.size > 2 * 1024 * 1024) {
                         toast.error(
-                          "Le logo dépasse la taille maximale de 2 MB."
+                          "Le logo dépasse la taille maximale de 2 MB.",
                         );
                         return;
                       }
@@ -396,7 +396,7 @@ const AddNewShopForm = () => {
                       // Vérifier la taille du logo : max 2MB
                       if (file.size > 2 * 1024 * 1024) {
                         toast.error(
-                          "Le logo dépasse la taille maximale de 2 MB."
+                          "Le logo dépasse la taille maximale de 2 MB.",
                         );
                         return;
                       }

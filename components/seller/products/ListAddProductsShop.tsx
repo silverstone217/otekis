@@ -44,6 +44,11 @@ import { ProductsTypeWithArticles } from "@/types/shop";
 import { toast } from "sonner";
 import noProduct from "@/public/images/noproduct.jpg";
 import SetValueComponent from "../SetValueComponent";
+import { ShopCategorySellerType } from "@/types/data";
+import {
+  CategorySellerFilter,
+  TypeSellerFilter,
+} from "@/components/CategoryAndTypesFilter";
 
 type Props = {
   products: ProductsTypeWithArticles[];
@@ -64,7 +69,8 @@ const ListAddProductsShop = ({
 }: Props) => {
   // Filtres de recherche et d'affichage
   const [searchText, setSearchText] = useState("");
-  const [type, setType] = useState("");
+  const [category, setCategory] = useState<ShopCategorySellerType>("all");
+  const [type, setType] = useState("all");
   const [state, setState] = useState("");
   const [quality, setQuality] = useState("");
   const [target, setTarget] = useState("");
@@ -83,63 +89,38 @@ const ListAddProductsShop = ({
     return () => clearTimeout(timeoutId);
   }, [searchText]);
 
-  const filteredProducts = useMemo(
-    () =>
-      products
-        .filter(
-          (pr) =>
-            pr.name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            (pr.brand &&
-              pr.brand
-                .toLowerCase()
-                .includes(debouncedSearchText.toLowerCase())) ||
-            pr.description
-              .toLowerCase()
-              .includes(debouncedSearchText.toLowerCase()) ||
-            (pr.type &&
-              returnDataValue(pr.type, TargetData).includes(
-                debouncedSearchText.toLowerCase()
-              )) ||
-            (pr.material &&
-              returnDataValue(pr.material, AccessoriesData)
-                .toLowerCase()
-                .includes(debouncedSearchText.toLowerCase()))
-        )
-        .filter((pr) => pr.type && pr.type.includes(type))
-        .filter((pr) => {
-          if (shop.category === "accessoires") {
-            return pr.material && pr.material.includes(material);
-          }
-          return true;
-        })
-        .filter((pr) => pr.state && pr.state.includes(state))
-        .filter((pr) => {
-          if (target === "unisex") {
-            return pr.target === "unisex";
-          }
-          if (target === "") return true;
-          if (target === "men")
-            return pr.target === "men" || pr.target === "unisex";
-          if (target === "women")
-            return pr.target === "women" || pr.target === "unisex";
-          return pr.target?.includes(target);
-        })
-        .filter((pr) => pr.quality && pr.quality.includes(quality)),
-    [
-      products,
-      debouncedSearchText,
-      type,
-      shop.category,
-      material,
-      state,
-      target,
-      quality,
-    ]
-  );
+  const filteredProducts = useMemo(() => {
+    const text = debouncedSearchText.toLowerCase();
+
+    return products
+      .filter((pr) => {
+        return (
+          pr.name.toLowerCase().includes(text) ||
+          pr.brand?.toLowerCase().includes(text) ||
+          pr.description.toLowerCase().includes(text) ||
+          returnDataValue(pr.material ?? "", AccessoriesData)
+            .toLowerCase()
+            .includes(text)
+        );
+      })
+      .filter((pr) => (category === "all" ? true : pr.category === category))
+      .filter((pr) => (type === "all" ? true : pr.type === type))
+      .filter((pr) => (!state ? true : pr.state === state))
+      .filter((pr) => {
+        if (target === "unisex") return pr.target === "unisex";
+        if (!target) return true;
+        if (target === "men")
+          return pr.target === "men" || pr.target === "unisex";
+        if (target === "women")
+          return pr.target === "women" || pr.target === "unisex";
+        return true;
+      })
+      .filter((pr) => (!quality ? true : pr.quality === quality));
+  }, [products, debouncedSearchText, category, type, state, target, quality]);
 
   const currentItems = useMemo(
     () => filteredProducts.slice(firstIndex, lastItemIndex),
-    [filteredProducts, firstIndex, lastItemIndex]
+    [filteredProducts, firstIndex, lastItemIndex],
   );
 
   if (products.length < 1) {
@@ -188,6 +169,8 @@ const ListAddProductsShop = ({
           setQuality={setQuality}
           setType={setType}
           shop={shop}
+          category={category}
+          setCategory={setCategory}
         />
       </div>
       {currentItems.length > 0 ? (
@@ -250,15 +233,15 @@ function ProductCardAddShop({
   const isInShopProduct = useMemo(
     () =>
       productsShop.find(
-        (ps) => ps.productId === product.id && ps.shopId === shop.id
+        (ps) => ps.productId === product.id && ps.shopId === shop.id,
       ),
-    [productsShop, product.id, shop.id]
+    [productsShop, product.id, shop.id],
   );
   const isInShop = !!isInShopProduct;
   const articles = product.Article as Article[];
   const totalQuantity = articles.reduce(
     (acc, article) => acc + article.stock,
-    0
+    0,
   );
 
   // Design card moderne
@@ -340,20 +323,20 @@ export function AddProductToShopSheet({
   const isInShopProduct = useMemo(
     () =>
       productsShop.find(
-        (ps) => ps.productId === product.id && ps.shopId === shop.id
+        (ps) => ps.productId === product.id && ps.shopId === shop.id,
       ),
-    [productsShop, product.id, shop.id]
+    [productsShop, product.id, shop.id],
   );
   const isInShop = Boolean(isInShopProduct);
 
   const [percentage, setPercentage] = useState(
-    isInShop && isInShopProduct?.percentage ? isInShopProduct.percentage : 5
+    isInShop && isInShopProduct?.percentage ? isInShopProduct.percentage : 5,
   );
 
   const articles = product.Article as Article[];
   const totalQuantity = articles.reduce(
     (acc, article) => acc + article.stock,
-    0
+    0,
   );
   const raw = (percentage * product.price) / 100;
   const benefit = Math.floor(raw * 100) / 100;
@@ -541,7 +524,7 @@ export function AddProductToShopSheet({
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
-                <span className="font-bold tabular-nums text-base min-w-[32px] text-center">
+                <span className="font-bold tabular-nums text-base min-w-8 text-center">
                   {percentage}%
                 </span>
                 <Button
@@ -626,26 +609,30 @@ type FilterTopTypes = {
   type: string;
   quality: string;
   material: string;
+  category: ShopCategorySellerType;
   setState: React.Dispatch<React.SetStateAction<string>>;
   setType: React.Dispatch<React.SetStateAction<string>>;
   setQuality: React.Dispatch<React.SetStateAction<string>>;
   setTarget: React.Dispatch<React.SetStateAction<string>>;
   setMaterial: React.Dispatch<React.SetStateAction<string>>;
+  setCategory: React.Dispatch<React.SetStateAction<ShopCategorySellerType>>;
   shop: Shop;
 };
 
 const TopFilterProductShop = ({
+  shop,
   target,
   state,
   type,
   quality,
   material,
+  category,
+  setCategory,
   setState,
   setType,
   setQuality,
   setTarget,
   setMaterial,
-  shop,
 }: FilterTopTypes) => {
   return (
     <Sheet>
@@ -660,7 +647,7 @@ const TopFilterProductShop = ({
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="bg-background text-foreground h-[100dvh] w-full max-w-md md:max-w-[380px] py-0 px-0 overflow-y-auto flex flex-col shadow-xl"
+        className="bg-background text-foreground h-dvh w-full max-w-md md:max-w-[380px] py-0 px-0 overflow-y-auto flex flex-col shadow-xl"
         side="right"
       >
         <SheetHeader className="px-6 pt-6 pb-2">
@@ -673,7 +660,25 @@ const TopFilterProductShop = ({
 
         {/* FILTRES */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {shop.category === "vetements" && (
+          {/* CATEGORY AND TYPES */}
+
+          {/* CATEGORY */}
+          <CategorySellerFilter
+            category={category}
+            setCategory={setCategory}
+            setType={setType}
+            className="w-full"
+          />
+
+          {/* TYPES BASED ON CATEGORY */}
+          <TypeSellerFilter
+            category={category}
+            type={type}
+            setType={setType}
+            className="w-full"
+          />
+
+          {/* {shop.category === "vetements" && (
             <SetValueComponent
               setValue={setType}
               TypeData={TypeClothesData}
@@ -704,19 +709,25 @@ const TopFilterProductShop = ({
                 title="Matière"
               />
             </>
-          )}
+          )} */}
+
+          {/* GENDER OR TARGET */}
           <SetValueComponent
             setValue={setTarget}
             TypeData={TargetData}
             value={target}
             title="Genre / public cible"
           />
+
+          {/* PRODUCT STATE */}
           <SetValueComponent
             setValue={setState}
             TypeData={StatesData}
             value={state}
             title="État du produit"
           />
+
+          {/* PRODUCT QUALITY */}
           <SetValueComponent
             setValue={setQuality}
             TypeData={QualitiesData}
@@ -742,7 +753,8 @@ const TopFilterProductShop = ({
               variant="secondary"
               className="gap-2 rounded-md font-semibold"
               onClick={() => {
-                setType("");
+                setCategory("all");
+                setType("all");
                 setTarget("");
                 setState("");
                 setQuality("");

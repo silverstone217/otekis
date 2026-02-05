@@ -44,12 +44,16 @@ import { modifyItemToShop, deleteItemToShop } from "@/actions/shopActions";
 import { Input } from "@/components/ui/input";
 import PaginationSection from "@/components/PaginationSection";
 import ImageSliderCarrousel from "./ImageSliderCarrousel";
-import { ProductWithArticle } from "@/types/data";
+import { ProductWithArticle, ShopCategorySellerType } from "@/types/data";
 import SetValueComponent from "../SetValueComponent";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  CategorySellerFilter,
+  TypeSellerFilter,
+} from "@/components/CategoryAndTypesFilter";
 
 type ProductShopTypeWithProducts = ProductShop & { product: Product };
 
@@ -75,7 +79,8 @@ const ListModifyProductsShop = ({
   exchange,
 }: Props) => {
   const [searchText, setSearchText] = useState("");
-  const [type, setType] = useState("");
+  const [category, setCategory] = useState<ShopCategorySellerType>("all");
+  const [type, setType] = useState("all");
   const [state, setState] = useState("");
   const [quality, setQuality] = useState("");
   const [target, setTarget] = useState("");
@@ -99,71 +104,38 @@ const ListModifyProductsShop = ({
     return () => clearTimeout(timeoutId);
   }, [searchText]);
 
-  const filteredProducts = useMemo(
-    () =>
-      products
-        .filter(
-          (pr) =>
-            pr.name.toLowerCase().includes(debouncedSearchText.toLowerCase()) ||
-            (pr.brand &&
-              pr.brand
-                .toLowerCase()
-                .includes(debouncedSearchText.toLowerCase())) ||
-            pr.description
-              .toLowerCase()
-              .includes(debouncedSearchText.toLowerCase()) ||
-            (pr.type &&
-              returnDataValue(pr.type, TargetData).includes(
-                debouncedSearchText.toLowerCase()
-              )) ||
-            (pr.material &&
-              returnDataValue(pr.material, AccessoriesData)
-                .toLowerCase()
-                .includes(debouncedSearchText.toLowerCase()))
-        )
-        .filter((pr) => pr.type && pr.type.includes(type))
-        .filter((pr) => pr.state && pr.state.includes(state))
-        .filter((pr) => {
-          if (target === "unisex") {
-            return (
-              // pr.target === "men" ||
-              // pr.target === "women" ||
-              pr.target === "unisex"
-            );
-          }
-          if (target === "") {
-            return true;
-          }
-          if (target == "men") {
-            return pr.target === "men" || pr.target === "unisex";
-          }
-          if (target == "women") {
-            return pr.target === "women" || pr.target === "unisex";
-          }
-          return pr.target?.includes(target);
-        })
-        .filter((pr) => pr.quality && pr.quality.includes(quality))
-        .filter((pr) => {
-          if (shop.category === "accessoires") {
-            return pr.material && pr.material.includes(material);
-          }
-          return true;
-        }),
-    [
-      products,
-      debouncedSearchText,
-      type,
-      state,
-      target,
-      quality,
-      shop.category,
-      material,
-    ]
-  );
+  const filteredProducts = useMemo(() => {
+    const text = debouncedSearchText.toLowerCase();
+
+    return products
+      .filter((pr) => {
+        return (
+          pr.name.toLowerCase().includes(text) ||
+          pr.brand?.toLowerCase().includes(text) ||
+          pr.description.toLowerCase().includes(text) ||
+          returnDataValue(pr.material ?? "", AccessoriesData)
+            .toLowerCase()
+            .includes(text)
+        );
+      })
+      .filter((pr) => (category === "all" ? true : pr.category === category))
+      .filter((pr) => (type === "all" ? true : pr.type === type))
+      .filter((pr) => (!state ? true : pr.state === state))
+      .filter((pr) => {
+        if (target === "unisex") return pr.target === "unisex";
+        if (!target) return true;
+        if (target === "men")
+          return pr.target === "men" || pr.target === "unisex";
+        if (target === "women")
+          return pr.target === "women" || pr.target === "unisex";
+        return true;
+      })
+      .filter((pr) => (!quality ? true : pr.quality === quality));
+  }, [products, debouncedSearchText, category, type, state, target, quality]);
 
   const currentItems = useMemo(
     () => filteredProducts.slice(firstIndex, lastItemIndex),
-    [filteredProducts, firstIndex, lastItemIndex]
+    [filteredProducts, firstIndex, lastItemIndex],
   );
 
   if (products.length < 1) {
@@ -212,6 +184,8 @@ const ListModifyProductsShop = ({
           setMaterial={setMaterial}
           material={material}
           shop={shop}
+          category={category}
+          setCategory={setCategory}
         />
       </div>
       {currentItems.length > 0 ? (
@@ -277,9 +251,9 @@ export const ListAddProductCard = ({
   const isInShopProduct = useMemo(
     () =>
       productsShop.find(
-        (ps) => ps.productId === product.id && ps.shopId === shop.id
+        (ps) => ps.productId === product.id && ps.shopId === shop.id,
       ),
-    [productsShop, product.id, shop.id]
+    [productsShop, product.id, shop.id],
   );
   const isInShop = !!isInShopProduct;
   const promotion = isInShopProduct?.promotion || 0;
@@ -297,7 +271,7 @@ export const ListAddProductCard = ({
     <Card
       className={cn(
         "group relative w-full md:max-w-xs min-h-[360px] flex flex-col justify-between rounded-xl shadow border hover:shadow-lg transition-all duration-300",
-        isInShop && "ring-2 ring-primary/30"
+        isInShop && "ring-2 ring-primary/30",
       )}
     >
       <CardHeader className="p-0 -mt-6">
@@ -425,10 +399,10 @@ export function AddProductToShopSheet({
 }: ProductAddItemType) {
   const [loading, setLoading] = useState(false);
   const [percentage, setPercentage] = useState(
-    isInShop && isInShopProduct?.percentage ? isInShopProduct.percentage : 5
+    isInShop && isInShopProduct?.percentage ? isInShopProduct.percentage : 5,
   );
   const [promotion, setPromotion] = useState(
-    isInShop && isInShopProduct?.promotion ? isInShopProduct.promotion : 0
+    isInShop && isInShopProduct?.promotion ? isInShopProduct.promotion : 0,
   );
 
   // Calcules
@@ -475,8 +449,8 @@ export function AddProductToShopSheet({
         prev.map((pr) =>
           pr.id === isInShopProduct.id && addNewItem?.data?.percentage
             ? { ...pr, percentage: addNewItem?.data.percentage }
-            : pr
-        )
+            : pr,
+        ),
       );
       router.refresh();
     } catch (error) {
@@ -511,7 +485,7 @@ export function AddProductToShopSheet({
       });
 
       setProductsShop((prev) =>
-        prev.filter((pr) => pr.id !== isInShopProduct.id)
+        prev.filter((pr) => pr.id !== isInShopProduct.id),
       );
 
       router.refresh();
@@ -548,7 +522,7 @@ export function AddProductToShopSheet({
         side="right"
         className={cn(
           "max-w-full w-[400px] sm:w-[440px] md:w-[520px] p-0",
-          "bg-background flex flex-col "
+          "bg-background flex flex-col ",
         )}
       >
         <SheetHeader className="px-6 pt-6 pb-2">
@@ -778,7 +752,7 @@ const ControlLine = ({
       >
         <Minus className="w-4 h-4" />
       </Button>
-      <span className="font-bold tabular-nums text-base min-w-[32px] text-center">
+      <span className="font-bold tabular-nums text-base min-w-8 text-center">
         {value}%
       </span>
       <Button
@@ -800,11 +774,13 @@ type FilterTopTypes = {
   type: string;
   quality: string;
   material: string;
+  category: ShopCategorySellerType;
   setState: React.Dispatch<React.SetStateAction<string>>;
   setType: React.Dispatch<React.SetStateAction<string>>;
   setQuality: React.Dispatch<React.SetStateAction<string>>;
   setTarget: React.Dispatch<React.SetStateAction<string>>;
   setMaterial: React.Dispatch<React.SetStateAction<string>>;
+  setCategory: React.Dispatch<React.SetStateAction<ShopCategorySellerType>>;
   shop: Shop;
 };
 
@@ -815,6 +791,8 @@ const TopFilterProductShop = ({
   quality,
   material,
   setState,
+  category,
+  setCategory,
   setType,
   setQuality,
   setTarget,
@@ -834,7 +812,7 @@ const TopFilterProductShop = ({
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="bg-background text-foreground h-[100dvh] w-full max-w-md md:max-w-[380px] py-0 px-0 overflow-y-auto flex flex-col shadow-xl"
+        className="bg-background text-foreground h-dvh w-full max-w-md md:max-w-[380px] py-0 px-0 overflow-y-auto flex flex-col shadow-xl"
         side="right"
       >
         <SheetHeader className="px-6 pt-6 pb-2">
@@ -847,50 +825,41 @@ const TopFilterProductShop = ({
 
         {/* FILTRES */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {shop.category === "vetements" && (
-            <SetValueComponent
-              setValue={setType}
-              TypeData={TypeClothesData}
-              value={type}
-              title="Type de vêtement"
-            />
-          )}
-          {shop.category === "cosmetiques" && (
-            <SetValueComponent
-              setValue={setType}
-              TypeData={CosmeticsData}
-              value={type}
-              title="Catégorie cosmétique"
-            />
-          )}
-          {shop.category === "accessoires" && (
-            <>
-              <SetValueComponent
-                setValue={setType}
-                TypeData={AccessoriesData}
-                value={type}
-                title="Type d'accessoire"
-              />
-              <SetValueComponent
-                setValue={setMaterial}
-                TypeData={MaterialsAccData}
-                value={material}
-                title="Matière"
-              />
-            </>
-          )}
+          {/* CATEGORY AND TYPES */}
+
+          {/* CATEGORY */}
+          <CategorySellerFilter
+            category={category}
+            setCategory={setCategory}
+            setType={setType}
+            className="w-full"
+          />
+
+          {/* TYPES BASED ON CATEGORY */}
+          <TypeSellerFilter
+            category={category}
+            type={type}
+            setType={setType}
+            className="w-full"
+          />
+
+          {/* GEBDER / TARGET */}
           <SetValueComponent
             setValue={setTarget}
             TypeData={TargetData}
             value={target}
             title="Genre / public cible"
           />
+
+          {/* PRODUCT STATE */}
           <SetValueComponent
             setValue={setState}
             TypeData={StatesData}
             value={state}
             title="État du produit"
           />
+
+          {/* PRODUCT QUALITY */}
           <SetValueComponent
             setValue={setQuality}
             TypeData={QualitiesData}
@@ -912,11 +881,9 @@ const TopFilterProductShop = ({
           </SheetClose>
           <SheetClose asChild>
             <Button
-              type="button"
-              variant="secondary"
-              className="gap-2 rounded-md font-semibold"
               onClick={() => {
-                setType("");
+                setCategory("all");
+                setType("all");
                 setTarget("");
                 setState("");
                 setQuality("");

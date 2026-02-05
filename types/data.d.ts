@@ -19,3 +19,12 @@ export type IconLikeComponent = React.FC<{
   className?: string;
   style?: React.CSSProperties;
 }>;
+
+export type ShopCategorySellerType =
+  | "all"
+  | "vetements"
+  | "accessoires"
+  | "electroniques"
+  | "aliments"
+  | "cosmetiques"
+  | "autres";
