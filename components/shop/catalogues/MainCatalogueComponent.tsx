@@ -14,6 +14,8 @@ import {
 import { ProductsTypeWithArticles } from "@/types/shop";
 import {
   AccessoriesData,
+  AllProductsTypes,
+  AllProductsTypesWithCategory,
   CosmeticsData,
   JewelryData,
   MaterialsAccData,
@@ -30,7 +32,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "../home/NewArrivalProductSection";
 import PaginationSection from "@/components/PaginationSection";
 import { useRouter, useSearchParams } from "next/navigation";
-import SetValueComponent from "../SetValueComponent";
+import SetValueComponent, { SetValueComponentType } from "../SetValueComponent";
 import { luminanceColor } from "@/utils/shopFunctions";
 import { ShopCategorySellerType } from "@/types/data";
 import { CategorySellerFilter } from "@/components/CategoryAndTypesFilter";
@@ -461,41 +463,17 @@ const TopFilterProductShop = ({
 
           <Separator />
 
-          {/* type with comp clothes */}
-          {shop.category === "vetements" && (
-            <SetValueComponent
+          {
+            <SetValueComponentType
               title="Par Type"
-              TypeData={TypeClothesData}
+              TypeData={AllProductsTypesWithCategory}
               setValue={setType}
               value={type}
               preferences={preferences}
               All="Tout"
+              constraint={category}
             />
-          )}
-
-          {/* type with comp cosmetics */}
-          {shop.category === "cosmetiques" && (
-            <SetValueComponent
-              title="Par Type"
-              TypeData={CosmeticsData}
-              setValue={setType}
-              value={type}
-              preferences={preferences}
-              All="Tout"
-            />
-          )}
-
-          {/* type with comp accs */}
-          {shop.category === "accessoires" && (
-            <SetValueComponent
-              title="Par Type"
-              TypeData={AccessoriesData}
-              setValue={setType}
-              value={type}
-              preferences={preferences}
-              All="Tout"
-            />
-          )}
+          }
 
           {/* color */}
           <div className="pb-4 border-b">
