@@ -49,27 +49,27 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   const defaultShopId = useSelectDefaultShop({ shops });
 
   const [background, setBackground] = useState(
-    preferences?.background ?? backgroundColors.white
+    preferences?.background ?? backgroundColors.white,
   );
   const [textColor, setTextColor] = useState(
     (preferences?.textColor ?? background === backgroundColors.white)
       ? textColorData.light
-      : textColorData.dark
+      : textColorData.dark,
   );
   const [buttonColor, setButtonColor] = useState(
-    preferences?.buttonColor ?? buttonColors.black
+    preferences?.buttonColor ?? buttonColors.black,
   );
   const [buttonRadius, setButtonRadius] = useState(
-    preferences?.buttonRadius ?? buttonRadiusData.small
+    preferences?.buttonRadius ?? buttonRadiusData.small,
   );
   const [buttonTextColor, setButtonTextColor] = useState(
     (preferences?.textColor ?? buttonColor === buttonColors.white)
       ? textColorData.light
-      : textColorData.dark
+      : textColorData.dark,
   );
 
   const [fontFamily, setFontFamily] = useState(
-    preferences?.fontFamily ?? "Lato"
+    preferences?.fontFamily ?? "Lato",
   );
 
   const [logoTop, setLogoTop] = useState(preferences?.logo ?? "name");
@@ -86,13 +86,13 @@ const MainPreferencesComponent = ({ shops }: Props) => {
   //   const [displayHero, setDisplayHero] = useState(true);
   const [title, setTitle] = useState("Bienvenue dans Ma boutique");
   const [description, setDescription] = useState(
-    "Parcourez le catalogue et trouvez ce qui vous fait envie!"
+    "Parcourez le catalogue et trouvez ce qui vous fait envie!",
   );
   const [textPosition, setTextPosition] = useState(
-    preferences?.positionText ?? "center"
+    preferences?.positionText ?? "center",
   );
   const [showDescription, setShowDescription] = useState(
-    preferences?.showDescription ?? true
+    preferences?.showDescription ?? true,
   );
 
   const [loading, setLoading] = useState(false);
@@ -100,12 +100,12 @@ const MainPreferencesComponent = ({ shops }: Props) => {
 
   const shop = useMemo(
     () => shops.find((i) => i.id === defaultShopId),
-    [shops, defaultShopId]
+    [shops, defaultShopId],
   );
 
   // font update
   const getMyFont = FontsList.find(
-    (font) => font.name === fontFamily
+    (font) => font.name === fontFamily,
   )?.component;
 
   useEffect(() => {
@@ -134,17 +134,17 @@ const MainPreferencesComponent = ({ shops }: Props) => {
       setTitle(preferences.title ?? "Bienvenue dans Ma boutique");
       setDescription(
         preferences.description ??
-          "Parcourez le catalogue et trouvez ce qui vous fait envie!"
+          "Parcourez le catalogue et trouvez ce qui vous fait envie!",
       );
       setButtonTextColor(
         (preferences.buttonTextColor ?? buttonColor === buttonColors.white)
           ? textColorData.light
-          : textColorData.dark
+          : textColorData.dark,
       );
       setTextColor(
         (preferences.textColor ?? background === backgroundColors.white)
           ? textColorData.light
-          : textColorData.dark
+          : textColorData.dark,
       );
       setFontFamily(preferences.fontFamily ?? "Lato");
       setLogoTop(preferences.logo ?? "name");
@@ -173,7 +173,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         ? textColorData.light
         : textColorData.dark,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [buttonColor, buttonTextColor]
+    [buttonColor, buttonTextColor],
   );
 
   // DISABLED BTN
@@ -287,7 +287,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     } catch (error) {
       console.error(error);
       toast.error(
-        "Une erreur s'est produite lors de l'enregistrement des préférences, veuillez réessayer plus tard!"
+        "Une erreur s'est produite lors de l'enregistrement des préférences, veuillez réessayer plus tard!",
       );
     } finally {
       setLoading(false);
@@ -354,7 +354,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
     } catch (error) {
       console.error(error);
       toast.error(
-        "Une erreur s'est produite lors de la modification des préférences, veuillez réessayer plus tard!"
+        "Une erreur s'est produite lors de la modification des préférences, veuillez réessayer plus tard!",
       );
     } finally {
       setLoading(false);
@@ -392,7 +392,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
         "
         >
           <span>Voire ma boutique</span>
-          <Store className="flex-shrink-0 w-8" />
+          <Store className="shrink-0 w-8" />
         </Link>
       </div>
 
@@ -472,7 +472,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                         value={idx.toString()}
                         id={idx.toString()}
                       />
-                      <Mi className="flex-shrink-0 size-6" />
+                      <Mi className="shrink-0 size-6" />
                     </div>
                   ))}
                 </div>
@@ -605,14 +605,14 @@ const MainPreferencesComponent = ({ shops }: Props) => {
           </BorderWrapper>
 
           {/* Category Shop */}
-          <BorderWrapper>
+          {/* <BorderWrapper>
             <div
               className="w-full gap-2.5 flex flex-col transition-all duration-500 
             ease-in-out"
             >
               <Label className="font-bold py-2">Section de Categorie</Label>
 
-              {/* radio category */}
+            
               <RadioGroup
                 value={Category}
                 onValueChange={(val) => setCategory(val)}
@@ -630,7 +630,7 @@ const MainPreferencesComponent = ({ shops }: Props) => {
                 </div>
               </RadioGroup>
             </div>
-          </BorderWrapper>
+          </BorderWrapper> */}
 
           {/* DESCRIPTION SHOW */}
           <BorderWrapper>
