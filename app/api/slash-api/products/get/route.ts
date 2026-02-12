@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     if (!companyPrefs) {
       return NextResponse.json(
         { CONTENTS: [], message: "Aucune préférence entreprise trouvée." },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
           : 0;
         const beneficeAfterDiscount = applyPromotionOnProfit(
           benefit,
-          discountPercentage
+          discountPercentage,
         );
         const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
 
@@ -70,7 +70,7 @@ export async function GET(req: Request) {
         if (
           product.category &&
           categories.some((cat) =>
-            product.category.toLowerCase().includes(cat.toLowerCase())
+            product.category.toLowerCase().includes(cat.toLowerCase()),
           )
         ) {
           count += 3;
@@ -82,7 +82,7 @@ export async function GET(req: Request) {
           if (
             Object.prototype.hasOwnProperty.call(TargetGenders, key) &&
             TargetGenders[key as keyof typeof TargetGenders].includes(
-              gender.toLowerCase()
+              gender.toLowerCase(),
             )
           ) {
             count += 1;
@@ -106,7 +106,7 @@ export async function GET(req: Request) {
                 (discountPercentage && discountPercentage > 0
                   ? totalPriceAfterDiscount
                   : ps.price) * exchangeRate
-              ).toFixed(2)
+              ).toFixed(2),
             ),
             stock: product.stock ?? 0,
             brand: product.brand ? product.brand.replace(/ /g, "-") : "",
@@ -121,6 +121,7 @@ export async function GET(req: Request) {
                 | "woman"
                 | "kids"
                 | "unisex") ?? "unisex",
+            origin: "otekis",
           },
           shop: {
             id: shop.id,
@@ -131,7 +132,7 @@ export async function GET(req: Request) {
           },
           url: shopProductUrl,
         };
-      })
+      }),
     );
 
     // --- Nettoyer et trier ---
@@ -145,8 +146,43 @@ export async function GET(req: Request) {
 
     console.log(`✅ ${validContents.length} produits préparés et triés.`);
 
+    //
+    // 🔹 Produits externes (slash-mobile)
+    let externalContents: any[] = [];
+
+    try {
+      const externalRes = await fetch(
+        "https://slash-puce.vercel.app/api/slash-mobile",
+        {
+          method: "GET",
+          cache: "no-store", // important pour API dynamique
+        },
+      );
+
+      if (externalRes.ok) {
+        const externalData = await externalRes.json();
+
+        externalContents = (externalData?.data || []).map((item: any) => ({
+          ...item,
+          product: {
+            ...item.product,
+            origin: item.product.origin || "external",
+          },
+        }));
+      } else {
+        console.error("⚠️ API externe non OK");
+      }
+    } catch (err) {
+      console.error("⚠️ erreur fetch external", err);
+    }
+
+    const mergedContents = [...validContents, ...externalContents];
+
+    // mélange aléatoire pour discovery
+    const shuffled = mergedContents.sort(() => Math.random() - 0.5);
+
     return NextResponse.json({
-      CONTENTS: validContents,
+      CONTENTS: shuffled,
       hasMore: validContents.length === take,
       message: "Données récupérées avec succès",
     });
@@ -154,7 +190,7 @@ export async function GET(req: Request) {
     console.error("❌ Erreur GET /products/get :", error);
     return NextResponse.json(
       { message: "Erreur interne du serveur" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
