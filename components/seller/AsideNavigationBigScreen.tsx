@@ -37,7 +37,11 @@ const AsideNavigationBigScreen = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col px-6 py-6 bg-white">
+    <div
+      className="w-full h-full flex flex-col px-6 py-6 bg-white
+    overflow-y-auto no-horizontal-scrollbar
+    "
+    >
       {/* Logo */}
       <Link
         href={"/"}
