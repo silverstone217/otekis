@@ -18,10 +18,12 @@ import { changeName, returnRoleWith } from "@/utils/functions";
 import { Button } from "../ui/button";
 import logo from "@/public/images/oteki-logo.png";
 import Image from "next/image";
+import { NavLink } from "./NavLink";
+import { MobileNavItem } from "./MobileNavItem";
 
 const PERMIT_ROLES = ["employe", "employee", , "admin", "super_admin"];
 
-const Header = () => {
+const Header = ({ hasShop }: { hasShop: { slug: string } | null }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const user = session?.user;
@@ -65,34 +67,46 @@ const Header = () => {
           />
           <span>tekis.</span>
         </Link>
+
         {/* links and others*/}
-        <div className="flex-1 hidden items-center justify-end lg:flex gap-10">
-          {/* links */}
-          <div className="flex items-center justify-end gap-4 flex-1">
-            <LinkName href="/dashboard" title="Ma Boutique" />
-            <LinkName href="/documentation" title="Docs" />
-            <LinkName href="/a-propos" title="A propos" />
-            <LinkName href="#contact" title="Nous Contacter" />
+        <div className="flex-1 hidden lg:flex items-center justify-end gap-10">
+          {/* Navigation */}
+          <div className="flex items-center gap-6">
+            <NavLink href="/dashboard" title="Ma Boutique" />
+            <NavLink href="/documentation" title="Docs" />
+            <NavLink href="/a-propos" title="A propos" />
+            <NavLink href="#contact" title="Nous Contacter" />
             {user && PERMIT_ROLES.includes(user.role) && (
-              <LinkName href="/overview" title="Administrateur" />
+              <NavLink href="/overview" title="Administrateur" />
             )}
           </div>
 
-          {/* buttons */}
-          <div className="flex gap-2.5 items-center justify-center ">
-            {!user && (
-              <Link href={"/connexion"}>
-                <Button
-                  className="py-2 px-6 rounded-md text-white hover:text-gray-900 
-        transition-all duration-500 ease-in-out hover:bg-transparent"
+          {/* Right side */}
+          <div className="flex items-center gap-4">
+            {/* CTA Boutique officielle */}
+            {user && hasShop && (
+              <Link href={`/${hasShop.slug}`}>
+                <div
+                  className="
+          px-4 py-2 rounded-lg
+          bg-neutral-900 text-white text-sm font-medium
+          transition-all duration-300
+          hover:bg-black
+        "
                 >
-                  Connexion
-                </Button>
+                  Visiter ma boutique
+                </div>
               </Link>
             )}
-            {/* <ToggleThemeMode /> */}
+
+            {!user && (
+              <Link href={"/connexion"}>
+                <Button className="px-5 py-2 rounded-lg">Connexion</Button>
+              </Link>
+            )}
+
             {user && (
-              <Link href={"/dashboard"} className="w-[43px] h-[43px]">
+              <Link href={"/dashboard"} className="w-10 h-10">
                 <UserAvatar />
               </Link>
             )}
@@ -112,84 +126,96 @@ const Header = () => {
 
         {/* small screen menu */}
         {isOpen && (
-          <div className="w-full flex flex-col items-start gap-4 py-4 transition-all duration-500 ease-in-out">
-            {/* links */}
-            <div className="flex flex-col items-start justify-start gap-4 flex-1 transition-all duration-500 ease-in-out">
+          <div className="w-full flex flex-col px-6 pt-6 pb-10 gap-6">
+            {/* CTA Boutique officielle */}
+            {user && hasShop && (
               <Link
-                href={"/ma-boutique"}
-                className="flex gap-4 items-center w-full"
+                href={`/${hasShop.slug}`}
+                onClick={() => setIsOpen(false)}
+                className="block"
               >
-                <Store className="w-8 shrink-0" />
-                <span>Ma Boutique</span>
-              </Link>
-
-              <Link
-                href={"/documentation"}
-                className="flex gap-4 items-center w-full"
-              >
-                <BookOpenText className="w-8 shrink-0" />
-                <span>Documentation</span>
-              </Link>
-
-              <Link
-                href={"/a-propos"}
-                className="flex gap-4 items-center w-full"
-              >
-                <BadgeInfo className="w-8 shrink-0" />
-                <span>A Propos</span>
-              </Link>
-              <Link
-                href={"#contact"}
-                className="flex gap-4 items-center w-full"
-                onClick={() => {
-                  setTimeout(() => {
-                    setIsOpen(false);
-                  }, 300);
-                }}
-              >
-                <PhoneCall className="w-8 shrink-0" />
-                <span>Nous Contacter</span>
-              </Link>
-              {user && PERMIT_ROLES.includes(user.role) && (
-                <Link
-                  href={"/overview"}
-                  className="flex gap-4 items-center w-full"
+                <div
+                  className="
+          rounded-2xl p-5
+          bg-neutral-900 text-white
+        "
                 >
-                  <Users className="w-8 shrink-0" />
-                  <span>Staff*</span>
-                </Link>
+                  <span className="text-xs opacity-70 block">
+                    Boutique officielle
+                  </span>
+                  <span className="text-lg font-semibold">
+                    Voir ma boutique
+                  </span>
+                </div>
+              </Link>
+            )}
+
+            {/* Navigation */}
+            <div className="flex flex-col">
+              <MobileNavItem
+                href="/ma-boutique"
+                icon={Store}
+                title="Ma Boutique"
+                setIsOpen={setIsOpen}
+              />
+
+              <MobileNavItem
+                href="/documentation"
+                icon={BookOpenText}
+                title="Documentation"
+                setIsOpen={setIsOpen}
+              />
+
+              <MobileNavItem
+                href="/a-propos"
+                icon={BadgeInfo}
+                title="A Propos"
+                setIsOpen={setIsOpen}
+              />
+
+              <MobileNavItem
+                href="#contact"
+                icon={PhoneCall}
+                title="Nous Contacter"
+                setIsOpen={setIsOpen}
+              />
+
+              {user && PERMIT_ROLES.includes(user.role) && (
+                <MobileNavItem
+                  href="/overview"
+                  icon={Users}
+                  title="Staff"
+                  setIsOpen={setIsOpen}
+                />
               )}
             </div>
-            {/* separators */}
-            <span className="w-full h-0.5 bg-gray-200" />
-            {/* buttons */}
-            <div className="flex flex-col gap-2 items-center justify-center">
+
+            {/* Divider */}
+            <div className="border-t" />
+
+            {/* Bottom section */}
+            <div className="flex flex-col gap-4">
               {!user && (
-                <Link href={"/connexion"}>
-                  <Button
-                    className="py-2 px-4 rounded-md hover:text-gray-700 
-            transition-all duration-500 ease-in-out border-primary border w-52"
-                  >
-                    Connexion
-                  </Button>
+                <Link href="/connexion" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full rounded-xl">Connexion</Button>
                 </Link>
               )}
 
-              {/* avatar user profile */}
               {user && (
                 <Link
-                  href={"/dashboard"}
-                  className="flex items-center justify-start gap-2"
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-4 p-4 rounded-xl bg-gray-50"
                 >
-                  <div className="w-12 h-12 shrink-0">
+                  <div className="w-10 h-10">
                     <UserAvatar />
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold line-clamp-1">{user?.name}</span>
-                    <span className="text-sm text-gray-500 line-clamp-1">
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="font-semibold truncate">{user?.name}</span>
+                    <span className="text-sm text-gray-500 truncate">
                       {user?.email}
                     </span>
-                    <span className="text-sm text-red-700 line-clamp-1">
+                    <span className="text-xs text-gray-400">
                       {returnRoleWith(user?.role)}
                     </span>
                   </div>

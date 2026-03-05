@@ -1,4 +1,5 @@
-import { getProductsWithArticles } from "@/actions/actions";
+import { getProductsWithArticles, getUser } from "@/actions/actions";
+import { isUserHasShop } from "@/actions/shopActions";
 import Footer from "@/components/home/Footer";
 import MainHomeComponent from "@/components/home/MainHomeComponent";
 import { prisma } from "@/lib/prisma";
@@ -48,12 +49,17 @@ export default async function Home() {
   const filterdeProducts = !products
     ? []
     : shuffleArray(products).filter(
-        (itm) => !itm.name.toLocaleLowerCase().includes("test")
+        (itm) => !itm.name.toLocaleLowerCase().includes("test"),
       );
+
+  const user = await getUser();
+
+  // isuser has shop
+  const hasShop = user ? await isUserHasShop(user.id) : null;
 
   return (
     <main className="min-h-dvh w-full flex items-center justify-start flex-col gap-10">
-      <MainHomeComponent products={filterdeProducts} />
+      <MainHomeComponent products={filterdeProducts} hasShop={hasShop} />
 
       <Footer />
     </main>

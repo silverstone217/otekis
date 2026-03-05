@@ -10,7 +10,11 @@ import { returnRole } from "@/utils/functions";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 
-const HeaderSmallScreen = () => {
+const HeaderSmallScreen = ({
+  hasShop,
+}: {
+  hasShop: { slug: string } | null;
+}) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
@@ -27,7 +31,6 @@ const HeaderSmallScreen = () => {
       setIsOpen(false);
       router.refresh();
     } catch (error) {
-      console.error("Failed to log out", error);
       const err = error as Error;
       toast.error("Erreur lors de la déconnexion", {
         description: err.message,
@@ -39,160 +42,181 @@ const HeaderSmallScreen = () => {
 
   return (
     <header
-      className={`w-full py-4 p-2 z-50 bg-white lg:hidden h-16 fixed border-b shadow
-    dark:text-white 
-  ${
-    isOpen
-      ? " w-full h-[99dvh] overflow-x-hidden overflow-y-auto flex-wrap bg-white dark:text-white "
-      : ""
-  }
-   transition-all duration-500 ease-in-out
-  `}
+      className={`fixed top-0 left-0 w-full z-50 lg:hidden
+      bg-white/80 backdrop-blur-xl border-b
+      transition-all duration-300
+      ${isOpen ? "h-dvh" : "h-16"}
+      `}
     >
       <div
-        className={`w-full max-w-7xl mx-auto flex items-center justify-between gap-10 flex-shrink-0
-      ${isOpen ? "flex-wrap" : ""}
-      transition-all duration-500 ease-in-out
-      `}
+        className={`max-w-7xl mx-auto h-16 px-4
+        flex items-center justify-between
+        `}
       >
+        {/* Logo */}
         <Link
           href={"/"}
-          className="font-extrabold tracking-tight text-3xl capitalize lg:hidden"
+          className="text-2xl font-extrabold tracking-tight capitalize"
         >
           {siteName}.
         </Link>
 
-        {/* small screen open menu */}
-        <div className="lg:hidden flex-shrink-0">
-          <button
-            onClick={toggleMenu}
-            className="flex items-center justify-center
-            bg-transparent rounded-full focus:outline-none"
-          >
-            {isOpen ? <X className="w-10" /> : <AlignJustify className="w-8" />}
-          </button>
-        </div>
+        {/* Toggle */}
+        <button
+          onClick={toggleMenu}
+          className="w-10 h-10 flex items-center justify-center
+          rounded-xl hover:bg-gray-100 transition"
+        >
+          {isOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <AlignJustify className="w-6 h-6" />
+          )}
+        </button>
+      </div>
 
-        {isOpen && (
-          <div
-            className="w-full flex flex-col items-start gap-6 transition-all 
-          duration-500 ease-in-out"
-          >
-            {/* links */}
-            <div className="w-full flex flex-1 flex-col gap-4 2xl:mt-2">
-              {SellerLinksPage.map((link, idx) => (
+      {/* Fullscreen Menu */}
+      {isOpen && (
+        <div className="px-6 pt-6 pb-10 overflow-y-auto h-[calc(100dvh-4rem)] flex flex-col">
+          {/* Shop CTA */}
+          {hasShop && (
+            <Link
+              href={`/${hasShop.slug}`}
+              onClick={() => setIsOpen(false)}
+              className="mb-8 block"
+            >
+              <div
+                className="
+    relative overflow-hidden rounded-2xl p-5
+    bg-linear-to-br from-black to-gray-800
+    text-white
+    transition-all duration-300
+    hover:scale-[1.02]
+    active:scale-[0.98]
+  "
+              >
+                <div className="flex flex-col">
+                  <span className="text-xs opacity-70">
+                    Visiter votre boutique officielle
+                  </span>
+                  <span className="text-lg font-semibold">
+                    Voir ma boutique
+                  </span>
+                </div>
+              </div>
+            </Link>
+          )}
+
+          {/* Navigation Links */}
+          <div className="flex flex-col">
+            {SellerLinksPage.map((link, idx) => {
+              const isActive = pathname.includes(link.path);
+
+              return (
                 <Link
                   key={idx}
                   href={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`flex gap-4 items-center  border-y-2 
-            justify-start w-full transition-all duration-500 ease-in-out
-           py-3
-             ${
-               pathname.includes(link.path)
-                 ? "border-y-2 border-gray-300"
-                 : "border-transparent"
-             }
-             hover:opacity-70
-             `}
+                  className={`group relative flex items-center gap-4 px-4 py-4
+        transition-all duration-300`}
                 >
-                  <link.icon className="w-8 flex-shrink-0" />
-                  <span>{link.name}</span>
+                  {/* Accent bar */}
+                  <span
+                    className={`absolute left-0 top-0 h-full w-1 rounded-r-full transition-all duration-300
+          ${isActive ? "bg-black" : "bg-transparent group-hover:bg-gray-300"}`}
+                  />
+
+                  <link.icon
+                    className={`w-5 h-5 transition-all duration-300
+          ${isActive ? "text-black" : "text-gray-500 group-hover:text-black"}`}
+                  />
+
+                  <span
+                    className={`transition-all duration-300
+          ${
+            isActive
+              ? "font-semibold text-black"
+              : "text-gray-600 group-hover:text-black"
+          }`}
+                  >
+                    {link.name}
+                  </span>
                 </Link>
-              ))}
-            </div>
-
-            <div
-              className="w-full flex flex-col items-start justify-start 
-            gap-4 flex-shrink-0 pt-6 border-t-2"
-            >
-              <Link
-                href={"/"}
-                onClick={() => setIsOpen(false)}
-                className={`flex gap-4 items-center  border-y-2 
-            justify-start w-full transition-all duration-500 ease-in-out
-           py-3
-             ${
-               pathname.includes("/aide")
-                 ? "border-y-2 border-gray-300"
-                 : "border-transparent"
-             }
-             hover:opacity-70
-             `}
-              >
-                <Info className="w-8 flex-shrink-0" />
-                <span>{"Aide"}</span>
-              </Link>
-
-              <Link
-                href={"/documentation"}
-                onClick={() => setIsOpen(false)}
-                className={`flex gap-4 items-center  border-y-2 
-            justify-start w-full transition-all duration-500 ease-in-out
-           py-3
-             ${
-               pathname.includes("/documentation")
-                 ? "border-y-2 border-gray-300"
-                 : "border-transparent"
-             }
-             hover:opacity-70
-             `}
-              >
-                <Newspaper className="w-8 flex-shrink-0" />
-                <span>{"Documentations"}</span>
-              </Link>
-
-              {/* <Link
-                href={"/blog"}
-                onClick={() => setIsOpen(false)}
-                className={`flex gap-4 items-center  border-y-2 
-            justify-start w-full transition-all duration-500 ease-in-out
-           py-4
-             ${
-               pathname.includes("/help")
-                 ? "border-y-3 border-gray-300"
-                 : "border-transparent"
-             }
-             hover:opacity-70
-             `}
-              >
-                <Newspaper className="w-8 flex-shrink-0" />
-                <span>{"Blog"}</span>
-              </Link> */}
-              {/* avatar */}
-              {user && (
-                <Link
-                  href={"/profile"}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-start gap-2"
-                >
-                  <UserAvatar />
-                  <div>
-                    <span className="font-bold line-clamp-1">{user?.name}</span>
-                    <span className="text-sm text-gray-500 line-clamp-1">
-                      {user?.email}
-                    </span>
-                    <span className="text-sm text-gray-500 line-clamp-1">
-                      {returnRole(user?.role)}
-                    </span>
-                  </div>
-                </Link>
-              )}
-              {user && (
-                <Button
-                  disabled={loading}
-                  onClick={handleLogOut}
-                  variant={"destructive"}
-                  className="w-full py-5 flex items-center justify-center gap-4"
-                >
-                  <LogOut className="w-8 flex-shrink-0" />
-                  <span>Deconnexion</span>
-                </Button>
-              )}
-            </div>
+              );
+            })}
           </div>
-        )}
-      </div>
+
+          {/* Divider */}
+          <div className="my-8 border-t" />
+
+          {/* Secondary Links */}
+          <div className="flex flex-col gap-2">
+            <Link
+              href={"/aide"}
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition
+              ${
+                pathname.includes("/aide")
+                  ? "bg-gray-100 font-medium"
+                  : "hover:bg-gray-50"
+              }
+              `}
+            >
+              <Info className="w-5 h-5 opacity-80" />
+              <span>Aide</span>
+            </Link>
+
+            <Link
+              href={"/documentation"}
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition
+              ${
+                pathname.includes("/documentation")
+                  ? "bg-gray-100 font-medium"
+                  : "hover:bg-gray-50"
+              }
+              `}
+            >
+              <Newspaper className="w-5 h-5 opacity-80" />
+              <span>Documentations</span>
+            </Link>
+          </div>
+
+          {/* Profile Section */}
+          {user && (
+            <>
+              <div className="my-8 border-t" />
+
+              <Link
+                href={"/profile"}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-50"
+              >
+                <UserAvatar />
+                <div className="flex flex-col overflow-hidden">
+                  <span className="font-semibold truncate">{user?.name}</span>
+                  <span className="text-sm text-gray-500 truncate">
+                    {user?.email}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {returnRole(user?.role)}
+                  </span>
+                </div>
+              </Link>
+
+              <Button
+                disabled={loading}
+                onClick={handleLogOut}
+                variant="destructive"
+                className="mt-4 w-full rounded-xl"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Deconnexion
+              </Button>
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 };

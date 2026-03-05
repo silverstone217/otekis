@@ -270,18 +270,21 @@ export const ListAddProductCard = ({
   return (
     <Card
       className={cn(
-        "group relative w-full md:max-w-xs min-h-[360px] flex flex-col justify-between rounded-xl shadow border hover:shadow-lg transition-all duration-300",
+        "group relative w-full md:max-w-xs min-h-[360px] flex flex-col",
+        "justify-between rounded-xl shadow border hover:shadow-lg transition-all",
+        "duration-300",
         isInShop && "ring-2 ring-primary/30",
       )}
     >
       <CardHeader className="p-0 -mt-6">
-        <div className="relative h-56 w-full overflow-hidden rounded-t-xl">
+        <div className="relative h-72 w-full overflow-hidden rounded-t-xl">
           <Image
             src={product.image || noProduct}
             alt={product.name}
             fill
             unoptimized
-            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out bg-muted"
+            className="object-cover group-hover:scale-105 
+            transition-transform duration-500 ease-in-out bg-muted"
             sizes="(max-width: 600px) 100vw, 25vw"
             priority
           />
@@ -534,7 +537,7 @@ export function AddProductToShopSheet({
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-6">
           {/* IMAGE CAROUSEL */}
-          <div className="w-full h-48 md:h-56 rounded-xl overflow-hidden mb-4 border">
+          <div className="w-full h-72 rounded-xl overflow-hidden mb-4 border">
             <ImageSliderCarrousel
               images={[product.image, ...(product.images || [])]}
               custom_height="100%"

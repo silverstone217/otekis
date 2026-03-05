@@ -889,3 +889,15 @@ export const canUserCreateShop = async () => {
 
   return true;
 };
+
+// get shop slug by user id
+export const isUserHasShop = async (userId: string) => {
+  return await prisma.shop.findFirst({
+    where: {
+      userId,
+    },
+    select: {
+      slug: true,
+    },
+  });
+};

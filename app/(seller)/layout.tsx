@@ -6,6 +6,8 @@ import React, { ReactNode } from "react";
 // import NotAuthorizedComponent from "@/components/NotAuthorizedComponent";
 import BannedUserSeller from "@/components/BannedUserSeller";
 import { getCompanyPreference } from "@/actions/companyAction";
+import { isUserHasShop } from "@/actions/shopActions";
+
 const SellerLayout = async ({ children }: { children: ReactNode }) => {
   const user = await getUser();
   // const isPermitted = user?.role === "seller" || user?.role.includes("admin");
@@ -16,6 +18,9 @@ const SellerLayout = async ({ children }: { children: ReactNode }) => {
   // }
 
   const otekisPrefs = await getCompanyPreference();
+
+  // isuser has shop
+  const hasShop = user ? await isUserHasShop(user.id) : null;
 
   // if (user.isBanned) {
   //   return <BannedUserSeller />;
@@ -28,14 +33,14 @@ const SellerLayout = async ({ children }: { children: ReactNode }) => {
     "
     >
       {/* header small screen */}
-      <HeaderSmallScreen />
+      <HeaderSmallScreen hasShop={hasShop} />
       {/* aside big screen */}
       <aside
-        className="col-span-1 hidden lg:flex border-r shadow z-30 h-[100dvh]
+        className="col-span-1 hidden lg:flex border-r shadow z-30 h-dvh
         overflow-hidden no-scrollbar w-[250px] 2xl:w-[300px]
         "
       >
-        <AsideNavigationBigScreen />
+        <AsideNavigationBigScreen hasShop={hasShop} />
       </aside>
       <main className="lg:flex-1 lg:overflow-y-auto lg:overflow-x-hidden w-full pt-20 pb-4 lg:pt-4 px-4 ">
         {!user ? (

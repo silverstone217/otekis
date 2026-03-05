@@ -251,7 +251,7 @@ function ProductCardAddShop({
     transition hover:shadow-lg ring-0 hover:ring-primary/20 border"
     >
       <CardHeader className="p-0 -mt-6">
-        <div className="relative w-full h-56 overflow-hidden rounded-t-2xl">
+        <div className="relative w-full h-80 overflow-hidden rounded-t-2xl">
           <Image
             src={product.image || noProduct}
             alt={product.name}
@@ -429,7 +429,7 @@ export function AddProductToShopSheet({
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-6">
           {/* IMAGE CAROUSEL */}
-          <div className="w-full h-48 md:h-56 rounded-xl overflow-hidden mb-4 border">
+          <div className="w-full h-72 rounded-xl overflow-hidden mb-4 border">
             <ImageSliderCarrousel images={images} custom_height="100%" />
           </div>
           {/* INFOS PRODUIT */}

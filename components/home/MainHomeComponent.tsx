@@ -10,13 +10,14 @@ import SomeProducts from "./SomeProducts";
 
 type Props = {
   products: ProductWithArticle[];
+  hasShop: { slug: string } | null;
 };
 
-const MainHomeComponent = ({ products }: Props) => {
+const MainHomeComponent = ({ products, hasShop }: Props) => {
   return (
     <div className="w-full flex gap-10 flex-col">
       {/* header */}
-      <Header />
+      <Header hasShop={hasShop} />
       {/* content */}
       <main className="py-14 space-y-4 ">
         {/* hero section */}
