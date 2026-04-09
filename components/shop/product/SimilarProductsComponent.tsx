@@ -5,7 +5,7 @@ import {
   Product,
   ProductShop,
   Shop,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 import React from "react";
 import { ProductCard } from "../home/NewArrivalProductSection";
 import { ProductsTypeWithArticles } from "@/types/shop";
@@ -88,7 +88,7 @@ const SimilarProductsComponent = ({
 
   const filteredProducts = () => {
     const sortedSimilarProducts = similarProducts.sort(
-      (a, b) => b.score - a.score
+      (a, b) => b.score - a.score,
     );
 
     // const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>
@@ -101,7 +101,7 @@ const SimilarProductsComponent = ({
 
     // Filtre explicitement les undefined (narrowing TypeScript garanti)
     const definedProducts = sortedSimilarProducts.filter(
-      (p): p is ProductsTypeWithArticles & { score: number } => p !== undefined
+      (p): p is ProductsTypeWithArticles & { score: number } => p !== undefined,
     );
 
     return definedProducts.sort((a, b) => {

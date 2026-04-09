@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
-import { FactureDeliverOrder, Preferences, Shop } from "@prisma/client";
+import {
+  FactureDeliverOrder,
+  Preferences,
+  Shop,
+} from "@/lib/generated/prisma/client";
 import React, { useMemo } from "react";
 import {
   Dialog,
@@ -121,11 +125,11 @@ const FactureDeliveryView = ({
     doc.text(
       deliveryInfo?.isOtekisDelivery
         ? `Otekis delivery - agent ${capitalizeText(
-            factureDelivery.deliverBy
+            factureDelivery.deliverBy,
           )} `
         : capitalizeText(factureDelivery.deliverBy),
       leftX + 80,
-      y
+      y,
     );
     y += 14;
 

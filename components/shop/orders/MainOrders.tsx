@@ -1,6 +1,6 @@
 "use client";
 import { OrderWithProductInfo } from "@/app/(shop)/[slug]/commandes/page";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { ChevronRight, Ellipsis, Search } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import {
@@ -47,18 +47,19 @@ const MainOrders = ({ myOrders, shopPreferences, shop }: MainOrdersProps) => {
           order.id.toLowerCase().includes(searchText.toLowerCase()) ||
           (order?.ShipmentNumber &&
             order?.ShipmentNumber.toLowerCase().includes(
-              searchText.toLowerCase()
-            ))
+              searchText.toLowerCase(),
+            )),
       )
       .filter(
-        (order) => status === "tout" || status === "" || order.status === status
+        (order) =>
+          status === "tout" || status === "" || order.status === status,
       );
   }, [myOrders, searchText, status]);
 
   //   currentItems for pagination
   const currentItems = useMemo(
     () => filteredOrders.slice(firstIndex, lastItemIndex),
-    [filteredOrders, firstIndex, lastItemIndex]
+    [filteredOrders, firstIndex, lastItemIndex],
   );
 
   return (
@@ -226,7 +227,7 @@ const MainOrders = ({ myOrders, shopPreferences, shop }: MainOrdersProps) => {
                               }}
                             />
                           </Link>
-                        )
+                        ),
                     )}
                   {/* more ... */}
                   {order.productInfo.length > 4 && (

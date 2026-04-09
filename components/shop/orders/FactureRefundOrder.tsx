@@ -18,7 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronRight, Download, DollarSign, BadgeInfo } from "lucide-react";
 import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { returnFormatedMoney } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 
@@ -152,7 +152,7 @@ const FactureRefundOrder = ({
       `${factureOrder.totalAmount} ${factureOrder.currency}`,
       pageWidth - 40,
       finalY,
-      { align: "right" }
+      { align: "right" },
     );
 
     // --- SAUVEGARDE ---
@@ -226,7 +226,7 @@ const FactureRefundOrder = ({
                 </span>
                 <span className="font-medium">
                   {returnFormatedMoney(
-                    factureOrder.deliveryPrice * factureOrder.exchange
+                    factureOrder.deliveryPrice * factureOrder.exchange,
                   )}{" "}
                   {factureOrder.currency}
                 </span>

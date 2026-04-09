@@ -4,7 +4,7 @@ import {
   deleteAllProds,
   setSamePercentage,
 } from "@/actions/shopActions";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 import { CircleDollarSign, Podcast, Trash, Plus, Minus } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import {

@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { FileText, ChevronRight, Download, BadgeInfo } from "lucide-react";
 import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import { OrderWithProductDetails } from "@/actions/myOrderAction";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { returnFormatedMoney } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 
@@ -179,14 +179,14 @@ const FactureOrderView = ({
     doc.text(
       `Sous-total : ${sumProducts} ${factureOrder.currency}`,
       40,
-      totalsY
+      totalsY,
     );
     totalsY += 16;
 
     doc.text(
       `Livraison : ${deliveryAmount} ${factureOrder.currency}`,
       40,
-      totalsY
+      totalsY,
     );
     totalsY += 16;
 
@@ -202,7 +202,7 @@ const FactureOrderView = ({
     doc.text(
       `Total à payer : ${grandTotal} ${factureOrder.currency}`,
       40,
-      totalsY
+      totalsY,
     );
     totalsY += 30;
 
@@ -288,7 +288,7 @@ const FactureOrderView = ({
                 </span>
                 <span className="font-medium">
                   {returnFormatedMoney(
-                    factureOrder.deliveryPrice * factureOrder.exchange
+                    factureOrder.deliveryPrice * factureOrder.exchange,
                   )}{" "}
                   {factureOrder.currency}
                 </span>

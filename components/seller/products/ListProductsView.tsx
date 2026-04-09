@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
-import { Shop } from "@prisma/client";
+import { Shop } from "@/lib/generated/prisma/client";
 
 const ListProductsView = () => {
   return <div>ListProductsView</div>;
@@ -14,7 +14,7 @@ export const LinkAddNewProduct = ({ shops }: { shops: Shop[] }) => {
   const selectDefault = useSelectDefaultShop({ shops });
   const defaultShop = useMemo(
     () => shops.find((sh) => sh.id === selectDefault),
-    [shops, selectDefault]
+    [shops, selectDefault],
   );
   const href = `/ma-boutique/${defaultShop?.slug}/nouveau-produit`;
 

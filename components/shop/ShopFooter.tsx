@@ -1,5 +1,5 @@
 "use client";
-import { Shop, Preferences, Contact } from "@prisma/client";
+import { Shop, Preferences, Contact } from "@/lib/generated/prisma/client";
 import React, { useEffect, useState } from "react";
 
 // footer template

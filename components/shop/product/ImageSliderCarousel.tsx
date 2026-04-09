@@ -1,5 +1,5 @@
 "use client";
-import { Preferences } from "@prisma/client";
+import { Preferences } from "@/lib/generated/prisma/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -16,11 +16,11 @@ const ImageSliderCarousel = ({ images, preferences, custom_height }: Props) => {
   const handleClick = (direction: "prev" | "next") => {
     if (direction === "prev") {
       setIndex((prevIndex) =>
-        prevIndex === 0 ? images.length - 1 : prevIndex - 1
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1,
       );
     } else if (direction === "next") {
       setIndex((prevIndex) =>
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1,
       );
     } else {
       throw new Error("Invalid direction");

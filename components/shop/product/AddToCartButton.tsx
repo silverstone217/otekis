@@ -6,7 +6,7 @@ import {
   Product,
   ProductShop,
   Shop,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 import React, { Suspense, useMemo, useState } from "react";
 import {
   Sheet,
@@ -68,7 +68,7 @@ const AddToCartButton = ({
   currency,
 }: Props) => {
   const [article, setArticle] = useState(
-    articles.length > 0 ? articles[0].id : ""
+    articles.length > 0 ? articles[0].id : "",
   );
 
   // CHECK IF THE ITEM IS IN THE CART
@@ -76,13 +76,13 @@ const AddToCartButton = ({
     () =>
       carts.find(
         (cart) =>
-          cart.productShopId === productShop.id && cart.articleId === article
+          cart.productShopId === productShop.id && cart.articleId === article,
       ),
-    [carts, productShop.id, article]
+    [carts, productShop.id, article],
   );
 
   const [quantity, setQuantity] = useState(
-    isInCartItem ? isInCartItem.quantity : 1
+    isInCartItem ? isInCartItem.quantity : 1,
   );
 
   const [loading, setLoading] = useState(false);
@@ -191,19 +191,19 @@ const AddToCartButton = ({
   // STOCK MAX
   const stockMax = useMemo(
     () => articles.find((art) => art.id === article)?.stock ?? 1,
-    [article, articles]
+    [article, articles],
   );
 
   // TOTAL PRICE
   const totalPrice = useMemo(
     () => Number(productShop.price * quantity),
-    [productShop.price, quantity]
+    [productShop.price, quantity],
   );
 
   // TOTAL PRICE AFTER DISCOUNT
   const totalTotalPriceAfterDiscount = useMemo(
     () => Number(totalPriceAfterDiscount * quantity),
-    [quantity, totalPriceAfterDiscount]
+    [quantity, totalPriceAfterDiscount],
   );
 
   // HANDLE SIGN IN
@@ -401,7 +401,7 @@ const AddToCartButton = ({
                 className={cn(
                   `px-1 py-0.5 rounded hover:bg-overlay4 
                 text-white flex items-center justify-center bg-black`,
-                  article || stockMax < 1 ? "opacity-100" : "opacity-50"
+                  article || stockMax < 1 ? "opacity-100" : "opacity-50",
                 )}
               >
                 <Minus className="w-8 flex-shrink-0" />
@@ -423,7 +423,9 @@ const AddToCartButton = ({
                 className={cn(
                   `px-1 py-0.5 rounded hover:bg-overlay4 
                 text-white flex items-center justify-center bg-black`,
-                  article || stockMax <= quantity ? "opacity-100" : "opacity-50"
+                  article || stockMax <= quantity
+                    ? "opacity-100"
+                    : "opacity-50",
                 )}
               >
                 <Plus className="w-8 flex-shrink-0" />

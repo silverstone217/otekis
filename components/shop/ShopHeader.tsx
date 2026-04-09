@@ -6,7 +6,7 @@ import {
   shopDataLinks,
 } from "@/utils/shopData";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Preferences, Shop } from "@prisma/client";
+import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { signIn, signOut, useSession } from "next-auth/react";
 // import Image from "next/image";
 import Link from "next/link";
@@ -45,7 +45,7 @@ const ShopHeader = ({ shop, preference }: Props) => {
   useEffect(() => {
     const updateFavicon = (iconURL: string): void => {
       let favicon = document.querySelector(
-        'link[rel="icon"]'
+        'link[rel="icon"]',
       ) as HTMLLinkElement;
 
       if (!favicon) {
@@ -62,7 +62,7 @@ const ShopHeader = ({ shop, preference }: Props) => {
 
   const IconCart = useMemo(
     () => CartIcons[preference.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference.cartIcon]
+    [preference.cartIcon],
   );
 
   if (!isClient) return null;
@@ -190,7 +190,7 @@ const LinkShop = ({
       href={`/${slug}${link}`}
       className={cn(
         "font-medium",
-        "transition-all ease-in-out duration-500 hover:underline hover:opacity-75"
+        "transition-all ease-in-out duration-500 hover:underline hover:opacity-75",
       )}
     >
       {label}
@@ -210,7 +210,7 @@ const SmallDevicesLinksPart = ({
   const user = session?.user;
   const IconMenu = useMemo(
     () => MenuIcons[parseInt(preferences.menuIcon)],
-    [preferences.menuIcon]
+    [preferences.menuIcon],
   );
 
   // SIGN WITH GOOGLE
