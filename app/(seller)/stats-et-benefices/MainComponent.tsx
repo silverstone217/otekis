@@ -1,9 +1,9 @@
 "use client";
 import { ShopDefaultSelect } from "@/components/seller/SelectWIthOptionsDefaultShop";
-import { Shop } from "@prisma/client";
 import React, { Suspense, useMemo, useState } from "react";
 import StatsAndBenefits, { StatsAndBenefitsProps } from "./data-benefit";
 import useSelectDefaultShop from "@/components/seller/SelectDefaultShop";
+import { Shop } from "@/lib/generated/prisma/client";
 
 type Props = {
   shops: Shop[];
@@ -21,12 +21,12 @@ const MainComponent = ({
   const defaultShopId = useSelectDefaultShop({ shops });
   const defaultShopStats = useMemo(
     () => shopStats.find((s) => s.id === (defaultShopId ?? 0)),
-    [defaultShopId, shopStats]
+    [defaultShopId, shopStats],
   );
 
   const defaultShopStatsCDF = useMemo(
     () => ShopStatsCDF.find((s) => s.id === (defaultShopId ?? 0)),
-    [defaultShopId, ShopStatsCDF]
+    [defaultShopId, ShopStatsCDF],
   );
   const returnCurrency = currencySimbol === "$" ? "USD" : "CDF";
   const [currency, setCurrency] = useState<"USD" | "CDF">(returnCurrency);
