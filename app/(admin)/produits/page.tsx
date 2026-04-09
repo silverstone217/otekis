@@ -68,7 +68,7 @@ const ProductPage = async () => {
         flex items-center justify-center gap-4
         "
         >
-          <Plus className="w-8 flex-shrink-0 " />
+          <Plus className="w-8 shrink-0 " />
           <span>Ajouter un nouveau produit</span>
         </Link>
       </div>

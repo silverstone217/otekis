@@ -3,7 +3,6 @@ import NoUserComponent from "@/components/NoUserComponent";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/actions/actions";
 import { returnRoleWith } from "@/utils/functions";
-import { Shop, ProductShop } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
@@ -47,7 +46,7 @@ const UserAdminPage = async (props: { params: Promise<{ id: string }> }) => {
 
   const adminUser = await getUserByUserId(id);
   const shops = (await getAllUserShops(
-    id
+    id,
   )) as unknown as ShopWIthProductShopType[];
 
   if (!adminUser) {
@@ -73,7 +72,7 @@ const UserAdminPage = async (props: { params: Promise<{ id: string }> }) => {
         <p className="text-2xl font-bold max-w-3xl mx-auto">
           {" "}
           {`Cet utilisateur est déjà un ${returnRoleWith(
-            adminUser.role
+            adminUser.role,
           )}! et vous n'avez pas les permissions necessaires`}
         </p>
         <Link

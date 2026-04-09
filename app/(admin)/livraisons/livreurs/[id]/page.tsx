@@ -2,7 +2,7 @@ import { getUser } from "@/actions/actions";
 import { getDeliveryManById } from "@/actions/deliverymenActions";
 import { DeliveryAgentProfile } from "@/components/admins/delivrery/deliveryAgentProfile";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
-import { DeliveryAgent, DeliveryOrder } from "@prisma/client";
+
 import { redirect } from "next/navigation";
 import React from "react";
 
