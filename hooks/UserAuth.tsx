@@ -1,6 +1,6 @@
 "use client";
 import { getUser } from "@/actions/actions";
-import { User } from "@prisma/client";
+import { User } from "@/lib/generated/prisma/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
