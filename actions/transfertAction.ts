@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getUser } from "./actions";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
 import { prisma } from "@/lib/prisma";
-import { WithdrawalHistory } from "@prisma/client";
+import { WithdrawalHistory } from "@/lib/generated/prisma/client";
 
 export type TransfertShopType = z.infer<typeof transfertShopArraySchema>;
 
@@ -22,7 +22,7 @@ export const transfertShop = async (data: TransfertShopType) => {
     }
 
     const isPermitted = PERMITED_ROLES.some(
-      (r) => r !== "employee" && r === user.role
+      (r) => r !== "employee" && r === user.role,
     );
 
     if (!isPermitted) {
@@ -38,7 +38,7 @@ export const transfertShop = async (data: TransfertShopType) => {
     if (!validationResult.success) {
       console.error(
         "Erreur validation transfertShop:",
-        validationResult.error.issues
+        validationResult.error.issues,
       );
       return {
         error: true,
@@ -79,7 +79,7 @@ export const transfertShop = async (data: TransfertShopType) => {
     // Vérifie si l'entreprise a assez de fonds
     const totalMoneyToPay = validated.reduce(
       (acc, item) => acc + item.amount,
-      0
+      0,
     );
     const companyAmount =
       currency === "USD" ? companyPrefs.amount : companyPrefs.amountCDF;
@@ -103,7 +103,7 @@ export const transfertShop = async (data: TransfertShopType) => {
         await prisma.shop.findMany({
           where: { id: { in: shopIds } },
         })
-      ).map((shop) => [shop.id, shop])
+      ).map((shop) => [shop.id, shop]),
     );
 
     // Met à jour les shops et l'entreprise
@@ -118,7 +118,7 @@ export const transfertShop = async (data: TransfertShopType) => {
               ? { benefit: truncateTwoDecimals(shop.benefit - item.amount) }
               : {
                   benefitCDF: truncateTwoDecimals(
-                    shop.benefitCDF - item.amount
+                    shop.benefitCDF - item.amount,
                   ),
                 };
 
@@ -131,12 +131,12 @@ export const transfertShop = async (data: TransfertShopType) => {
             item.currency === "USD"
               ? {
                   amount: truncateTwoDecimals(
-                    companyPrefs.amount - item.amount
+                    companyPrefs.amount - item.amount,
                   ),
                 }
               : {
                   amountCDF: truncateTwoDecimals(
-                    companyPrefs.amountCDF - item.amount
+                    companyPrefs.amountCDF - item.amount,
                   ),
                 };
 
@@ -147,7 +147,7 @@ export const transfertShop = async (data: TransfertShopType) => {
         } catch (e) {
           console.error(`Erreur mise à jour shop ${item.shopId}:`, e);
         }
-      })
+      }),
     );
 
     return {
@@ -171,7 +171,7 @@ export const getAllWithdrawalHistory = async () => {
   if (!user) return [];
 
   const isPermitted = PERMITED_ROLES.filter((r) => r !== "employee ").includes(
-    user.role
+    user.role,
   );
   if (!isPermitted) return [];
 
@@ -186,7 +186,7 @@ export const getAllWithdrawalHistory = async () => {
 // validate all withdraw his
 export const updateAllWithdrawHistory = async (
   data: string[],
-  status: "annulé" | "traité"
+  status: "annulé" | "traité",
 ) => {
   try {
     const user = await getUser();
@@ -198,7 +198,7 @@ export const updateAllWithdrawHistory = async (
       };
     }
     const isPermitted = PERMITED_ROLES.filter((r) => r !== "employee").includes(
-      user.role
+      user.role,
     );
 
     if (!isPermitted) {
@@ -271,7 +271,7 @@ export const updateAllWithdrawHistory = async (
 
 export const cancelWithdrawHistory = async (
   data: WithdrawalHistory[],
-  status: "annulé"
+  status: "annulé",
 ) => {
   try {
     const user = await getUser();
@@ -283,7 +283,7 @@ export const cancelWithdrawHistory = async (
       };
     }
     const isPermitted = PERMITED_ROLES.filter((r) => r !== "employee").includes(
-      user.role
+      user.role,
     );
     if (!isPermitted) {
       return {

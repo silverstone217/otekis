@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUser } from "./actions";
-import { Facture, ProductFacture } from "@prisma/client";
+import { Facture, ProductFacture } from "@/lib/generated/prisma/client";
 
 export type FactureOrderWithProductsDetailsType = Facture & {
   productFactures: ProductFacture[];
