@@ -48,7 +48,7 @@ const AdminLayout = async ({ children }: { children: ReactNode }) => {
       <HeaderSmallScreen initialCount={initialCount} />
       {/* aside big screen */}
       <aside
-        className="col-span-1 hidden lg:flex border-r shadow z-30 h-[100dvh]
+        className="col-span-1 hidden lg:flex border-r shadow z-30 h-dvh
         overflow-hidden no-scrollbar w-[250px] 2xl:w-[300px] 
         "
       >

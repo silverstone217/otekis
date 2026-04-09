@@ -13,7 +13,7 @@ import {
   OtekisDelPriceWithdrawalHistory,
   OtekisPreferences,
   OtekisWithdrawalHistory,
-} from "@prisma/client";
+} from "@/lib/generated/prisma/client";
 import {
   BanknoteArrowDown,
   HandCoins,

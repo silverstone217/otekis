@@ -2,7 +2,7 @@
 // import { getCurrencySymbol } from "@/actions/companyAction";
 import { TransfertColumns } from "@/components/admins/finances/transfert/transfertTable/TransfertColumns";
 import { TransfertDataTable } from "@/components/admins/finances/transfert/transfertTable/TransfertTableData";
-import { Shop, WithdrawalHistory } from "@prisma/client";
+import { Shop, WithdrawalHistory } from "@/lib/generated/prisma/client";
 import React from "react";
 
 type Props = {
