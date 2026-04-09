@@ -91,6 +91,8 @@ model User {
   Shop   Shop[]
   Cart   Cart[]
   orders Order[]
+
+  supplierProducts SupplierProduct[]
 }
 
 // Products
@@ -574,4 +576,56 @@ model TestCronJob {
   isWorking Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// SUPPLIER TABLES
+// SUPPLIER PRODUCTS
+// Products
+model SupplierProduct {
+  id          String   @id @default(cuid())
+  uid         String
+  name        String
+  slug        String
+  category    String
+  description String
+  image       String
+  images      String[]
+  price       Float
+  state       String   @default("nouveau")
+  quality     String   @default("original")
+  target      String?
+  type        String?
+  material    String?
+  brand       String?
+  stock       Int      @default(1)
+
+  isValidated Boolean @default(false)
+  isAvailable Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Article    SupplierArticle[]
+  // ProductShop ProductShop[]
+  supplierId String
+  Supplier   User              @relation(fields: [supplierId], references: [id], onDelete: NoAction)
+}
+
+model SupplierArticle {
+  id            String  @id @default(cuid())
+  commandNumber String  @default("SUP45BC")
+  color         String?
+  size          String?
+  flavor        String?
+  volume        String?
+  stock         Int     @default(0)
+  productId     String
+
+  Product SupplierProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // HistoryOrders HistoryOrder[] // un article a plusieurs historiques
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Cart Cart[]
 }

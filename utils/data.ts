@@ -597,3 +597,26 @@ export const AllProductsTypesWithCategory = [
   ...AccessoriesData.map((type) => ({ ...type, category: "accessoires" })),
   ...CosmeticsData.map((type) => ({ ...type, category: "cosmetiques" })),
 ];
+
+export const NewAllProductsTypesWithCategory = [
+  ...TypeClothesData.filter((type) => type.value !== "other").map((type) => ({
+    ...type,
+    value: `vetements-${type.value}`,
+    category: "vetements",
+  })),
+  ...AccessoriesData.filter((type) => type.value !== "other").map((type) => ({
+    ...type,
+    value: `accessoires-${type.value}`,
+    category: "accessoires",
+  })),
+  ...CosmeticsData.filter((type) => type.value !== "other").map((type) => ({
+    ...type,
+    value: `cosmetiques-${type.value}`,
+    category: "cosmetiques",
+  })),
+  {
+    value: "autres-other",
+    label: "Autre",
+    category: "autres",
+  },
+];

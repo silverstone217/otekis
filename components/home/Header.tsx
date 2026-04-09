@@ -9,6 +9,7 @@ import {
   Store,
   X,
   BookOpenText,
+  Boxes,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -73,6 +74,7 @@ const Header = ({ hasShop }: { hasShop: { slug: string } | null }) => {
           {/* Navigation */}
           <div className="flex items-center gap-6">
             <NavLink href="/dashboard" title="Ma Boutique" />
+            <NavLink href="/fournisseurs" title="Fournisseurs" />
             <NavLink href="/documentation" title="Docs" />
             <NavLink href="/a-propos" title="A propos" />
             <NavLink href="#contact" title="Nous Contacter" />
@@ -156,6 +158,13 @@ const Header = ({ hasShop }: { hasShop: { slug: string } | null }) => {
                 href="/ma-boutique"
                 icon={Store}
                 title="Ma Boutique"
+                setIsOpen={setIsOpen}
+              />
+
+              <MobileNavItem
+                href="/fournisseurs"
+                icon={Boxes}
+                title="Fournisseurs"
                 setIsOpen={setIsOpen}
               />
 
