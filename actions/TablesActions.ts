@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma"; // adapte le chemin
-import { Prisma } from "@prisma/client";
+
 import { getUser } from "./actions";
+import { Prisma } from "@/lib/generated/prisma/client";
 
 export async function emptyDatabase() {
   try {
@@ -24,20 +25,19 @@ export async function emptyDatabase() {
     }
 
     // Typage explicite pour le paramètre `m`
-    const modelNames: string[] = Prisma.dmmf.datamodel.models.map(
-      (m: { name: string }) => m.name
-    );
+    const dmmf = (Prisma as any).dmmf;
+    const modelNames = dmmf.datamodel.models.map((m: any) => m.name);
 
     // Typage explicite pour `modelName`
     await Promise.all(
       modelNames.map(async (modelName: string) => {
         // @ts-expect-error : accès dynamique au modèle Prisma
         await prisma[modelName].deleteMany({});
-      })
+      }),
     );
 
     console.log(
-      "✅ Toutes les données ont été supprimées de la base de données."
+      "✅ Toutes les données ont été supprimées de la base de données.",
     );
     return {
       error: false,
