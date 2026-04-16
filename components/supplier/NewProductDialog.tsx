@@ -11,13 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PackagePlus } from "lucide-react";
-import { useState } from "react";
+import { PackagePlus, Target } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   NewAllProductsTypesWithCategory,
   CategoriesData,
   QualitiesData,
   StatesData,
+  TargetData,
 } from "@/utils/data";
 import {
   SelectorProducts,
@@ -26,6 +27,8 @@ import {
 } from "./SelectProductCategories";
 import { ProductArticles } from "./ProductArticles";
 import Image from "next/image";
+import { IsAvailableProducts, IsAvailableType } from "@/utils/supplier";
+import { PermittedSellersSelect } from "./PermittedSellersSelect";
 
 interface NewProductDialogProps {
   open: boolean;
@@ -50,6 +53,10 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
   const [brand, setBrand] = useState("");
   const [target, setTarget] = useState("");
 
+  const [isAvailable, setIsAvailable] = useState<IsAvailableType>("for_all");
+  const [permittedSellers, setPermittedSellers] = useState<string[]>([]);
+  const [shops, setShops] = useState<any[]>([]);
+
   const [articles, setArticles] = useState([
     { color: "", size: "", quantity: 1 },
   ]);
@@ -67,9 +74,22 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
     onOpenChange(false);
   }
 
+  useEffect(() => {
+    const fetchShops = async () => {
+      const res = await fetch("/api/supplier/shops-list");
+      const data = await res.json();
+      setShops(data);
+    };
+
+    fetchShops();
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-auto max-h-[90vh] w-full overflow-y-auto rounded-lg p-6 md:w-[500px]">
+      <DialogContent
+        className="h-auto max-h-dvh md:max-h-[90vh] w-full 
+      overflow-y-auto rounded-none md:rounded-lg p-6 md:max-w-[700px]"
+      >
         <DialogHeader>
           <PackagePlus className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
           <DialogTitle className="text-center">Nouveau Produit</DialogTitle>
@@ -77,44 +97,73 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
 
         <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
           {/* IMAGE */}
-          <div className="grid w-full items-center gap-2 justify-center">
-            <label htmlFor="image" className="text-sm font-medium w-full">
+          <div className="w-full flex flex-col gap-2">
+            <label htmlFor="image" className="text-sm font-medium">
               Image du produit
             </label>
-            {image ? (
-              <div
-                className="relative w-28 h-36 flex items-center justify-center
-              border rounded-md shadow
-              "
-              >
-                <Image
-                  src={URL.createObjectURL(image)}
-                  alt="Product Image"
-                  fill
-                  className="object-cover rounded-md"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute -top-2 -right-2"
-                  onClick={() => setImage(null)}
+
+            <div className="w-full">
+              {image ? (
+                <div
+                  className="relative w-full h-64 rounded-xl overflow-hidden 
+                border bg-gray-100"
                 >
-                  X
-                </Button>
-              </div>
-            ) : (
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setImage(e.target.files[0]);
-                  }
-                }}
-                className="w-full"
-              />
-            )}
+                  <Image
+                    src={URL.createObjectURL(image)}
+                    alt="Product Image"
+                    fill
+                    className="object-cover"
+                  />
+
+                  {/* Bouton supprimer minimaliste */}
+                  <button
+                    type="button"
+                    onClick={() => setImage(null)}
+                    className="
+                    absolute top-3 right-3
+                    h-8 w-8 flex items-center justify-center
+                    rounded-full
+                    bg-white/80 backdrop-blur
+                    border shadow-sm
+                    hover:bg-white
+                    transition
+                    font-bold
+                  "
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="image"
+                  className="
+                  flex flex-col items-center justify-center
+                  w-full h-64
+                  border border-dashed rounded-xl
+                  cursor-pointer
+                  hover:bg-gray-50
+                  transition
+                "
+                >
+                  <div className="text-center space-y-1">
+                    <p className="text-sm text-gray-600">Ajouter une image</p>
+                    <p className="text-xs text-gray-400">PNG, JPG, WEBP</p>
+                  </div>
+
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setImage(e.target.files[0]);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
           </div>
 
           {/* NAME */}
@@ -131,10 +180,22 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
             />
           </div>
 
+          {/* BRAND */}
+          <div className="grid w-full items-center gap-2">
+            <label htmlFor="state" className="text-sm font-medium">
+              Marque du produit
+            </label>
+            <Input
+              placeholder="Ex: Nike, Apple..."
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+            />
+          </div>
+
           {/* DESCRIPTION */}
           <div className="grid w-full items-center gap-2">
             <label htmlFor="description" className="text-sm font-medium">
-              Description
+              Description du produit
             </label>
             <Textarea
               id="description"
@@ -147,6 +208,9 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
+
+          {/* ARTICLES */}
+          <ProductArticles articles={articles} setArticles={setArticles} />
 
           {/* CATEGORY --- TYPE */}
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -169,7 +233,7 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
             {/* TYPE */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="type" className="text-sm font-medium">
-                Type
+                Type de produit
               </label>
               <SelectProductType
                 types={NewAllProductsTypesWithCategory}
@@ -184,7 +248,7 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
 
           <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
             {/* QUALITY */}
-            <div className="grid w-full items-center gap-2">
+            {/* <div className="grid w-full items-center gap-2">
               <label htmlFor="quality" className="text-sm font-medium">
                 Qualité
               </label>
@@ -194,46 +258,32 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
                 value={quality}
                 placeholder="Sélectionnez une qualité"
               />
-            </div>
+            </div> */}
 
             {/* STATE */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="state" className="text-sm font-medium">
-                État
+                État du produit
               </label>
               <SelectorProducts
                 data={StatesData}
                 onChange={setState}
                 value={state}
                 placeholder="Sélectionnez un état"
-                disabled
+                // disabled
               />
             </div>
-          </div>
 
-          <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Target */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="quality" className="text-sm font-medium">
                 Cible
               </label>
               <SelectorProducts
-                data={QualitiesData}
+                data={TargetData}
                 onChange={setTarget}
                 value={target}
                 placeholder="Sélectionnez une cible"
-              />
-            </div>
-
-            {/* BRAND */}
-            <div className="grid w-full items-center gap-2">
-              <label htmlFor="state" className="text-sm font-medium">
-                Marque
-              </label>
-              <Input
-                placeholder="Ex: Nike, Apple..."
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
               />
             </div>
           </div>
@@ -241,7 +291,7 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
           {/* PRICE */}
           <div className="grid w-full items-center gap-2">
             <label htmlFor="price" className="text-sm font-medium">
-              Prix ($)
+              Prix ($) du produit
             </label>
             <Input
               id="price"
@@ -255,8 +305,37 @@ export const NewProductDialog: React.FC<NewProductDialogProps> = ({
             />
           </div>
 
-          {/* ARTICLES */}
-          <ProductArticles articles={articles} setArticles={setArticles} />
+          {/* Is Available */}
+          <div className="grid w-full items-center gap-2">
+            <label htmlFor="isAvailable" className="text-sm font-medium">
+              Disponibilité du produit
+            </label>
+            <SelectorProducts
+              data={IsAvailableProducts}
+              onChange={(val) => {
+                setIsAvailable(val as IsAvailableType);
+                if (val !== "specific_sellers") {
+                  setPermittedSellers([]);
+                }
+              }}
+              value={isAvailable}
+              placeholder="Sélectionnez une option de disponibilité"
+            />
+          </div>
+
+          {/* Permitted Sellers (if specific_sellers) */}
+          {isAvailable === "specific_sellers" && (
+            <div className="grid w-full items-center gap-2">
+              <label htmlFor="permittedSellers" className="text-sm font-medium">
+                Vendeurs autorisés
+              </label>
+              <PermittedSellersSelect
+                data={shops} // TODO: list of sellers
+                value={permittedSellers}
+                onChange={setPermittedSellers}
+              />
+            </div>
+          )}
 
           <DialogFooter>
             <Button type="submit" disabled={loading} className="w-full">

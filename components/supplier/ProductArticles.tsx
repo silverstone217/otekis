@@ -47,17 +47,17 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
   };
 
   const removeArticle = (index: number) => {
-    if (articles.length === 1) return; // au moins 1
+    if (articles.length === 1) return;
     setArticles(articles.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="space-y-4">
-      {/* LABEL */}
-      <div>
+    <div className="space-y-5">
+      {/* HEADER */}
+      <div className="space-y-1">
         <p className="text-sm font-medium">Articles</p>
         <p className="text-xs text-muted-foreground">
-          La taille peut être 0 et la couleur "autre" si vous ne connaissez pas.
+          Couleur et Taille = 0 "autre" si inconnu.
         </p>
       </div>
 
@@ -66,22 +66,31 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
         {articles.map((article, index) => (
           <div
             key={index}
-            className="p-3 border rounded-xl space-y-3 bg-muted/30"
+            className="
+            group
+            grid
+            grid-cols-[2fr_1fr_1fr_auto]
+            items-center
+            gap-3
+            w-full
+            p-3
+            rounded-xl
+            border
+            bg-background
+            hover:border-muted-foreground/30
+            transition
+      "
           >
-            {/* ROW */}
-            <div className="grid grid-cols-3 gap-2">
-              {/* COLOR */}
-              {/* <Input
-                placeholder="Couleur"
-                onChange={(e) => handleChange(index, "color", e.target.value)}
-              /> */}
+            {/* COLOR */}
+            <div className="min-w-0">
               <Select
                 value={article.color}
                 onValueChange={(value) => handleChange(index, "color", value)}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="La couleur" />
+                <SelectTrigger className="h-9 w-full">
+                  <SelectValue placeholder="Couleur" />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectGroup>
                     {ColorsData.map((col) => (
@@ -92,38 +101,42 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
                   </SelectGroup>
                 </SelectContent>
               </Select>
-
-              {/* SIZE */}
-              <Input
-                placeholder="Taille"
-                value={article.size}
-                onChange={(e) => handleChange(index, "size", e.target.value)}
-              />
-
-              {/* QUANTITY */}
-              <Input
-                type="number"
-                min={1}
-                placeholder="Qté"
-                value={article.quantity}
-                onChange={(e) =>
-                  handleChange(index, "quantity", e.target.value)
-                }
-              />
             </div>
 
-            {/* ACTION */}
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => removeArticle(index)}
-                disabled={articles.length === 1}
-              >
-                <Trash2 className="h-4 w-4 text-red-500" />
-              </Button>
-            </div>
+            {/* SIZE */}
+            <Input
+              className="h-9 w-full min-w-0"
+              placeholder="Taille"
+              value={article.size}
+              onChange={(e) => handleChange(index, "size", e.target.value)}
+            />
+
+            {/* QUANTITY */}
+            <Input
+              type="number"
+              min={1}
+              className="h-9 w-full min-w-0 text-center"
+              value={article.quantity}
+              onChange={(e) => handleChange(index, "quantity", e.target.value)}
+            />
+
+            {/* DELETE */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => removeArticle(index)}
+              disabled={articles.length === 1}
+              className="
+          h-9 w-9
+          opacity-0
+          group-hover:opacity-100
+          transition
+          shrink-0
+        "
+            >
+              <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-500 transition" />
+            </Button>
           </div>
         ))}
       </div>
@@ -132,7 +145,16 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
       <Button
         type="button"
         variant="outline"
-        className="w-full flex items-center gap-2"
+        className="
+          w-full
+          h-11
+          flex items-center justify-center gap-2
+          rounded-xl
+          border-dashed
+          text-muted-foreground
+          hover:text-foreground
+          transition
+        "
         onClick={addArticle}
       >
         <Plus className="h-4 w-4" />

@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import { Button } from "../ui/button";
-import { NewProductDialog } from "./NewProductDialog";
+// import { NewProductDialog } from "./NewProductDialog";
+import Link from "next/link";
 
 const Products = () => {
   const [open, setOpen] = React.useState(false);
@@ -9,7 +10,11 @@ const Products = () => {
     <div className="pt-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Produits</h2>
-        <Button onClick={() => setOpen(true)}>Nouveau Produit</Button>
+        <Link href={"/fournisseurs/nouveau-produit"}>
+          <Button size={"sm"}>Nouveau Produit</Button>
+        </Link>
+
+        {/* <Button onClick={() => setOpen(true)}>Nouveau Produit</Button> */}
       </div>
 
       {/* exemple */}
@@ -25,7 +30,7 @@ const Products = () => {
       </div>
 
       {/* POPUP */}
-      <NewProductDialog open={open} onOpenChange={setOpen} />
+      {/* <NewProductDialog open={open} onOpenChange={setOpen} /> */}
     </div>
   );
 };
