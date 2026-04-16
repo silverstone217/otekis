@@ -58,38 +58,33 @@ const nextConfig = {
 
     // Delivers Apikey
     DELIVERS_API_KEY: process.env.DELIVERS_API_KEY,
+
+    // DEFAULT SUPPLIER IMAGE
+    DEFAULT_SUPPLIER_IMAGE: process.env.DEFAULT_SUPPLIER_IMAGE,
+
+    // VERCEL BLOB STORAGE
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   },
   images: {
-    // domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "firebasestorage.googleapis.com",
-        port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "3eqaz12yan4rgf7v.public.blob.vercel-storage.com",
-        port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "3eqaz12yan4rgf7v.public.blob.vercel-storage.com",
-        port: "",
         pathname: "/**",
       },
     ],

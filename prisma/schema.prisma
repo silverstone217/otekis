@@ -195,6 +195,8 @@ model Shop {
   benefitCDF        Float               @default(0)
   shopProfitWaited  ShopProfitWaited[]
   withdrawalHistory WithdrawalHistory[]
+
+  permittedproducts PermittedSeller[]
 }
 
 model Contact {
@@ -578,37 +580,52 @@ model TestCronJob {
   updatedAt DateTime @updatedAt
 }
 
-// SUPPLIER TABLES
+//  ------------- SUPPLIER TABLES -------------
+
+enum SupplierProductAvailability {
+  for_all
+  only_self
+  specific_sellers
+  not_available
+}
+
 // SUPPLIER PRODUCTS
-// Products
 model SupplierProduct {
-  id          String   @id @default(cuid())
-  uid         String
+  id  String @id @default(cuid())
+  uid String @unique
+
   name        String
   slug        String
-  category    String
   description String
-  image       String
-  images      String[]
-  price       Float
-  state       String   @default("nouveau")
-  quality     String   @default("original")
-  target      String?
-  type        String?
-  material    String?
-  brand       String?
-  stock       Int      @default(1)
 
-  isValidated Boolean @default(false)
-  isAvailable Boolean @default(true)
+  category String
+  type     String?
+  material String?
+  brand    String?
+
+  image  String
+  images String[]
+
+  price Float
+  stock Int   @default(1)
+
+  state   String  @default("nouveau")
+  quality String  @default("original")
+  target  String?
+
+  isValidated Boolean                     @default(true)
+  isAvailable SupplierProductAvailability @default(for_all)
+
+  address String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Article    SupplierArticle[]
+  Article        SupplierArticle[]
+  permittedShops PermittedSeller[]
   // ProductShop ProductShop[]
-  supplierId String
-  Supplier   User              @relation(fields: [supplierId], references: [id], onDelete: NoAction)
+  supplierId     String
+  Supplier       User              @relation(fields: [supplierId], references: [id], onDelete: NoAction)
 }
 
 model SupplierArticle {
@@ -628,4 +645,18 @@ model SupplierArticle {
   updatedAt DateTime @updatedAt
 
   // Cart Cart[]
+}
+
+model PermittedSeller {
+  id                String @id @default(cuid())
+  supplierProductId String
+  shopId            String
+
+  SupplierProduct SupplierProduct @relation(fields: [supplierProductId], references: [id], onDelete: Cascade)
+  Shop            Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([supplierProductId, shopId])
 }

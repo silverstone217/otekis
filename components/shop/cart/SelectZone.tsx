@@ -28,7 +28,7 @@ const SelectZones = ({
 }: Props) => {
   const SelectedCommune = useMemo(() => {
     const newComm = communesQuartiers.find(
-      (q) => q.name.toLowerCase() === commune.toLowerCase()
+      (q) => q.name.toLowerCase() === commune.toLowerCase(),
     );
 
     return newComm ? newComm.quartiers : [];

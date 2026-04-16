@@ -55,9 +55,17 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
     <div className="space-y-5">
       {/* HEADER */}
       <div className="space-y-1">
-        <p className="text-sm font-medium">Articles</p>
+        <p className="text-sm font-medium">Articles *</p>
         <p className="text-xs text-muted-foreground">
-          Couleur et Taille = 0 "autre" si inconnu.
+          Ajoutez les différentes variantes de votre produit (ex: couleurs,
+          tailles et quantités disponibles). Vous pourrez les modifier plus tard
+          si besoin.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Mettez <strong>Autre</strong> si la couleur est différente de celles
+          proposées ou si vous ne souhaitez pas préciser la couleur. <br />
+          Mettez <strong>0</strong> si la taille n'est pas applicable (ex: pour
+          les accessoires).
         </p>
       </div>
 
