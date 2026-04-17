@@ -3,8 +3,8 @@
 import * as React from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { Input } from "../ui/input";
 import { capitalizeText } from "@/utils/shopFunctions";
+import { Input } from "@/components/ui/input";
 
 type Seller = {
   id: string;

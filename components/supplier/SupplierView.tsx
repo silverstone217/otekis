@@ -4,9 +4,9 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 import { SupplierSwitch, SupplierTab } from "./SupplierSwitch";
 
-const Products = dynamic(() => import("./Products"));
-const Orders = dynamic(() => import("./Orders"));
-const Stats = dynamic(() => import("./Stats"));
+const Products = dynamic(() => import("./products/Products"));
+const Orders = dynamic(() => import("./orders/Orders"));
+const Stats = dynamic(() => import("./stats/Stats"));
 
 export default function SupplierView() {
   const [tab, setTab] = React.useState<SupplierTab>("products");

@@ -1,5 +1,4 @@
-import NewProductForm from "@/components/supplier/NewProductForm";
-import React from "react";
+import NewProductForm from "@/components/supplier/products/new/NewProductForm";
 
 function page() {
   return <NewProductForm />;

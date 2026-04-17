@@ -11,22 +11,13 @@ import {
 } from "@/utils/supplier";
 import { PackagePlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { PermittedSellersSelect } from "./PermittedSellersSelect";
-import {
-  SelectorProducts,
-  SelectProductCategory,
-  SelectProductType,
-} from "./SelectProductCategories";
-import { Input } from "../ui/input";
+
 import {
   CategoriesData,
   NewAllProductsTypesWithCategory,
   StatesData,
   TargetData,
 } from "@/utils/data";
-import { Textarea } from "../ui/textarea";
-import { ProductArticles } from "./ProductArticles";
 import Image from "next/image";
 import { communesQuartiers, communesKinshasa } from "@/utils/zones";
 import { toast } from "sonner";
@@ -40,6 +31,16 @@ import { v4 } from "uuid";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  SelectProductCategory,
+  SelectProductType,
+  SelectorProducts,
+} from "../../SelectProductCategories";
+import { PermittedSellersSelect } from "./PermittedSellersSelect";
+import { ProductArticles } from "./ProductArticles";
+import { Button } from "@/components/ui/button";
 
 const NewProductForm = () => {
   const [loading, setLoading] = useState(false);

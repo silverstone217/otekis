@@ -1,6 +1,6 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import Link from "next/link";
 import { SupplierProduct } from "@/lib/generated/prisma/client";
 import { capitalizeText } from "@/utils/shopFunctions";
@@ -63,20 +63,24 @@ const Products = () => {
           {products.length > 0 &&
             !loading &&
             products.map((product) => (
-              <div
+              <Link
+                href={`/fournisseurs/produits/${product.id}`}
                 key={product.id}
                 className="
-      group
-      border rounded-xl
-      p-4
-      bg-background
-      hover:shadow-md
-      transition
-      flex gap-4
-    "
+                group
+                border rounded-xl
+                p-4
+                bg-background
+                hover:shadow-md
+                transition
+                flex gap-4
+              "
               >
                 {/* IMAGE */}
-                <div className="relative w-20 h-20 rounded-lg overflow-hidden border bg-muted">
+                <div
+                  className="relative w-20 h-20 rounded-lg overflow-hidden 
+                border bg-muted"
+                >
                   <Image
                     src={product.image}
                     alt={product.name}
@@ -138,7 +142,7 @@ const Products = () => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
         </div>
       </Suspense>
