@@ -6,6 +6,7 @@ import {
 } from "@/lib/generated/prisma/client";
 import React from "react";
 import ModifyImage from "./ModifyImage";
+import PrincipalsInformations from "./PrincipalsInformations";
 
 type Props = {
   product: SupplierProduct & {
@@ -16,6 +17,14 @@ type Props = {
 
 const MainForm = ({ product }: Props) => {
   const ImageProps = { image: product.image, productId: product.id };
+  const ProductInfo = {
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    brand: product.brand,
+    productId: product.id,
+  };
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -35,14 +44,22 @@ const MainForm = ({ product }: Props) => {
           <div
             className="
             relative w-full h-64
-            rounded-xl overflow-hidden
-            border bg-muted
+           grid grid-cols-2 gap-4
           "
-          ></div>
+          >
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                className=" rounded-xl overflow-hidden
+            border bg-muted w-full
+            "
+                key={i.toString()}
+              ></div>
+            ))}
+          </div>
         </div>
 
         {/* Informations Principals */}
-        <div></div>
+        <PrincipalsInformations ProductInfo={ProductInfo} />
       </div>
     </div>
   );

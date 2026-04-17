@@ -187,3 +187,72 @@ export const supplierProductImages = async (data: {
     };
   }
 };
+
+// Modify Principal info
+type ProductInfo = {
+  name: string;
+  description: string;
+  price: number;
+  brand?: string | null;
+  productId: string;
+};
+export const updatePrincipalInfo = async (data: ProductInfo) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    // fix name and slug
+    const name = normalizeProductName(data.name);
+
+    const slug =
+      name === isProductExist.name ? isProductExist.slug : generateSlug(name);
+
+    await prisma.supplierProduct.update({
+      where: { id: isProductExist.id },
+      data: {
+        name,
+        slug,
+        brand: data.brand,
+        description: data.description,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Modifie avec success!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la modification du produit:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la modification du produit",
+    };
+  }
+};
