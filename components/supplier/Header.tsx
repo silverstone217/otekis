@@ -7,25 +7,18 @@ import { UserAvatar } from "../home/Header";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
-const LinksGoBack = ["/fournisseurs/nouveau-produit", "/fournisseurs/produits"];
+const LinksGoBack = "/fournisseurs";
 
 const Header = () => {
   const user = useCurrentUser();
 
   const pathname = usePathname();
 
-  const isAddingProduct = useMemo(() => {
-    for (const link of LinksGoBack) {
-      if (pathname.includes(link)) {
-        return true;
-      }
-    }
-    return false;
-  }, []);
+  const isAddingProduct = pathname === LinksGoBack;
 
   return (
     <div className="flex items-center w-full justify-between p-4 border-b shadow">
-      <Link href={isAddingProduct ? "/fournisseurs" : "/"}>
+      <Link href={!isAddingProduct ? "/fournisseurs" : "/"}>
         <ArrowLeft />
       </Link>
       <h1 className={cn("text-lg  xl:text-2xl font-bold")}>
