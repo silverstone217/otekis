@@ -8,6 +8,7 @@ import { getUser } from "./actions";
 import {
   generateDigitNumber,
   generateSlug,
+  isEmptyString,
   normalizeProductName,
 } from "@/utils/functions";
 
@@ -253,6 +254,269 @@ export const updatePrincipalInfo = async (data: ProductInfo) => {
     return {
       error: true,
       message: "Une erreur est survenue lors de la modification du produit",
+    };
+  }
+};
+
+// MODIFY CLASSIFICATIONS
+type ProductClassification = {
+  state: string;
+  category: string;
+  type?: string | null;
+  target?: string | null;
+  quality: string;
+  productId: string;
+};
+
+// UPDATE TARGET< TYPE
+export const updateClassificationsInfo = async (
+  data: ProductClassification,
+) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    const { productId, ...rest } = data;
+
+    await prisma.supplierProduct.update({
+      where: { id: isProductExist.id },
+      data: {
+        ...rest,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Modifie avec success!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la modification du produit:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la modification du produit",
+    };
+  }
+};
+
+// ADD NEW ARTICLE
+type ProductArticles = {
+  article: {
+    color: string;
+    size: string;
+    stock: number;
+  };
+  productId: string;
+};
+export const addNewArticle = async (data: ProductArticles) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    if (
+      (data.article.color && isEmptyString(data.article.color)) ||
+      isEmptyString(data.article.size) ||
+      isNaN(data.article.stock)
+    ) {
+      return {
+        error: true,
+        message: "Veuillez entrer les informations exactes !",
+      };
+    }
+
+    await prisma.supplierProduct.update({
+      where: { id: isProductExist.id },
+      data: {
+        Article: {
+          create: {
+            ...data.article,
+          },
+        },
+      },
+    });
+
+    return {
+      error: false,
+      message: "Ajouté avec success!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la modification du produit:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la modification du produit",
+    };
+  }
+};
+
+// DELETE ARTICLE
+export const deleteArticleById = async (data: {
+  articleId: string;
+  productId: string;
+}) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    await prisma.supplierProduct.update({
+      where: { id: isProductExist.id },
+      data: {
+        Article: {
+          delete: {
+            id: data.articleId,
+          },
+        },
+      },
+    });
+
+    return {
+      error: false,
+      message: "Supprimé avec success!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'article:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la suppression de l'article",
+    };
+  }
+};
+
+// UPDATE PRODUCT ADDRESS
+
+export const upadteAddressProduct = async (data: {
+  address: string;
+  productId: string;
+}) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    await prisma.supplierProduct.update({
+      where: { id: isProductExist.id },
+      data: {
+        address: data.address.trim(),
+      },
+    });
+
+    return {
+      error: false,
+      message: "modifiee avec success!",
+    };
+  } catch (error) {
+    console.error(
+      "Une erreur est survenue lors de la modification de l'adresse:",
+      error,
+    );
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la modification de l'adresse",
     };
   }
 };
