@@ -1,7 +1,12 @@
+import { getUser } from "@/actions/actions";
 import SupplierView from "@/components/supplier/SupplierView";
 import React from "react";
 
-function page() {
+async function page() {
+  const user = await getUser();
+
+  if (!user) return null;
+
   return (
     <div>
       <SupplierView />

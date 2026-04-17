@@ -1,4 +1,6 @@
+import { getUser } from "@/actions/actions";
 import Header from "@/components/supplier/Header";
+import SupplierAuthGate from "@/components/supplier/SupplierAuthGate";
 import React from "react";
 
 type Props = {
@@ -6,6 +8,10 @@ type Props = {
 };
 
 async function layout({ children }: Props) {
+  const user = await getUser();
+
+  if (!user) return <SupplierAuthGate />;
+
   return (
     <div>
       <Header />
