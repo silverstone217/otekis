@@ -11,6 +11,7 @@ import Classifications from "./Classifications";
 import Articles from "./Articles";
 import ModifyAddress from "./ModifyAddress";
 import AvaiabillityForm from "./AvaiabillityForm";
+import ProductDangerZone from "./ProductDangerZone";
 
 type Props = {
   product: SupplierProduct & {
@@ -98,6 +99,13 @@ const MainForm = ({ product }: Props) => {
           productId={product.id}
           permittedSellers={product.permittedShops.map((s) => s.shopId)}
           isAvailable={product.isAvailable}
+        />
+
+        {/* DANGER ZONE */}
+        <ProductDangerZone
+          images={[product.image, ...product.images]}
+          productId={product.id}
+          productName={product.name}
         />
       </div>
     </div>

@@ -35,7 +35,7 @@ async function ProductSupplierId({ params }: Props) {
 
   const product = await getSupplierProductById(id);
 
-  if (!product) return null;
+  if (!product) redirect("/fournisseurs");
 
   return (
     <div className="max-w-4xl w-full p-4 mx-auto ">

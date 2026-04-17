@@ -12,6 +12,10 @@ import {
   normalizeProductName,
 } from "@/utils/functions";
 import { IsAvailableType } from "@/utils/supplier";
+import { storage } from "@/lib/firebase";
+import { deleteObject, ref } from "firebase/storage";
+import { DEFAULT_SUPPLIER_IMAGE } from "@/utils/envVariables";
+import { revalidatePath } from "next/cache";
 
 // GET SHOPS DATA
 export const getShopData = async () => {
@@ -603,4 +607,74 @@ export const updateDisponibility = async (data: {
         "Une erreur est survenue lors de la modification de la disponibilité",
     };
   }
+};
+
+// DELETE PRODUCT ____
+export const deleteProductById = async ({
+  productId,
+}: {
+  productId: string;
+}) => {
+  // auth check
+  const user = await getUser();
+  if (!user || user.isBanned) {
+    return {
+      error: true,
+      message: "Vous n'êtes pas autorisé à modifier ce produit, connectez-vous",
+    };
+  }
+
+  // 🔍 CHECK PRODUCT
+  const product = await prisma.supplierProduct.findUnique({
+    where: { id: productId },
+  });
+
+  if (!product) {
+    return {
+      error: true,
+      message: "Ce produit est introuvable",
+    };
+  }
+
+  if (product.supplierId !== user.id) {
+    return {
+      error: true,
+      message: "Vous ne pouvez pas modifier ce produit!",
+    };
+  }
+
+  await prisma.supplierProduct.delete({
+    where: { id: productId },
+  });
+
+  // =========================
+  // 1. DELETE FIREBASE IMAGES
+  // =========================
+  const deleteImage = async (url: string) => {
+    try {
+      if (!url) return;
+
+      const imageRef = ref(storage, url);
+      await deleteObject(imageRef);
+    } catch (err) {
+      console.warn("Erreur suppression image:", err);
+    }
+  };
+
+  // image principale
+  if (DEFAULT_SUPPLIER_IMAGE !== product.image) {
+    await deleteImage(product.image);
+  }
+
+  // images secondaires
+  if (product.images?.length) {
+    await Promise.all(product.images.map((img) => deleteImage(img)));
+  }
+
+  revalidatePath("/fournisseurs");
+
+  return {
+    error: false,
+    message: "Produit supprimé",
+  };
 };

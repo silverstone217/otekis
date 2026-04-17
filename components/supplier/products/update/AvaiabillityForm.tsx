@@ -109,7 +109,7 @@ const AvaiabillityForm = ({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8 py-4">
+    <div className="w-full max-w-4xl mx-auto sm:col-span-2 space-y-8 py-4">
       {/* HEADER */}
       <header className="space-y-1">
         <h2 className="text-xl font-medium tracking-tight">

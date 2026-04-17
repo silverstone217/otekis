@@ -625,7 +625,7 @@ model SupplierProduct {
   permittedShops PermittedSeller[]
   // ProductShop ProductShop[]
   supplierId     String
-  Supplier       User              @relation(fields: [supplierId], references: [id], onDelete: NoAction)
+  Supplier       User              @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 }
 
 model SupplierArticle {
