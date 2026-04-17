@@ -11,6 +11,7 @@ import {
   isEmptyString,
   normalizeProductName,
 } from "@/utils/functions";
+import { IsAvailableType } from "@/utils/supplier";
 
 // GET SHOPS DATA
 export const getShopData = async () => {
@@ -462,7 +463,6 @@ export const deleteArticleById = async (data: {
 };
 
 // UPDATE PRODUCT ADDRESS
-
 export const upadteAddressProduct = async (data: {
   address: string;
   productId: string;
@@ -517,6 +517,90 @@ export const upadteAddressProduct = async (data: {
     return {
       error: true,
       message: "Une erreur est survenue lors de la modification de l'adresse",
+    };
+  }
+};
+
+// AVA/ DISPO
+// UPDATE PRODUCT DISPONIBILITY
+export const updateDisponibility = async (data: {
+  productId: string;
+  isAvailable: IsAvailableType;
+  permittedSellers: string[];
+}) => {
+  try {
+    // 🔐 AUTH
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier ce produit, connectez-vous",
+      };
+    }
+
+    // 🔍 CHECK PRODUCT
+    const product = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!product) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    if (product.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    // 🔄 UPDATE TRANSACTION (IMPORTANT)
+    await prisma.$transaction(async (tx) => {
+      // 1️⃣ UPDATE AVAILABILITY
+      await tx.supplierProduct.update({
+        where: { id: data.productId },
+        data: {
+          isAvailable: data.isAvailable,
+        },
+      });
+
+      // 2️⃣ CLEAN OLD RELATIONS
+      await tx.permittedSeller.deleteMany({
+        where: { supplierProductId: data.productId },
+      });
+
+      // 3️⃣ ADD NEW (SI SPECIFIC)
+      if (data.isAvailable === "specific_sellers") {
+        if (data.permittedSellers.length === 0) {
+          throw new Error("Ajoutez au moins une boutique");
+        }
+
+        await tx.permittedSeller.createMany({
+          data: data.permittedSellers.map((shopId) => ({
+            supplierProductId: data.productId,
+            shopId,
+          })),
+          skipDuplicates: true, // 🔥 sécurité
+        });
+      }
+    });
+
+    return {
+      error: false,
+      message: "Disponibilité mise à jour avec succès",
+    };
+  } catch (error: any) {
+    console.error("Erreur lors de la modification de la disponibilité:", error);
+
+    return {
+      error: true,
+      message:
+        error.message ||
+        "Une erreur est survenue lors de la modification de la disponibilité",
     };
   }
 };

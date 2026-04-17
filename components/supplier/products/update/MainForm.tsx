@@ -10,6 +10,7 @@ import PrincipalsInformations from "./PrincipalsInformations";
 import Classifications from "./Classifications";
 import Articles from "./Articles";
 import ModifyAddress from "./ModifyAddress";
+import AvaiabillityForm from "./AvaiabillityForm";
 
 type Props = {
   product: SupplierProduct & {
@@ -91,6 +92,13 @@ const MainForm = ({ product }: Props) => {
 
         {/* Address */}
         <ModifyAddress address={product.address} productId={product.id} />
+
+        {/* AV */}
+        <AvaiabillityForm
+          productId={product.id}
+          permittedSellers={product.permittedShops.map((s) => s.shopId)}
+          isAvailable={product.isAvailable}
+        />
       </div>
     </div>
   );
