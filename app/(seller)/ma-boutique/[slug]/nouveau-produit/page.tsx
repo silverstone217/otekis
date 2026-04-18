@@ -22,6 +22,7 @@ type Props = {
   }>;
 };
 
+// OTEKIS PRODUCTS
 const getProductsByCategory = async (category: string) => {
   const products = await prisma.product.findMany({
     // where: { category },
@@ -30,9 +31,53 @@ const getProductsByCategory = async (category: string) => {
   });
   return products ? products : [];
 };
-
+// OTEKIS PRODUCTSHOP PRODUCTS
 const getProductShopsByShopId = async (shopId: string) => {
   const products = await prisma.productShop.findMany({
+    where: { shopId },
+    orderBy: { createdAt: "desc" },
+  });
+  return products;
+};
+
+// Suplier PRODUCTS
+const getSupplierProductsForShop = async ({
+  shopId,
+  userId,
+}: {
+  shopId: string;
+  userId: string;
+}) => {
+  return await prisma.supplierProduct.findMany({
+    where: {
+      OR: [
+        { isAvailable: "for_all" },
+
+        {
+          isAvailable: "only_self",
+          supplierId: userId,
+        },
+
+        {
+          isAvailable: "specific_sellers",
+          permittedShops: {
+            some: {
+              shopId: shopId,
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      Article: true,
+      permittedShops: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+// Suplier PRODUCTSHOP PRODUCTS
+const getSuplierProductShopsByShopId = async (shopId: string) => {
+  const products = await prisma.supplierProductShop.findMany({
     where: { shopId },
     orderBy: { createdAt: "desc" },
   });
@@ -67,16 +112,26 @@ const AddShopProductPage = async (props: Props) => {
     return <NotAuthorizedComponent />;
   }
 
+  // OTEKIS
   const products = await getProductsByCategory(shop.category);
   const productsShop = await getProductShopsByShopId(shop.id);
 
+  // SUPPLIER
+  const supplierProducts = await getSupplierProductsForShop({
+    shopId: shop.id,
+    userId: user.id,
+  });
+  const supplierProductsShop = await getSuplierProductShopsByShopId(shop.id);
+
   // Récupérer les IDs des produits dans productsShop
   const productIdsInShop = new Set(
-    productsShop.map((product) => product.productId),
+    [...productsShop, ...supplierProductsShop].map(
+      (product) => product.productId,
+    ),
   );
 
   // Créer un tableau trié
-  const sortedProducts = products.sort((a, b) => {
+  const sortedProducts = [...products, ...supplierProducts].sort((a, b) => {
     const isAInShop = productIdsInShop.has(a.id);
     const isBInShop = productIdsInShop.has(b.id);
 
@@ -126,23 +181,12 @@ const AddShopProductPage = async (props: Props) => {
           </p>
         </div>
         {/* add items */}
-        {/* navigate */}
-        {/* <Link
-          href={`/produits/${shop.slug}/articles`}
-          className="w-full lg:w-fit lg:px-6 py-3 bg-primary text-center text-white font-medium border-2 border-primary 
-        hover:bg-transparent hover:text-black transition-all duration-500 ease-in-out shadow-md
-        flex items-center justify-center gap-4
-        "
-        >
-          <Plus className="w-8 flex-shrink-0" />
-          <span>Voire les articles</span>
-        </Link> */}
       </div>
       {/* List */}
       <ListAddProductsShop
         shop={shop}
         products={sortedProducts}
-        productsShop={productsShop}
+        productsShop={[...productsShop, ...supplierProductsShop]}
         currency={currency}
         exchange={exchange}
       />

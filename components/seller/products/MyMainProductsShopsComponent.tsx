@@ -2,7 +2,10 @@
 import { Product, ProductShop, Shop } from "@/lib/generated/prisma/client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useSelectDefaultShop from "../SelectDefaultShop";
-import { getProductShopByShopId } from "@/actions/shopActions";
+import {
+  getProductShopByShopId,
+  getSupplierProductShopByShopId,
+} from "@/actions/shopActions";
 import ListModifyProductsShop from "./ListModifyProductsShop";
 import { ProductWithArticle } from "@/types/data";
 import ActionsProducts from "./ActionsProducts";
@@ -27,22 +30,21 @@ const MyMainProductsShopsComponent = ({
   const [productsShop, setProductsShop] = useState<
     ProductShopTypeWithProducts[]
   >([]);
-  const defaultShopId = useSelectDefaultShop({ shops });
+  // const defaultShopId = useSelectDefaultShop({ shops });
   const [loading, setLoading] = useState(false);
 
   //   get shop
-  const shop = useMemo(
-    () => (defaultShopId ? shops.find((sh) => sh.id === defaultShopId) : null),
-    [shops, defaultShopId]
-  ); //
+  const shop = useMemo(() => shops[0], [shops]);
 
   //   get products for shop
   const filteredProducts = useMemo(
     () =>
       products.filter((product) =>
-        productsShop.some((shopProduct) => shopProduct.productId === product.id)
+        productsShop.some(
+          (shopProduct) => shopProduct.productId === product.id,
+        ),
       ),
-    [productsShop, products]
+    [productsShop, products],
   );
 
   const refreshData = useCallback(() => {
@@ -54,13 +56,15 @@ const MyMainProductsShopsComponent = ({
           return;
         }
         const shopProducts = await getProductShopByShopId(shopId);
+        const supplierProductsShop =
+          await getSupplierProductShopByShopId(shopId);
         setProductsShop(
-          shopProducts.map((shopProduct) => ({
+          [...shopProducts, ...supplierProductsShop].map((shopProduct) => ({
             ...shopProduct,
             product: products.find(
-              (product) => product.id === shopProduct.productId
+              (product) => product.id === shopProduct.productId,
             )!,
-          }))
+          })),
         );
         return;
       } catch (error) {
@@ -69,8 +73,8 @@ const MyMainProductsShopsComponent = ({
         setLoading(false);
       }
     };
-    getShopProducts(defaultShopId);
-  }, [defaultShopId, setProductsShop, products]);
+    getShopProducts(shop.id);
+  }, [shop.id, setProductsShop, products]);
 
   useEffect(() => {
     refreshData();

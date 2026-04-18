@@ -432,6 +432,7 @@ export function AddProductToShopSheet({
         percentage,
         price: totalPrice,
         promotion: promotion,
+        origin: product.origin,
       };
       const addNewItem = await modifyItemToShop({ ...newProductShop });
       if (!addNewItem) {
@@ -475,6 +476,7 @@ export function AddProductToShopSheet({
       const deleteItem = await deleteItemToShop({
         productShopId: isInShopProduct.id,
         shopId: shop.id,
+        origin: product.origin,
       });
       if (!deleteItem) {
         toast.error("Erreur survenue!", {

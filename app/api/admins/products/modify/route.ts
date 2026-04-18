@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json(
         { message: "Unauthorized", error: true },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
           message: "Vous n'avez pas les droits pour effectuer cette action",
           error: true,
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     if (!isProductExist) {
       return NextResponse.json(
         { message: "Produit introuvable", error: true },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const uidCat = revalidated.category.slice(0, 3).toUpperCase();
@@ -82,6 +82,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // FIX PRICE FOR ALL SHOPS
     const getAllProductsShop = await prisma.productShop.findMany({
       where: { productId: revalidated.id },
     });
@@ -91,14 +92,14 @@ export async function POST(request: Request) {
       await Promise.all(
         getAllProductsShop.map(async (productShop) => {
           const benefit = Number(
-            Math.round((productShop.percentage * revalidated.price) / 100)
+            Math.round((productShop.percentage * revalidated.price) / 100),
           );
           const price = benefit + revalidated.price;
           await prisma.productShop.update({
             where: { id: productShop.id },
             data: { price },
           });
-        })
+        }),
       );
     }
 
@@ -135,7 +136,7 @@ export async function POST(request: Request) {
           message: "Erreur de validation des données",
           details: formattedErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -145,7 +146,7 @@ export async function POST(request: Request) {
         error: true,
         message: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

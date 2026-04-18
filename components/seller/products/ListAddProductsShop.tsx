@@ -352,6 +352,7 @@ export function AddProductToShopSheet({
         shopId: shop.id,
         percentage,
         price: totalPrice,
+        origin: product.origin,
       };
       const addNewItem = await addItemToShop({ ...newProductShop });
       if (addNewItem.error) {
@@ -380,6 +381,7 @@ export function AddProductToShopSheet({
       const deleteItem = await deleteItemToShop({
         productShopId: isInShopProduct.id,
         shopId: shop.id,
+        origin: product.origin,
       });
 
       if (deleteItem.error) {

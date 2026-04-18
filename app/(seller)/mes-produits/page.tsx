@@ -13,12 +13,56 @@ import {
 } from "@/actions/companyAction";
 import BannedUserSeller from "@/components/BannedUserSeller";
 
-const getProducts = async () => {
+const getProducts = async (shopId: string) => {
   const products = await prisma.product.findMany({
     include: { Article: true },
     orderBy: { createdAt: "desc" },
   });
 
+  return products;
+};
+
+// Suplier PRODUCTS
+const getSupplierProductsForShop = async ({
+  shopId,
+  userId,
+}: {
+  shopId: string;
+  userId: string;
+}) => {
+  return await prisma.supplierProduct.findMany({
+    where: {
+      OR: [
+        { isAvailable: "for_all" },
+
+        {
+          isAvailable: "only_self",
+          supplierId: userId,
+        },
+
+        {
+          isAvailable: "specific_sellers",
+          permittedShops: {
+            some: {
+              shopId: shopId,
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      Article: true,
+      permittedShops: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+// Suplier PRODUCTSHOP PRODUCTS
+const getSuplierProductShopsByShopId = async (shopId: string) => {
+  const products = await prisma.supplierProductShop.findMany({
+    where: { shopId },
+    orderBy: { createdAt: "desc" },
+  });
   return products;
 };
 
@@ -39,8 +83,18 @@ const MyProductsPage = async () => {
   if (!shops || shops.length < 1) {
     return <NoShopFind />;
   }
+  // OTEKIS PRODUCTS
+  const products = await getProducts(shops[0].id);
 
-  const products = await getProducts();
+  // SUPPLIER PRODUCTS
+  const supplierProducts = await getSupplierProductsForShop({
+    shopId: shops[0].id,
+    userId: user.id,
+  });
+
+  // ASSEMBLE PRODUCTS
+  const allProducts = [...supplierProducts, ...products];
+
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
 
@@ -68,7 +122,7 @@ const MyProductsPage = async () => {
       <Suspense fallback={<div>chargement...</div>}>
         <MyMainProductsShopsComponent
           shops={shops}
-          products={products}
+          products={allProducts}
           currency={currency}
           exchange={exchange}
         />

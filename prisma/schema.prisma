@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -95,24 +89,34 @@ model User {
   supplierProducts SupplierProduct[]
 }
 
+enum ProductOrigin {
+  otekis
+  supplier
+}
+
 // Products
 model Product {
-  id          String   @id @default(cuid())
-  uid         String
+  id  String @id @default(cuid())
+  uid String
+
   name        String
   slug        String
   category    String
   description String
   image       String
-  images      String[]
-  price       Float
-  state       String   @default("nouveau")
-  quality     String   @default("original")
-  target      String?
-  type        String?
-  material    String?
-  brand       String?
-  stock       Int      @default(1)
+
+  images String[]
+
+  price    Float
+  state    String  @default("nouveau")
+  quality  String  @default("original")
+  target   String?
+  type     String?
+  material String?
+  brand    String?
+  stock    Int     @default(1)
+
+  origin ProductOrigin @default(otekis)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -196,7 +200,8 @@ model Shop {
   shopProfitWaited  ShopProfitWaited[]
   withdrawalHistory WithdrawalHistory[]
 
-  permittedproducts PermittedSeller[]
+  permittedproducts    PermittedSeller[]
+  supplierProductShops SupplierProductShop[]
 }
 
 model Contact {
@@ -617,15 +622,17 @@ model SupplierProduct {
   isAvailable SupplierProductAvailability @default(for_all)
 
   address String
+  origin  ProductOrigin @default(supplier)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Article        SupplierArticle[]
-  permittedShops PermittedSeller[]
+  Article              SupplierArticle[]
+  permittedShops       PermittedSeller[]
   // ProductShop ProductShop[]
-  supplierId     String
-  Supplier       User              @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierId           String
+  Supplier             User                  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierProductShops SupplierProductShop[]
 }
 
 model SupplierArticle {
@@ -647,6 +654,7 @@ model SupplierArticle {
   // Cart Cart[]
 }
 
+// PERMITTED SUPPLIER PRODUCT SHOP
 model PermittedSeller {
   id                String @id @default(cuid())
   supplierProductId String
@@ -659,4 +667,24 @@ model PermittedSeller {
   updatedAt DateTime @updatedAt
 
   @@unique([supplierProductId, shopId])
+}
+
+// SUPPLIER PRODUCTSHOP
+model SupplierProductShop {
+  id        String @id @default(cuid())
+  productId String
+  shopId    String
+
+  percentage    Int
+  price         Float
+  promotion     Int?
+  promotionName String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product SupplierProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop    Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, shopId])
 }

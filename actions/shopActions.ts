@@ -1,6 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "../actions/actions";
+import { ProductOrigin } from "@/lib/generated/prisma/enums";
 
 export const getShopsByUserID = async (userId: string) => {
   const shops = await prisma.shop.findMany({
@@ -162,125 +163,213 @@ export const updateShopCover = async (
 };
 
 // product shop add
-type addItemShopType = {
+type AddItemShopType = {
   shopId: string;
   productId: string;
   price: number;
   percentage: number;
+  origin: ProductOrigin;
 };
+
 export const addItemToShop = async ({
   percentage,
   price,
   productId,
   shopId,
-}: addItemShopType) => {
-  const user = await getUser();
-  if (!user) {
+  origin,
+}: AddItemShopType) => {
+  try {
+    // 🔐 AUTH
+    const user = await getUser();
+    if (!user) {
+      return { error: true, message: "Non autorisé" };
+    }
+
+    // 🏪 CHECK SHOP
+    const shop = await prisma.shop.findUnique({
+      where: { id: shopId },
+    });
+
+    if (!shop || shop.userId !== user.id) {
+      return { error: true, message: "Accès refusé à cette boutique" };
+    }
+
+    // 📦 VALIDATION
+    if (!price || price <= 0) {
+      return { error: true, message: "Prix invalide" };
+    }
+
+    if (percentage < 0) {
+      return { error: true, message: "Pourcentage invalide" };
+    }
+
+    let item;
+
+    if (origin === "otekis") {
+      // 🔍 CHECK PRODUCT EXIST
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+      });
+
+      if (!product) {
+        return { error: true, message: "Produit introuvable" };
+      }
+
+      // 🚫 DUPLICATE CHECK
+      const existing = await prisma.productShop.findFirst({
+        where: { shopId, productId },
+      });
+
+      if (existing) {
+        return { error: true, message: "Produit déjà ajouté à la boutique" };
+      }
+
+      item = await prisma.productShop.create({
+        data: {
+          shopId,
+          productId,
+          price,
+          percentage,
+        },
+      });
+    } else {
+      const product = await prisma.supplierProduct.findUnique({
+        where: { id: productId },
+      });
+
+      if (!product) {
+        return { error: true, message: "Produit fournisseur introuvable" };
+      }
+
+      const existing = await prisma.supplierProductShop.findFirst({
+        where: { shopId, productId },
+      });
+
+      if (existing) {
+        return { error: true, message: "Produit déjà ajouté à la boutique" };
+      }
+
+      item = await prisma.supplierProductShop.create({
+        data: {
+          shopId,
+          productId,
+          price,
+          percentage,
+        },
+      });
+    }
+
     return {
-      message: "Pas authorisé à faire ça!",
+      error: false,
+      message: "Produit ajouté avec succès",
+      data: item,
+    };
+  } catch (error) {
+    console.error("addItemToShop error:", error);
+
+    return {
       error: true,
+      message: "Erreur serveur",
     };
   }
-
-  const shop = await prisma.shop.findUnique({
-    where: { id: shopId },
-  });
-
-  if (!shop) {
-    return {
-      message: "Cette boutique n'existe pas!",
-      error: true,
-    };
-  }
-
-  const isHisShop = shop.userId === user.id;
-
-  if (!isHisShop) {
-    return {
-      message: "Pas authorisé à faire ça!",
-      error: true,
-    };
-  }
-
-  const item = await prisma.productShop.create({
-    data: {
-      shopId,
-      productId,
-      price,
-      percentage,
-    },
-  });
-  return {
-    message: "Article ajouté avec succès!",
-    data: item,
-    error: false,
-  };
 };
 
 // product shop delete
-type deleteItemShopType = {
+type DeleteItemShopType = {
   productShopId: string;
   shopId: string;
+  origin: ProductOrigin;
 };
 
 export const deleteItemToShop = async ({
   productShopId,
   shopId,
-}: deleteItemShopType) => {
-  const user = await getUser();
-  if (!user) {
+  origin,
+}: DeleteItemShopType) => {
+  try {
+    // 🔐 AUTH
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non autorisé",
+      };
+    }
+
+    // 🏪 CHECK SHOP
+    const shop = await prisma.shop.findUnique({
+      where: { id: shopId },
+    });
+
+    if (!shop || shop.userId !== user.id) {
+      return {
+        error: true,
+        message: "Accès refusé à cette boutique",
+      };
+    }
+
+    let itemShop;
+
+    if (origin === "otekis") {
+      // FIND ITEM + VERIFY OWNERSHIP
+      itemShop = await prisma.productShop.findFirst({
+        where: {
+          id: productShopId,
+          shopId, //  IMPORTANT
+        },
+      });
+
+      if (!itemShop) {
+        return {
+          error: true,
+          message: "Produit introuvable dans cette boutique",
+        };
+      }
+
+      await prisma.productShop.delete({
+        where: { id: productShopId },
+      });
+    } else {
+      itemShop = await prisma.supplierProductShop.findFirst({
+        where: {
+          id: productShopId,
+          shopId, //  IMPORTANT
+        },
+      });
+
+      if (!itemShop) {
+        return {
+          error: true,
+          message: "Produit fournisseur introuvable dans cette boutique",
+        };
+      }
+
+      await prisma.supplierProductShop.delete({
+        where: { id: productShopId },
+      });
+    }
+
     return {
-      message: "Pas authorisé à faire ça!",
+      error: false,
+      message: "Produit supprimé avec succès",
+    };
+  } catch (error) {
+    console.error("deleteItemToShop error:", error);
+
+    return {
       error: true,
+      message: "Erreur serveur",
     };
   }
-
-  const isShopExist = await prisma.shop.findUnique({
-    where: { id: shopId },
-  });
-
-  if (!isShopExist) {
-    return {
-      message: "Cette boutique n'existe pas ou a ete suspendue!",
-      error: true,
-    };
-  }
-
-  if (user.id !== isShopExist.userId) {
-    return {
-      message: "Impossible de continuer, vous n'etes pas authorisé!",
-      error: true,
-    };
-  }
-
-  const itemShop = await prisma.productShop.findUnique({
-    where: { id: productShopId },
-  });
-  if (!itemShop) {
-    return {
-      message: "Cet article ne fait pas partie de cette boutique!",
-      error: true,
-    };
-  }
-
-  const item = await prisma.productShop.delete({
-    where: {
-      id: productShopId,
-    },
-  });
-
-  return {
-    message: "Article supprimé avec succès!",
-    error: false,
-    data: item,
-  };
 };
+
 // modify product shop
-type modifyItemShopType = {
+type ModifyItemShopType = {
   productShopId: string;
   percentage: number;
   price: number;
   promotion: number;
+  origin: ProductOrigin;
 };
 
 export const modifyItemToShop = async ({
@@ -288,41 +377,112 @@ export const modifyItemToShop = async ({
   percentage,
   price,
   promotion,
-}: modifyItemShopType) => {
-  const user = await getUser();
-  if (!user) {
+  origin,
+}: ModifyItemShopType) => {
+  try {
+    // 🔐 AUTH
+    const user = await getUser();
+    if (!user) {
+      return {
+        error: true,
+        message: "Non autorisé",
+      };
+    }
+
+    // 📦 VALIDATION
+    if (price <= 0) {
+      return { error: true, message: "Prix invalide" };
+    }
+
+    if (percentage < 0) {
+      return { error: true, message: "Pourcentage invalide" };
+    }
+
+    if (promotion < 0) {
+      return { error: true, message: "Promotion invalide" };
+    }
+
+    // 🔁 CAS OTEKIS
+    if (origin === "otekis") {
+      const item = await prisma.productShop.findUnique({
+        where: { id: productShopId },
+        include: { shop: true },
+      });
+
+      if (!item) {
+        return {
+          error: true,
+          message: "Produit introuvable",
+        };
+      }
+
+      // 🔒 OWNERSHIP
+      if (item.shop.userId !== user.id) {
+        return {
+          error: true,
+          message: "Accès refusé",
+        };
+      }
+
+      const updated = await prisma.productShop.update({
+        where: { id: productShopId },
+        data: {
+          price,
+          percentage,
+          promotion,
+        },
+      });
+
+      return {
+        error: false,
+        message: "Article modifié avec succès",
+        data: updated,
+      };
+    }
+
+    // 🔁 CAS SUPPLIER
+    const item = await prisma.supplierProductShop.findUnique({
+      where: { id: productShopId },
+      include: { shop: true },
+    });
+
+    if (!item) {
+      return {
+        error: true,
+        message: "Produit fournisseur introuvable",
+      };
+    }
+
+    // 🔒 OWNERSHIP
+    if (item.shop.userId !== user.id) {
+      return {
+        error: true,
+        message: "Accès refusé",
+      };
+    }
+
+    const updated = await prisma.supplierProductShop.update({
+      where: { id: productShopId },
+      data: {
+        price,
+        percentage,
+        promotion,
+      },
+    });
+
     return {
-      message: "Pas authorisé à faire ça!",
+      error: false,
+      message: "Article modifié avec succès",
+      data: updated,
+    };
+  } catch (error) {
+    console.error("modifyItemToShop error:", error);
+
+    return {
       error: true,
+      message: "Erreur serveur",
     };
   }
-
-  const itemShop = await prisma.productShop.findUnique({
-    where: { id: productShopId },
-  });
-  if (!itemShop) {
-    return {
-      message: "Cet article ne fait pas partie de cette boutique!",
-      error: true,
-    };
-  }
-
-  const item = await prisma.productShop.update({
-    where: {
-      id: productShopId,
-    },
-    data: {
-      price,
-      percentage,
-      promotion,
-    },
-  });
-
-  return {
-    message: "Article modifié avec succès!",
-    error: false,
-    data: item,
-  };
 };
 
 // get product shop by shopId
@@ -332,6 +492,17 @@ export const getProductShopByShopId = async (shopId: string) => {
     orderBy: { createdAt: "desc" },
     include: { Product: true },
   });
+
+  return items;
+};
+// PRODUCT SHOP SUPPLIER
+export const getSupplierProductShopByShopId = async (shopId: string) => {
+  const items = await prisma.supplierProductShop.findMany({
+    where: { shopId },
+    orderBy: { createdAt: "desc" },
+    include: { Product: true },
+  });
+
   return items;
 };
 

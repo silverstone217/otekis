@@ -247,8 +247,32 @@ export const updatePrincipalInfo = async (data: ProductInfo) => {
         slug,
         brand: data.brand,
         description: data.description,
+        price: data.price,
       },
     });
+
+    // FIX PRICE FOR ALL SHOPS MANUALLY
+    const getAllProductsShop = await prisma.supplierProductShop.findMany({
+      where: { productId: isProductExist.id },
+    });
+
+    if (getAllProductsShop.length > 0) {
+      // Mettre à jour les relations liées au produit
+      await Promise.all(
+        getAllProductsShop.map(async (supplierProductShop) => {
+          const benefit = Number(
+            Math.round(
+              (supplierProductShop.percentage * isProductExist.price) / 100,
+            ),
+          );
+          const price = benefit + isProductExist.price;
+          await prisma.supplierProductShop.update({
+            where: { id: supplierProductShop.id },
+            data: { price },
+          });
+        }),
+      );
+    }
 
     return {
       error: false,

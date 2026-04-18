@@ -55,7 +55,7 @@ const ModifyProductForm = ({ product }: Props) => {
   const [images, setImages] = useState<{ id: string; file: File }[]>([]);
   const [visualizeImage, setVisualizeImage] = useState(product.image ?? "");
   const [visualizeImages, setVisualizeImages] = useState<string[]>(
-    product.images ?? []
+    product.images ?? [],
   );
 
   const mergedImages = useMemo(
@@ -63,7 +63,7 @@ const ModifyProductForm = ({ product }: Props) => {
       ...images.map(({ id, file }) => ({ id, url: URL.createObjectURL(file) })),
       ...visualizeImages.map((url) => ({ id: url, url })),
     ],
-    [visualizeImages, images]
+    [visualizeImages, images],
   );
 
   const handleRemoveImage = async (id: string) => {
@@ -79,12 +79,12 @@ const ModifyProductForm = ({ product }: Props) => {
         const reducedImgs = visualizeImages.filter((im) => im !== id);
         const removeImgs = await updateImagesProductImages(
           product.id,
-          reducedImgs
+          reducedImgs,
         );
 
         if (!removeImgs) {
           toast.error(
-            "Une erreur s'est produite lors de la suppression de l'image, veuillez reessayez plus tard!"
+            "Une erreur s'est produite lors de la suppression de l'image, veuillez reessayez plus tard!",
           );
           return;
         }
@@ -94,7 +94,7 @@ const ModifyProductForm = ({ product }: Props) => {
       } catch (error) {
         console.error("Error uploading images", error);
         toast.error(
-          "Une erreur s'est produite lors de la suppression de l'image, veuillez reessayez plus tard!"
+          "Une erreur s'est produite lors de la suppression de l'image, veuillez reessayez plus tard!",
         );
       } finally {
         setLoading(false);
@@ -179,7 +179,7 @@ const ModifyProductForm = ({ product }: Props) => {
       const reducedImgs = [...product.images, ...imgUrls];
       const updateImages = await updateImagesProductImages(
         product.id,
-        reducedImgs
+        reducedImgs,
       );
 
       //   const response = await fetch("/api/admin/products/images", {
@@ -191,7 +191,7 @@ const ModifyProductForm = ({ product }: Props) => {
       //   });
       if (!updateImages) {
         toast.error(
-          "Une erreur s'est produite lors de l'ajout d'images du produit, veuillez reessayez plus tard!"
+          "Une erreur s'est produite lors de l'ajout d'images du produit, veuillez reessayez plus tard!",
         );
         throw new Error("Erreur lors de la modification du produit");
       }
