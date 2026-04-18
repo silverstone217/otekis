@@ -292,7 +292,7 @@ export const ListAddProductCard = ({
       className={cn(
         "group relative w-full md:max-w-xs min-h-[360px] flex flex-col",
         "justify-between rounded-xl shadow border hover:shadow-lg transition-all",
-        "duration-300 overflow-hidden",
+        "duration-300 overflow-hidden ",
         isInShop && "ring-2 ring-primary/30",
       )}
     >
@@ -347,17 +347,17 @@ export const ListAddProductCard = ({
                     "shadow-md",
                     "transition-all duration-200",
                     product.origin === "otekis"
-                      ? "bg-emerald-500/15 border-emerald-400/30 text-emerald-600"
-                      : "bg-orange-500/15 border-orange-400/30 text-orange-500",
+                      ? "bg-emerald-600 border-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.4)] text-white scale-110 z-10"
+                      : "bg-background border-muted-foreground/20 text-muted-foreground hover:border-orange-400 hover:text-orange-500",
                   )}
                 >
                   <OriginIcon className="w-3.5 h-3.5" />
                 </div>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="top" className="text-xs">
                 {product.origin === "otekis"
-                  ? "Produit vérifié et géré par Otekis"
-                  : "Produit provenant d’un vendeur partenaire"}
+                  ? "Officiel Otekis"
+                  : "Vendeur Partenaire"}
               </TooltipContent>
             </Tooltip>
           </div>

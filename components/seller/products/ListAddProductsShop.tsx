@@ -8,7 +8,9 @@ import {
   Plus,
   RotateCw,
   Search,
+  ShieldCheck,
   SlidersHorizontal,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -49,6 +51,12 @@ import {
   CategorySellerFilter,
   TypeSellerFilter,
 } from "@/components/CategoryAndTypesFilter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 type Props = {
   products: ProductsTypeWithArticles[];
@@ -244,39 +252,79 @@ function ProductCardAddShop({
     0,
   );
 
-  // Design card moderne
+  const OriginIcon = product.origin === "otekis" ? ShieldCheck : Store;
+
   return (
     <Card
       className="relative flex flex-col h-full rounded-2xl shadow group 
-    transition hover:shadow-lg ring-0 hover:ring-primary/20 border"
+    transition hover:shadow-lg ring-0 hover:ring-primary/20 border
+    overflow-hidden
+    "
     >
-      <CardHeader className="p-0 -mt-6">
-        <div className="relative w-full h-80 overflow-hidden rounded-t-2xl">
+      <CardHeader className="p-0 -mt-6 overflow-hidden">
+        <div className="relative h-72 w-full overflow-hidden rounded-t-xl">
           <Image
             src={product.image || noProduct}
             alt={product.name}
             fill
             unoptimized
-            className="object-cover w-full h-full group-hover:scale-105 
+            className="object-cover group-hover:scale-105 
             transition-transform duration-500 ease-in-out bg-muted"
+            sizes="(max-width: 600px) 100vw, 25vw"
             priority
-            sizes="(max-width:600px) 100vw, 33vw"
           />
-          <div className="absolute top-2 left-2 flex gap-2">
-            <Badge
-              variant="secondary"
-              className="capitalize text-xs px-2 py-1 rounded-md"
-            >
-              {returnDataValue(product?.quality, QualitiesData)}
-            </Badge>
-            {isInShop && (
+          <div
+            className="absolute top-2 left-0 right-0 flex gap-2 
+          items-center justify-between w-full px-4
+          "
+          >
+            <div className=" flex gap-2 items-center">
               <Badge
-                variant="outline"
-                className="  bg-black/40 text-white font-semibold text-xs"
+                variant="secondary"
+                className="text-xs px-2 py-1 rounded-lg capitalize"
               >
-                Déjà ajouté
+                {returnDataValue(product?.quality, QualitiesData)}
               </Badge>
-            )}
+              {isInShop && (
+                <Badge
+                  variant="outline"
+                  className="text-xs  bg-black/40 text-white"
+                >
+                  Déjà ajouté
+                </Badge>
+              )}
+            </div>
+
+            {/* ORIGIN */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  role="img"
+                  aria-label={
+                    product.origin === "otekis"
+                      ? "Produit maison vérifié"
+                      : "Produit fournisseur"
+                  }
+                  className={cn(
+                    "flex items-center justify-center",
+                    "h-7 w-7 rounded-full",
+                    "backdrop-blur-md border",
+                    "shadow-md",
+                    "transition-all duration-200",
+                    product.origin === "otekis"
+                      ? "bg-emerald-600 border-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.4)] text-white scale-110 z-10"
+                      : "bg-background border-muted-foreground/20 text-muted-foreground hover:border-orange-400 hover:text-orange-500",
+                  )}
+                >
+                  <OriginIcon className="w-3.5 h-3.5" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                {product.origin === "otekis"
+                  ? "Officiel Otekis"
+                  : "Vendeur Partenaire"}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </CardHeader>
