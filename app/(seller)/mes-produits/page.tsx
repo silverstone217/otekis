@@ -93,7 +93,10 @@ const MyProductsPage = async () => {
   });
 
   // ASSEMBLE PRODUCTS
-  const allProducts = [...supplierProducts, ...products];
+  // ASSEMBLE ALL PRODUCTS
+  const allProducts = [...products, ...supplierProducts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();

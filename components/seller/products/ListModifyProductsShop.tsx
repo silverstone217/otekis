@@ -10,7 +10,9 @@ import {
   Plus,
   RotateCw,
   Search,
+  ShieldCheck,
   SlidersHorizontal,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -54,6 +56,11 @@ import {
   CategorySellerFilter,
   TypeSellerFilter,
 } from "@/components/CategoryAndTypesFilter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ProductShopTypeWithProducts = ProductShop & { product: Product };
 
@@ -267,16 +274,29 @@ export const ListAddProductCard = ({
   const articles = product.Article as { stock: number }[];
   const totalQuantity = articles.reduce((acc, a) => acc + a.stock, 0);
 
+  const originConfig = {
+    otekis: {
+      label: "Produit vérifié",
+      className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    },
+    supplier: {
+      label: "Vendeur partenaire",
+      className: "bg-blue-50 text-blue-700 border-blue-200",
+    },
+  };
+
+  const OriginIcon = product.origin === "otekis" ? ShieldCheck : Store;
+
   return (
     <Card
       className={cn(
         "group relative w-full md:max-w-xs min-h-[360px] flex flex-col",
         "justify-between rounded-xl shadow border hover:shadow-lg transition-all",
-        "duration-300",
+        "duration-300 overflow-hidden",
         isInShop && "ring-2 ring-primary/30",
       )}
     >
-      <CardHeader className="p-0 -mt-6">
+      <CardHeader className="p-0 -mt-6 overflow-hidden">
         <div className="relative h-72 w-full overflow-hidden rounded-t-xl">
           <Image
             src={product.image || noProduct}
@@ -288,29 +308,58 @@ export const ListAddProductCard = ({
             sizes="(max-width: 600px) 100vw, 25vw"
             priority
           />
-          <div className="absolute top-2 left-2 flex gap-2">
-            <Badge
-              variant="secondary"
-              className="text-xs px-2 py-1 rounded-lg capitalize"
-              // onClick={() =>
-              //   console.log({
-              //     beneficeAfterDiscount,
-              //     benefit,
-              //     promotion,
-              //     percent: isInShopProduct?.percentage,
-              //   })
-              // }
-            >
-              {returnDataValue(product?.quality, QualitiesData)}
-            </Badge>
-            {isInShop && (
+          <div
+            className="absolute top-2 left-0 right-0 flex gap-2 
+          items-center justify-between w-full px-4
+          "
+          >
+            <div className=" flex gap-2 items-center">
               <Badge
-                variant="outline"
-                className="text-xs  bg-black/40 text-white"
+                variant="secondary"
+                className="text-xs px-2 py-1 rounded-lg capitalize"
               >
-                Déjà ajouté
+                {returnDataValue(product?.quality, QualitiesData)}
               </Badge>
-            )}
+              {isInShop && (
+                <Badge
+                  variant="outline"
+                  className="text-xs  bg-black/40 text-white"
+                >
+                  Déjà ajouté
+                </Badge>
+              )}
+            </div>
+
+            {/* ORIGIN */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  role="img"
+                  aria-label={
+                    product.origin === "otekis"
+                      ? "Produit maison vérifié"
+                      : "Produit fournisseur"
+                  }
+                  className={cn(
+                    "flex items-center justify-center",
+                    "h-7 w-7 rounded-full",
+                    "backdrop-blur-md border",
+                    "shadow-md",
+                    "transition-all duration-200",
+                    product.origin === "otekis"
+                      ? "bg-emerald-500/15 border-emerald-400/30 text-emerald-600"
+                      : "bg-orange-500/15 border-orange-400/30 text-orange-500",
+                  )}
+                >
+                  <OriginIcon className="w-3.5 h-3.5" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                {product.origin === "otekis"
+                  ? "Produit vérifié et géré par Otekis"
+                  : "Produit provenant d’un vendeur partenaire"}
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </CardHeader>

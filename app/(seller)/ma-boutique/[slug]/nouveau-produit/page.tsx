@@ -123,6 +123,21 @@ const AddShopProductPage = async (props: Props) => {
   });
   const supplierProductsShop = await getSuplierProductShopsByShopId(shop.id);
 
+  // ASSEMBLE ALL PRODUCTS
+  const allProducts = [...products, ...supplierProducts]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .filter((p) => {
+      const isAdmin =
+        user?.role?.includes("admin") || user?.role?.includes("super_admin");
+
+      if (isAdmin) return true;
+
+      return !p.name.toLowerCase().includes("test");
+    });
+
   // Récupérer les IDs des produits dans productsShop
   const productIdsInShop = new Set(
     [...productsShop, ...supplierProductsShop].map(
@@ -131,7 +146,7 @@ const AddShopProductPage = async (props: Props) => {
   );
 
   // Créer un tableau trié
-  const sortedProducts = [...products, ...supplierProducts].sort((a, b) => {
+  const sortedProducts = allProducts.sort((a, b) => {
     const isAInShop = productIdsInShop.has(a.id);
     const isBInShop = productIdsInShop.has(b.id);
 
