@@ -239,7 +239,7 @@ const AddToCartButton = ({
           color: preferences.textColor,
           borderColor: preferences.background,
         }}
-        className="max-h-[100dvh] overflow-x-hidden overflow-y-auto w-full"
+        className="max-h-dvh overflow-x-hidden overflow-y-auto w-full"
       >
         <SheetHeader
           style={{ borderColor: "dimgray" }}
@@ -404,7 +404,7 @@ const AddToCartButton = ({
                   article || stockMax < 1 ? "opacity-100" : "opacity-50",
                 )}
               >
-                <Minus className="w-8 flex-shrink-0" />
+                <Minus className="w-8 shrink-0" />
               </span>
               <p
                 className=" font-bold px-3 py-1 border
@@ -428,7 +428,7 @@ const AddToCartButton = ({
                     : "opacity-50",
                 )}
               >
-                <Plus className="w-8 flex-shrink-0" />
+                <Plus className="w-8 shrink-0" />
               </span>
             </div>
           </div>
@@ -488,7 +488,7 @@ const AddToCartButton = ({
                   disabled={article === null || quantity <= 0 || loading}
                 >
                   <span>{loading ? "en cours..." : "Ajouter au panier"}</span>
-                  {!loading && <ShoppingCart className="w-8 flex-shrink-0" />}
+                  {!loading && <ShoppingCart className="w-8 shrink-0" />}
                 </button>
               ) : (
                 <div className="mt-4">
@@ -561,7 +561,7 @@ const AddToCartButton = ({
                   disabled={article === null || quantity <= 0 || loading}
                 >
                   <span>{loading ? "en cours..." : "Modifier"}</span>
-                  {!loading && <ShoppingCart className="w-8 flex-shrink-0" />}
+                  {!loading && <ShoppingCart className="w-8 shrink-0" />}
                 </button>
               ) : (
                 <div className="mt-4">
@@ -578,7 +578,8 @@ const AddToCartButton = ({
             <SheetClose asChild className="mt-6">
               <Link
                 href={`/${shop.slug}/panier`}
-                className="w-full flex items-center justify-center gap-4  py-3 hover:opacity-75
+                className="w-full flex items-center justify-center gap-4  py-3 
+                hover:opacity-75
             transition-all duration-500 ease-in-out hover:shadow-2xl shadow-md
             "
                 style={{
@@ -589,7 +590,7 @@ const AddToCartButton = ({
                 }}
               >
                 <span>Voir le panier</span>
-                <ShoppingCart className="w-8 flex-shrink-0" />
+                <ShoppingCart className="w-8 shrink-0" />
               </Link>
             </SheetClose>
           ) : null}

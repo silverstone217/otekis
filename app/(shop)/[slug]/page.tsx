@@ -332,7 +332,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         shop={shop}
         products={filteredProducts() as ProductWithArticle[]}
         preferences={preferences}
-        productsShop={productsShop}
+        productsShop={allProductsShop}
         currency={currency}
         exchange={exchange}
       />
