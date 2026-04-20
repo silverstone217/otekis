@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ProductsTypeWithArticles } from "@/types/shop";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Preferences } from "@/lib//generated/prisma/client";
+import { Preferences, Shop } from "@/lib//generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -13,12 +13,18 @@ import React from "react";
 const getShopBySlug = async (slug: string) => {
   const shop = await prisma.shop.findUnique({
     where: { slug },
-    include: { Preferences: true, ProductShop: true },
+    include: {
+      Preferences: true,
+      ProductShop: true,
+      supplierProductShops: true,
+    },
   });
   if (!shop) return null;
 
   return shop;
 };
+
+// GET OTEKIS PRODUCT
 const getProducts = async () => {
   const products = await prisma.product.findMany({
     include: { Article: true },
@@ -27,13 +33,43 @@ const getProducts = async () => {
   return products;
 };
 
+// GET SUPPLIER PRODUCTS
+const getSupplierProductsForShop = async ({ shop }: { shop: Shop }) => {
+  return await prisma.supplierProduct.findMany({
+    where: {
+      OR: [
+        { isAvailable: "for_all" },
+
+        {
+          isAvailable: "only_self",
+          supplierId: shop.userId,
+        },
+
+        {
+          isAvailable: "specific_sellers",
+          permittedShops: {
+            some: {
+              shopId: shop.id,
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      Article: true,
+      permittedShops: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
 type Props = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(
-  props: Props
+  props: Props,
 ): // parent: ResolvingMetadata
 Promise<Metadata> {
   const params = await props.params;
@@ -87,25 +123,41 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
   if (!slug) return redirect("/");
 
   const shop = await getShopBySlug(slug);
-  const products = await getProducts();
 
   if (!shop) return <div>Shop not found</div>;
 
   const preferences = shop.Preferences ?? (preferenceDefaults as Preferences);
+
+  const products = await getProducts();
+  // OTEKIS PRODUCTSHOP
   const productsShop = shop.ProductShop;
+  // SUPPLIER PRODUCTSHOP
+  const supplierProductShop = shop.supplierProductShops;
+  // ASSEMBLE ALL PRODUCTS
+  const allProductsShop = [...supplierProductShop, ...productsShop].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  // SUPPLIER PRODUCTS
+  const supplierProducts = await getSupplierProductsForShop({ shop: shop });
+
+  // ASSEMBLE ALL PRODUCTS
+  const allProducts = [...products, ...supplierProducts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   // filterd by date and article stock
   const filteredProducts = () => {
-    const productIdsInShop = productsShop.map((ps) => ps.productId);
-    const filtered = products.filter((product) =>
-      productIdsInShop.includes(product.id)
+    const productIdsInShop = allProductsShop.map((ps) => ps.productId);
+    const filtered = allProducts.filter((product) =>
+      productIdsInShop.includes(product.id),
     );
 
-    const sortedProductShops = productsShop
+    const sortedProductShops = allProductsShop
       .filter((ps) => productIdsInShop.includes(ps.productId))
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
 
     // const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>
@@ -114,17 +166,17 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
     function isOutOfStock(product: ProductsTypeWithArticles) {
       if (!product.Article || product.Article.length === 0) return true;
       return product.Article.every(
-        (a: { stock: number | null }) => a.stock == null || a.stock <= 0
+        (a: { stock: number | null }) => a.stock == null || a.stock <= 0,
       );
     }
 
     const sortedFilteredProducts = sortedProductShops.map((sortedPS) =>
-      filtered.find((product) => product.id === sortedPS.productId)
+      filtered.find((product) => product.id === sortedPS.productId),
     );
 
     // Filtre explicitement les undefined (narrowing TypeScript garanti)
     const definedProducts = sortedFilteredProducts.filter(
-      (p): p is ProductsTypeWithArticles => p !== undefined
+      (p): p is ProductsTypeWithArticles => p !== undefined,
     );
 
     return definedProducts.sort((a, b) => {
@@ -144,7 +196,7 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
         shop={shop}
         preferences={preferences}
         products={filteredProducts() as unknown as ProductsTypeWithArticles[]}
-        productsShop={productsShop}
+        productsShop={allProductsShop}
         currency={currency}
         exchange={exchange}
       />

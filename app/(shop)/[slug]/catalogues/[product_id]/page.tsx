@@ -59,10 +59,23 @@ const getProductById = async (id: string) => {
   return product;
 };
 
+const getSupplierProductById = async (id: string) => {
+  const product = await prisma.supplierProduct.findUnique({
+    where: { id },
+    include: { Article: true },
+  });
+  return product;
+};
+
 const getShopBySlug = async (slug: string) => {
   const shop = await prisma.shop.findUnique({
     where: { slug },
-    include: { Preferences: true, ProductShop: true, user: true },
+    include: {
+      Preferences: true,
+      ProductShop: true,
+      user: true,
+      supplierProductShops: true,
+    },
   });
   return shop;
 };
@@ -77,7 +90,7 @@ const getCartsByUserId = async (userId: string) => {
 };
 
 export async function generateMetadata(
-  props: Props
+  props: Props,
 ): // parent: ResolvingMetadata
 Promise<Metadata> {
   const params = await props.params;
@@ -94,7 +107,9 @@ Promise<Metadata> {
     };
   }
 
-  const product = await getProductById(product_id);
+  const product =
+    (await getProductById(product_id)) ||
+    (await getSupplierProductById(product_id));
 
   return {
     title:
@@ -128,11 +143,20 @@ const page = async (props: Props) => {
   }
   if (!slug) throw new Error("Something went wrong!");
 
-  const product = await getProductById(product_id);
   const shop = await getShopBySlug(slug);
+
+  if (!shop) {
+    return <div>pas de boutique trouvée.</div>;
+  }
 
   // HEADER NUM POSITION
   const Header = shop?.Preferences?.Header ?? "0";
+
+  const product =
+    (await getProductById(product_id)) ||
+    (await getSupplierProductById(product_id));
+
+  // console.log({ product, product_id });
 
   if (!product) {
     return (
@@ -151,12 +175,8 @@ const page = async (props: Props) => {
     );
   }
 
-  if (!shop) {
-    return <div>pas de boutique trouvée.</div>;
-  }
-
   const preferences = shop.Preferences ?? (preferenceDefaults as Preferences);
-  const productsShop = shop.ProductShop;
+  const productsShop = [...shop.ProductShop, ...shop.supplierProductShops];
   const productShop = productsShop.find((ps) => ps.productId === product.id);
   const isInShop = !!productShop;
   const userShop = shop.user;
@@ -241,14 +261,14 @@ const page = async (props: Props) => {
 
   const beneficeAfterDiscount = applyPromotionOnProfit(
     benefit!,
-    productShop.promotion!
+    productShop.promotion!,
   );
 
   const totalPriceAfterDiscount = product.price + beneficeAfterDiscount;
 
   const discountPercentage = calculateDiscountPercentage(
     productShop.price!,
-    totalPriceAfterDiscount
+    totalPriceAfterDiscount,
   );
 
   return (
@@ -302,11 +322,11 @@ const page = async (props: Props) => {
                 <span className="opacity-70">
                   {product.category === "vetements"
                     ? capitalizeText(
-                        returnDataValue(product.type, TypeClothesData)
+                        returnDataValue(product.type, TypeClothesData),
                       )
                     : product.category === "accessoires"
                       ? capitalizeText(
-                          returnDataValue(product.type, AccessoriesData)
+                          returnDataValue(product.type, AccessoriesData),
                         )
                       : null}
                 </span>
@@ -354,7 +374,7 @@ const page = async (props: Props) => {
           {
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           }
           {/* price */}
@@ -382,7 +402,7 @@ const page = async (props: Props) => {
           {uniqueColors.length > 0 && uniqueColors[0] !== "nothing" && (
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           )}
           {/* colors */}
@@ -422,7 +442,7 @@ const page = async (props: Props) => {
           {uniquesSizes.length > 0 && Number(uniquesSizes[0]) !== 0 && (
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           )}
 
@@ -448,7 +468,7 @@ const page = async (props: Props) => {
           {/* {uniquesVolumes.length > 0 && (
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           )} */}
 
@@ -477,7 +497,7 @@ const page = async (props: Props) => {
           {/* {uniquesFlavors.length > 0 && (
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           )} */}
 
@@ -504,7 +524,7 @@ const page = async (props: Props) => {
           {
             <div
               style={{ backgroundColor: "dimgray" }}
-              className="w-full h-[1px] opacity-75 "
+              className="w-full h-px opacity-75 "
             />
           }
           {/* state && qualité material*/}
@@ -548,7 +568,7 @@ const page = async (props: Props) => {
 
           <div
             style={{ backgroundColor: "dimgray" }}
-            className="w-full h-[1px] opacity-75 "
+            className="w-full h-px opacity-75 "
           />
 
           {/* desc */}
@@ -560,7 +580,7 @@ const page = async (props: Props) => {
           </div>
 
           {/* separators no bg */}
-          <div style={{}} className="w-full h-[1px] opacity-75 " />
+          <div style={{}} className="w-full h-px opacity-75 " />
 
           {/* cart */}
           {isUserShopBanned ? (
@@ -574,20 +594,37 @@ const page = async (props: Props) => {
           ) : (
             <div className="mt-2 w-full">
               {articles.length > 0 ? (
-                <AddToCartButton
-                  preferences={preferences}
-                  product={product}
-                  shop={shop}
-                  productShop={productShop}
-                  isInShop={isInShop}
-                  images={images}
-                  articles={articles}
-                  carts={carts}
-                  isInCart={isInCart}
-                  totalPriceAfterDiscount={totalPriceAfterDiscount}
-                  currency={currency}
-                  exchange={exchange}
-                />
+                product.origin === "otekis" ? (
+                  <AddToCartButton
+                    preferences={preferences}
+                    product={product}
+                    shop={shop}
+                    productShop={productShop}
+                    isInShop={isInShop}
+                    images={images}
+                    articles={articles}
+                    carts={carts}
+                    isInCart={isInCart}
+                    totalPriceAfterDiscount={totalPriceAfterDiscount}
+                    currency={currency}
+                    exchange={exchange}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-4 mt-6 py-3 hover:opacity-75
+                    transition-all duration-500 ease-in-out 
+                    hover:shadow-2xl shadow-md
+                  "
+                    style={{
+                      backgroundColor: preferences.buttonColor,
+                      color: preferences.buttonTextColor,
+                      borderRadius: preferences.buttonRadius,
+                    }}
+                  >
+                    Commander maintenant
+                  </button>
+                )
               ) : (
                 <p className="text-center text-sm font-light">
                   {`Ce produit n'est pas disponible pour l'achat`}

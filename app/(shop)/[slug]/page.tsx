@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { FontsList } from "@/utils/fontsData";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Preferences, Product } from "@/lib/generated/prisma/client";
+import { Preferences, Product, Shop } from "@/lib/generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -58,12 +58,18 @@ type Props = {
 const getShopBySlug = async (slug: string) => {
   const shop = await prisma.shop.findUnique({
     where: { slug },
-    include: { Preferences: true, ProductShop: true },
+    include: {
+      Preferences: true,
+      ProductShop: true,
+      supplierProductShops: true,
+    },
   });
   if (!shop) return null;
 
   return shop;
 };
+
+// GET OTEKIS PRODUCTS
 const getProducts = async () => {
   const products = await prisma.product.findMany({
     include: { Article: true },
@@ -72,6 +78,37 @@ const getProducts = async () => {
   return products;
 };
 
+// GET SUPPLIER PRODUCTS
+const getSupplierProductsForShop = async ({ shop }: { shop: Shop }) => {
+  return await prisma.supplierProduct.findMany({
+    where: {
+      OR: [
+        { isAvailable: "for_all" },
+
+        {
+          isAvailable: "only_self",
+          supplierId: shop.userId,
+        },
+
+        {
+          isAvailable: "specific_sellers",
+          permittedShops: {
+            some: {
+              shopId: shop.id,
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      Article: true,
+      permittedShops: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+// GENERATE METADATA
 export async function generateMetadata(
   props: Props,
 ): // parent: ResolvingMetadata
@@ -132,20 +169,34 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
   if (!shop) return <div>Shop not found</div>;
 
-  const preferences = shop.Preferences ?? (preferenceDefaults as Preferences);
-  const productsShop = shop.ProductShop;
-  const myFont = preferences.fontFamily;
+  const supplierProducts = await getSupplierProductsForShop({ shop: shop });
 
+  const preferences = shop.Preferences ?? (preferenceDefaults as Preferences);
+  const myFont = preferences.fontFamily;
   const getMyFont = FontsList.find((font) => font.name === myFont)?.component;
+
+  // OTEKIS PRODUCTSHOP
+  const productsShop = shop.ProductShop;
+  // SUPPLIER PRODUCTSHOP
+  const supplierProductShop = shop.supplierProductShops;
+  // ASSEMBLE ALL PRODUCTS
+  const allProductsShop = [...supplierProductShop, ...productsShop].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  // ASSEMBLE ALL PRODUCTS
+  const allProducts = [...products, ...supplierProducts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   // filterd by date and article stock
   const filteredProducts = () => {
-    const productIdsInShop = productsShop.map((ps) => ps.productId);
-    const filtered = products.filter((product) =>
+    const productIdsInShop = allProductsShop.map((ps) => ps.productId);
+    const filtered = allProducts.filter((product) =>
       productIdsInShop.includes(product.id),
     );
 
-    const sortedProductShops = productsShop
+    const sortedProductShops = allProductsShop
       .filter((ps) => productIdsInShop.includes(ps.productId))
       .sort(
         (a, b) =>
@@ -181,8 +232,6 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
   // const articleFirst = filteredProducts()[1]?.Article;
 
-  // console.log(articleFirst);
-
   // HEADER
   const Header = Number(preferences.Header) ?? 1;
 
@@ -204,7 +253,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         shop={shop}
         preferences={preferences}
         products={filteredProducts() as Product[]}
-        productsShop={productsShop}
+        productsShop={allProductsShop}
         getMyFont={getMyFont!}
         currency={currency}
         exchange={exchange}

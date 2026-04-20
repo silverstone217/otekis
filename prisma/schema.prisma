@@ -419,6 +419,7 @@ model DeliveryAgent {
   updatedAt DateTime @updatedAt
 
   deliveryOrder DeliveryOrder[]
+  // supplierDeliveryOrders SupplierDeliveryOrder[]
 }
 
 enum PaymentMethod {
@@ -443,7 +444,8 @@ model DeliveryCompany {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  deliveryOrder DeliveryOrder[]
+  deliveryOrder  DeliveryOrder[]
+  supplierOrders SupplierOrder[]
 }
 
 model FactureDeliverOrder {
@@ -685,8 +687,65 @@ model SupplierProductShop {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Product SupplierProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-  shop    Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  Product        SupplierProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shop           Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  supplierOrders SupplierOrder[]
 
   @@unique([productId, shopId])
+}
+
+enum SupplierPaymentMethode {
+  cinetpay
+  mpesa
+  airtelMoney
+  orangeMoney
+  cash
+  flexpaie
+  bank
+}
+
+enum SupplierCurrency {
+  USD
+  CDF
+}
+
+// ORDERS SUPPLIER PRODUCTS
+model SupplierOrder {
+  id                String @id @default(cuid())
+  clientId          String
+  shopId            String
+  productShopId     String
+  deliveryCompanyId String
+
+  totalAmount Float
+  quantity    Int
+
+  paymentMethod       SupplierPaymentMethode @default(flexpaie) //cinetpay, mpesa, cash, flexpaie, bank
+  paymentMethodRefund SupplierPaymentMethode @default(mpesa)
+  currency            SupplierCurrency       @default(USD)
+  exchange            Float
+
+  paymentRef       String? // reference du paiement
+  paymentRefRefund String? // reference du remboursement
+
+  status        String @default("en cours de traitement")
+  paymentStatus String @default("en attente de paiement")
+
+  receiverAddress String
+  receiverTel     String
+  receiverName    String
+  deliveryPrice   Float  @default(0)
+
+  ShipmentNumber String?
+  ValidationCode String?
+
+  refundPhoneNumber  String?
+  refundReceiverName String?
+  description        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productShop     SupplierProductShop @relation(fields: [productShopId], references: [id], onDelete: Cascade)
+  deliveryCompany DeliveryCompany     @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
 }
