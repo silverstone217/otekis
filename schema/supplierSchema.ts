@@ -42,6 +42,14 @@ export const NewSupplierProductSchema = z
 
     commune: z.string().min(1, "La commune est requise"),
     quartier: z.string().min(1, "Le quartier est requis"),
+    contactNumber: z.string().regex(/^\d{9}$/, {
+      message: "Le numéro de  telephone doit contenir exactement 9 chiffres",
+    }),
+
+    paymentNumber: z.string().regex(/^\d{9}$/, {
+      message:
+        "Le numéro de paiment mobile doit contenir exactement 9 chiffres",
+    }),
 
     avenue: z.string().regex(/^.+,\s*\d+[a-zA-Z]?$/, {
       message: "Format invalide (ex: Samba, 12 ou Samba, 12C)",

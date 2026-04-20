@@ -13,9 +13,11 @@ import { upadteAddressProduct } from "@/actions/supplierAction";
 type AddressType = {
   productId: string;
   address: string;
+  contactNumber: string;
+  paymentNumber: string;
 };
 
-const ModifyAddress = ({ address, productId }: AddressType) => {
+const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -28,22 +30,37 @@ const ModifyAddress = ({ address, productId }: AddressType) => {
     avenue: parts.slice(2).join(",").trim(),
   };
 
+  const [contactNumber, setContactNumber] = useState(rest.contactNumber ?? "");
+  const [paymentNumber, setPaymentNumber] = useState(rest.paymentNumber ?? "");
+
   const [formData, setFormData] = useState(initial);
 
+  const isValidNumber = (val: string) => /^\d{9}$/.test(val);
   // ✅ DETECT CHANGES + VALID
   const isDirty = useMemo(() => {
     const hasChanged =
       formData.commune !== initial.commune ||
       formData.quartier !== initial.quartier ||
-      formData.avenue !== initial.avenue;
+      formData.avenue !== initial.avenue ||
+      contactNumber !== rest.contactNumber ||
+      paymentNumber !== rest.paymentNumber;
 
     const isValid =
       formData.commune &&
       formData.quartier &&
-      /^.+,\s*\d+[a-zA-Z]?$/.test(formData.avenue);
+      /^.+,\s*\d+[a-zA-Z]?$/.test(formData.avenue) &&
+      isValidNumber(contactNumber) &&
+      isValidNumber(paymentNumber);
 
     return hasChanged && isValid;
-  }, [formData, initial]);
+  }, [
+    formData,
+    contactNumber,
+    paymentNumber,
+    initial,
+    rest.contactNumber,
+    rest.paymentNumber,
+  ]);
 
   const handleUpdate = async () => {
     setLoading(true);
@@ -63,9 +80,23 @@ const ModifyAddress = ({ address, productId }: AddressType) => {
         return;
       }
 
+      if (!isValidNumber(contactNumber)) {
+        toast.error("Le numéro WhatsApp doit contenir exactement 9 chiffres");
+        return;
+      }
+
+      if (!isValidNumber(paymentNumber)) {
+        toast.error(
+          "Le numéro de paiement doit contenir exactement 9 chiffres",
+        );
+        return;
+      }
+
       const payload = {
         address: `${formData.commune}, ${formData.quartier}, ${formData.avenue}`,
         productId,
+        contactNumber,
+        paymentNumber,
       };
 
       const result = await upadteAddressProduct(payload);
@@ -86,7 +117,7 @@ const ModifyAddress = ({ address, productId }: AddressType) => {
       {/* HEADER (aligné avec Classification) */}
       <header className="space-y-1">
         <h2 className="text-xl font-medium tracking-tight">
-          Localisation du produit
+          Localisation du produit et Contacts
         </h2>
         <p className="text-sm text-muted-foreground">
           Définissez précisément où se trouve le produit.
@@ -161,6 +192,75 @@ const ModifyAddress = ({ address, productId }: AddressType) => {
           <p className="text-xs text-muted-foreground">
             Format : Nom de l’avenue, numéro (ex: Samba, 12)
           </p>
+        </div>
+
+        {/* CONTACTS */}
+        <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* CONTACT NUMBER */}
+          <div className="grid w-full items-center gap-2">
+            <label htmlFor="contactNumber" className="text-sm font-medium">
+              Numero de telephone (Whatsapp) *
+            </label>
+
+            <div className="relative">
+              <span
+                className="absolute left-3 top-1/2 -translate-y-1/2
+                  text-sm text-foreground
+                  pointer-events-none"
+              >
+                +243
+              </span>
+
+              <Input
+                id="contactNumber"
+                type="tel"
+                placeholder="83222622"
+                required
+                minLength={9}
+                maxLength={9}
+                value={contactNumber}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setContactNumber(val);
+                }}
+                className="pl-12 text-sm"
+              />
+            </div>
+          </div>
+
+          {/* CONTACT PAYMENT */}
+          <div className="grid w-full items-center gap-2">
+            <label htmlFor="paymentNumber" className="text-sm font-medium">
+              Numero de paiement (MPESA, AIRTEL MONEY...)*
+            </label>
+
+            <div className="relative">
+              <span
+                className="
+                  absolute left-3 top-1/2 -translate-y-1/2
+                  text-sm text-foreground
+                  pointer-events-none
+                "
+              >
+                +243
+              </span>
+
+              <Input
+                id="paymentNumber"
+                type="tel"
+                placeholder="832222622"
+                required
+                minLength={9}
+                maxLength={9}
+                value={paymentNumber}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setPaymentNumber(val);
+                }}
+                className="pl-12 text-sm"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

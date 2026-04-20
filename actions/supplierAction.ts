@@ -72,6 +72,8 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
       quartier,
       avenue,
       image,
+      contactNumber,
+      paymentNumber,
     } = validatedData.data;
 
     // CREATE PRODUCT IN DATABASE
@@ -102,6 +104,8 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
         isAvailable,
         image: image,
         address,
+        contactNumber,
+        paymentNumber,
         supplierId: user.id,
         Article: {
           create: articles.map((article) => ({
@@ -494,6 +498,8 @@ export const deleteArticleById = async (data: {
 export const upadteAddressProduct = async (data: {
   address: string;
   productId: string;
+  contactNumber: string;
+  paymentNumber: string;
 }) => {
   try {
     // CHECK USER AUTHENTICATION
@@ -530,6 +536,8 @@ export const upadteAddressProduct = async (data: {
       where: { id: isProductExist.id },
       data: {
         address: data.address.trim(),
+        contactNumber: data.contactNumber,
+        paymentNumber: data.paymentNumber,
       },
     });
 

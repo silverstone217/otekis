@@ -621,8 +621,10 @@ model SupplierProduct {
   isValidated Boolean                     @default(true)
   isAvailable SupplierProductAvailability @default(for_all)
 
-  address String
-  origin  ProductOrigin @default(supplier)
+  address       String
+  contactNumber String        @default("832222662")
+  paymentNumber String        @default("832222662")
+  origin        ProductOrigin @default(supplier)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

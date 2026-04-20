@@ -42,6 +42,17 @@ import { PermittedSellersSelect } from "./PermittedSellersSelect";
 import { ProductArticles } from "./ProductArticles";
 import { Button } from "@/components/ui/button";
 
+// VALIDATE NUMBER
+export const validatePhoneNumber = (value: string, label: string) => {
+  if (!value) return `${label} est requis`;
+
+  if (!/^\d{9}$/.test(value)) {
+    return `${label} doit contenir exactement 9 chiffres sans 0 ou +243`;
+  }
+
+  return "";
+};
+
 const NewProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -54,7 +65,7 @@ const NewProductForm = () => {
     "Produit",
     "Variantes",
     "Classification",
-    "Prix & Localisation",
+    "Localisation & Contacts",
     "Disponibilité",
   ];
 
@@ -86,6 +97,9 @@ const NewProductForm = () => {
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
   const [avenue, setAvenue] = useState("");
+
+  const [contactNumber, setContactNumber] = useState("");
+  const [paymentNumber, setPaymentNumber] = useState("");
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -133,6 +147,19 @@ const NewProductForm = () => {
 
     const avenueError = validateAvenue(avenue);
     if (avenueError) newErrors.avenue = avenueError;
+
+    // 🔹 NUMEROS
+    const contactError = validatePhoneNumber(
+      contactNumber,
+      "Le numéro de téléphone",
+    );
+    if (contactError) newErrors.contactNumber = contactError;
+
+    const paymentError = validatePhoneNumber(
+      paymentNumber,
+      "Le numéro de paiement",
+    );
+    if (paymentError) newErrors.paymentNumber = paymentError;
 
     setErrors(newErrors);
 
@@ -186,6 +213,8 @@ const NewProductForm = () => {
         avenue,
         permittedSellers,
         articles,
+        contactNumber,
+        paymentNumber,
         image: imageUrl, // L'URL de l'image sera définie après l'upload
       };
 
@@ -240,6 +269,8 @@ const NewProductForm = () => {
       setState("");
       setTarget("");
       setStep(0);
+      setContactNumber("");
+      setPaymentNumber("");
       setPrice("");
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -292,7 +323,7 @@ const NewProductForm = () => {
         key={step}
         className="animate-in fade-in slide-in-from-bottom-2 duration-300"
       >
-        {/* STEP 0: Product Information */}
+        {/* STEP 0: Product Information et Prix */}
         {step === 0 && (
           <div className="space-y-4">
             {/* IMAGE */}
@@ -411,6 +442,24 @@ const NewProductForm = () => {
                 disabled={loading}
               />
             </div>
+
+            {/* PRICE */}
+            <div className="grid w-full items-center gap-2">
+              <label htmlFor="price" className="text-sm font-medium">
+                Prix ($) du produit *
+              </label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="Ex: 29.99"
+                required
+                min="0"
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="text-sm"
+              />
+            </div>
           </div>
         )}
 
@@ -502,27 +551,9 @@ const NewProductForm = () => {
           </div>
         )}
 
-        {/* STEP 3: PRICE & Address */}
+        {/* STEP 3: CONTACTS & Address */}
         {step === 3 && (
           <div className="space-y-4">
-            {/* PRICE */}
-            <div className="grid w-full items-center gap-2">
-              <label htmlFor="price" className="text-sm font-medium">
-                Prix ($) du produit *
-              </label>
-              <Input
-                id="price"
-                type="number"
-                placeholder="Ex: 29.99"
-                required
-                min="0"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="text-sm"
-              />
-            </div>
-
             {/* ADDRESS */}
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
               {/* COMMUNE */}
@@ -580,6 +611,81 @@ const NewProductForm = () => {
                 disabled={loading}
                 required
               />
+
+              <p className="text-xs text-muted-foreground">
+                Format : Nom de l’avenue, numéro (ex: Samba, 12)
+              </p>
+            </div>
+
+            {/* CONTACTS */}
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* CONTACT NUMBER */}
+              <div className="grid w-full items-center gap-2">
+                <label htmlFor="contactNumber" className="text-sm font-medium">
+                  Numero de telephone (Whatsapp) *
+                </label>
+
+                <div className="relative">
+                  <span
+                    className="
+                    absolute left-3 top-1/2 -translate-y-1/2
+                    text-sm text-foreground
+                    pointer-events-none
+                  "
+                  >
+                    +243
+                  </span>
+
+                  <Input
+                    id="contactNumber"
+                    type="tel"
+                    placeholder="83222622"
+                    required
+                    minLength={9}
+                    maxLength={9}
+                    value={contactNumber}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      setContactNumber(val);
+                    }}
+                    className="pl-12 text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* CONTACT PAYMENT */}
+              <div className="grid w-full items-center gap-2">
+                <label htmlFor="paymentNumber" className="text-sm font-medium">
+                  Numero de paiement (MPESA, AIRTEL MONEY...)*
+                </label>
+
+                <div className="relative">
+                  <span
+                    className="
+                    absolute left-3 top-1/2 -translate-y-1/2
+                    text-sm text-foreground
+                    pointer-events-none
+                  "
+                  >
+                    +243
+                  </span>
+
+                  <Input
+                    id="paymentNumber"
+                    type="tel"
+                    placeholder="832222622"
+                    required
+                    minLength={9}
+                    maxLength={9}
+                    value={paymentNumber}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      setPaymentNumber(val);
+                    }}
+                    className="pl-12 text-sm"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )}

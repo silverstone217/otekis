@@ -92,7 +92,12 @@ const MainForm = ({ product }: Props) => {
         <Articles articles={ProductArticles.articles} productId={product.id} />
 
         {/* Address */}
-        <ModifyAddress address={product.address} productId={product.id} />
+        <ModifyAddress
+          address={product.address}
+          productId={product.id}
+          contactNumber={product.contactNumber}
+          paymentNumber={product.paymentNumber}
+        />
 
         {/* AV */}
         <AvaiabillityForm
