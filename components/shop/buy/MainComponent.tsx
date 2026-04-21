@@ -26,7 +26,7 @@ import {
   returnDataValue,
 } from "@/utils/functions";
 
-import { capitalizeText } from "@/utils/shopFunctions";
+import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { Loader2, MapPin, Phone, User } from "lucide-react";
 import { toast } from "sonner";
 import { SelectorProducts } from "@/components/supplier/SelectProductCategories";
@@ -184,6 +184,17 @@ const MainComponent = ({
     }
   };
 
+  // LUMINANCE
+  const luminance = luminanceColor(preferences.background);
+
+  // couleurs dynamiques
+  const isLightBg = luminance === "light";
+
+  const baseTextColor = isLightBg ? "#000" : "#fff";
+  const mutedBg = isLightBg ? "#f3f4f6" : "rgba(255,255,255,0.08)";
+  const hoverBg = isLightBg ? "#e5e7eb" : "rgba(255,255,255,0.15)";
+  const borderColor = isLightBg ? "#e5e7eb" : "rgba(255,255,255,0.15)";
+
   if (!product.Article.length) return null;
 
   return (
@@ -296,13 +307,69 @@ const MainComponent = ({
       {/* 2. QUANTITÉ */}
       <div className="space-y-2">
         <h3 className="text-sm font-medium">2. Quantité</h3>
-        <Input
-          type="number"
-          min={1}
-          max={selectedArticle?.stock || 1}
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-        />
+
+        {/* OUT OF STOCK */}
+        {(selectedArticle?.stock ?? 0) < 1 ? (
+          <div
+            className="text-sm text-red-500 bg-red-500/10 
+          border border-red-500/20 rounded-lg p-3"
+          >
+            Produit indisponible pour le moment
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            {/* DECREMENT */}
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              disabled={quantity <= 1}
+              className={cn(
+                "h-10 w-10 flex items-center justify-center rounded-md border transition",
+                quantity <= 1
+                  ? "opacity-40 cursor-not-allowed"
+                  : isLightBg
+                    ? "hover:bg-muted-foreground"
+                    : "hover:bg-muted",
+              )}
+            >
+              −
+            </button>
+
+            {/* VALUE */}
+            <div
+              className="min-w-[60px] text-center text-base font-medium"
+              style={{
+                color: preferences.textColor,
+              }}
+            >
+              {quantity}
+            </div>
+
+            {/* INCREMENT */}
+            <button
+              type="button"
+              onClick={() =>
+                setQuantity((q) => Math.min(selectedArticle!.stock, q + 1))
+              }
+              disabled={quantity >= selectedArticle!.stock}
+              className={cn(
+                "h-10 w-10 flex items-center justify-center rounded-md border transition",
+                quantity >= selectedArticle!.stock
+                  ? "opacity-40 cursor-not-allowed"
+                  : isLightBg
+                    ? "hover:bg-muted-foreground"
+                    : "hover:bg-muted",
+              )}
+            >
+              +
+            </button>
+
+            {/* STOCK INFO */}
+            <span className="text-xs text-muted-foreground ml-2">
+              {selectedArticle?.stock} disponible
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 3. RECEVEUR */}
@@ -316,6 +383,7 @@ const MainComponent = ({
           placeholder="Nom complet"
           value={receiverName}
           onChange={(e) => setReceiverName(e.target.value)}
+          disabled={loading}
         />
 
         <div className="relative">
@@ -326,6 +394,7 @@ const MainComponent = ({
             value={receiverTel}
             onChange={(e) => setReceiverTel(e.target.value.replace(/\D/g, ""))}
             maxLength={9}
+            disabled={loading}
           />
         </div>
         <p className="text-xs text-muted-foreground">
@@ -366,7 +435,7 @@ const MainComponent = ({
             onChange={setQuartier}
             value={quartier}
             placeholder="Quartier"
-            disabled={!commune}
+            disabled={!commune || loading}
           />
         </div>
 
@@ -374,7 +443,11 @@ const MainComponent = ({
           placeholder="Avenue, numéro"
           value={avenue}
           onChange={(e) => setAvenue(e.target.value)}
+          disabled={loading}
         />
+        <p className="text-xs text-muted-foreground">
+          Avenue, numero ex: Busu-melo, 14
+        </p>
       </div>
 
       {/* 5. PAIEMENT */}
@@ -394,6 +467,7 @@ const MainComponent = ({
               setPaymentNumber(e.target.value.replace(/\D/g, ""))
             }
             maxLength={9}
+            disabled={loading}
           />
         </div>
 

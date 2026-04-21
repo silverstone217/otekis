@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export type CategorriesType = {
   label: string;
@@ -115,6 +116,10 @@ type SelectorProductsProps = {
   placeholder: string;
   disabled?: boolean;
   required?: boolean;
+
+  // ✅ NEW
+  className?: string;
+  triggerClassName?: string;
 };
 
 export const SelectorProducts = ({
@@ -124,10 +129,17 @@ export const SelectorProducts = ({
   placeholder,
   disabled = false,
   required = false,
+  className,
+  triggerClassName,
 }: SelectorProductsProps) => {
   return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger className="w-full">
+    <Select
+      value={value}
+      onValueChange={onChange}
+      disabled={disabled}
+      required={required}
+    >
+      <SelectTrigger className={cn("w-full", triggerClassName)}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
