@@ -163,7 +163,8 @@ const page = async (props: Props) => {
       <div className="w-full">
         <div
           className="w-full max-w-4xl flex items-center justify-center flex-col min-h-[70dvh] 
-    px-2 box-border gap-4 transition-all duration-500 ease-in-out"
+          px-2 box-border gap-4 transition-all duration-500 ease-in-out mx-auto
+        "
         >
           <h1 className="lg:text-4xl text-3xl font-bold">Rien trouvé</h1>
           <SearchX className="lg:size-20 size-16 opacity-70" />
@@ -622,7 +623,9 @@ const page = async (props: Props) => {
                       borderRadius: preferences.buttonRadius,
                     }}
                   >
-                    Commander maintenant
+                    <Link href={`/${shop.slug}/payer/${product_id}`}>
+                      Commander maintenant
+                    </Link>
                   </button>
                 )
               ) : (
