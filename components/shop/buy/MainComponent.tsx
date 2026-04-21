@@ -31,6 +31,11 @@ import { Loader2, MapPin, Phone, User } from "lucide-react";
 import { toast } from "sonner";
 import { SelectorProducts } from "@/components/supplier/SelectProductCategories";
 import { cn } from "@/lib/utils";
+import {
+  canThisOrderBeProccessed,
+  createSupplierOrder,
+  CreateSupplierOrderType,
+} from "@/actions/supplierOrderAction";
 
 type Props = {
   shop: Shop;
@@ -163,19 +168,33 @@ const MainComponent = ({
     setLoading(true);
 
     try {
-      const payload = {
+      const payload: CreateSupplierOrderType = {
         productId: product.id,
         articleId: selectedArticle.id,
         quantity,
-        receiverName,
-        receiverTel,
+        receiver: {
+          name: receiverName,
+          number: receiverTel,
+          address: `${commune}, ${quartier}, ${avenue}`,
+        },
+        productShopId: productShop.id,
         paymentNumber,
-        address: `${commune}, ${quartier}, ${avenue}`,
+        deliveryId: "",
+
+        amount: total,
       };
 
-      console.log("ORDER:", payload);
+      const result = await createSupplierOrder(payload);
 
-      toast.success("Commande envoyée !");
+      if (result.error) {
+        toast.error(result.message || "Commande invalide");
+        setLoading(false);
+        return;
+      }
+
+      // console.log("ORDER:", payload);
+
+      toast.success(result.message || "Commande envoyée !");
       router.refresh();
     } catch {
       toast.error("Erreur lors de la commande");
@@ -189,11 +208,6 @@ const MainComponent = ({
 
   // couleurs dynamiques
   const isLightBg = luminance === "light";
-
-  const baseTextColor = isLightBg ? "#000" : "#fff";
-  const mutedBg = isLightBg ? "#f3f4f6" : "rgba(255,255,255,0.08)";
-  const hoverBg = isLightBg ? "#e5e7eb" : "rgba(255,255,255,0.15)";
-  const borderColor = isLightBg ? "#e5e7eb" : "rgba(255,255,255,0.15)";
 
   if (!product.Article.length) return null;
 

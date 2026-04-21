@@ -87,6 +87,7 @@ model User {
   orders Order[]
 
   supplierProducts SupplierProduct[]
+  supplierEarnings SupplierEarning[]
 }
 
 enum ProductOrigin {
@@ -202,6 +203,7 @@ model Shop {
 
   permittedproducts    PermittedSeller[]
   supplierProductShops SupplierProductShop[]
+  supplierShopEarnings SupplierShopEarning[]
 }
 
 model Contact {
@@ -748,4 +750,138 @@ model SupplierOrder {
 
   productShop     SupplierProductShop @relation(fields: [productShopId], references: [id], onDelete: Cascade)
   deliveryCompany DeliveryCompany     @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
+
+  supplierEarning     SupplierEarning?
+  supplierShopEarning SupplierShopEarning?
+  otekisEarning       OtekisEarning?
+}
+
+enum SupplierInvoiceStatus {
+  paye
+  rembourse
+  annule
+}
+
+// FACTURE SUPPLIER ORDER
+model SupplierInvoice {
+  id String @id @default(cuid())
+
+  // PRODUCT
+  productName String
+  article     String // TYPE, TAILLE, COULEUR, ETC 
+  quantity    Int
+  productUid  String
+
+  // CLIENT
+  clientName  String
+  clientEmail String
+
+  // RECEIVER
+  receiverName    String
+  receiverNumber  String
+  receiverAddress String
+
+  // PAYMENT
+  paymentNumber String
+  amount        Float
+
+  paymentRef       String? // reference du paiement
+  paymentRefRefund String? // reference du remboursement
+
+  paymentMethod       SupplierPaymentMethode @default(flexpaie) //cinetpay, mpesa, cash, flexpaie, bank
+  paymentMethodRefund SupplierPaymentMethode @default(mpesa)
+  currency            SupplierCurrency       @default(USD)
+  exchange            Float
+
+  // SHOP
+  shopId      String
+  ownerName   String
+  ownerNumber String
+
+  // STATUS
+  status SupplierInvoiceStatus @default(paye)
+
+  // DELIVERY
+  deliveryName   String?
+  deliveryNumber String?
+  deliveryPrice  Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EarningType {
+  supplier
+  shop
+}
+
+// Gains pour le Fournisseur (Prix minimum / Prix de gros)
+model SupplierEarning {
+  id String @id @default(cuid())
+
+  amount       Float // SUPPLIER MONEY
+  currency     SupplierCurrency @default(USD)
+  exchangeRate Float
+
+  isProcessed Boolean   @default(false) // Si l'argent a déjà été versé au fournisseur
+  processedAt DateTime?
+
+  // Relations
+  orderId String        @unique // Une ligne de gain par commande fournisseur
+  order   SupplierOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Relation avec l'Utilisateur (le Fournisseur)
+  supplierId String
+  supplier   User   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Gains pour la Boutique (Marge / Profit ajouté)
+model SupplierShopEarning {
+  id String @id @default(cuid())
+
+  amount       Float
+  currency     SupplierCurrency @default(USD)
+  exchangeRate Float
+
+  isProcessed Boolean   @default(false) //SHOP MONEY
+  processedAt DateTime?
+
+  // Relations
+  orderId String        @unique
+  order   SupplierOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// OtekisEarning ENUM
+enum OtekisEarningType {
+  commission
+  delivery
+}
+
+// OTEKIS EARNING
+model OtekisEarning {
+  id String @id @default(cuid())
+
+  amount       Float
+  currency     SupplierCurrency @default(USD)
+  exchangeRate Float
+
+  isProcessed Boolean           @default(false)
+  processedAt DateTime?
+  type        OtekisEarningType @default(delivery)
+
+  // Relations
+  orderId String        @unique
+  order   SupplierOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
