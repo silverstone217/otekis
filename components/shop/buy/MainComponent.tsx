@@ -101,42 +101,7 @@ const MainComponent = ({
     [product.Article],
   );
 
-  // SUBMIT
-  const handleSubmit = async () => {
-    if (!receiverName || !receiverTel || !commune || !quartier || !avenue) {
-      toast.error("Veuillez remplir tous les champs");
-      return;
-    }
-
-    if (!selectedArticle) {
-      toast.error("Veuillez sélectionner une variante");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const payload = {
-        productId: product.id,
-        articleId: selectedArticle.id,
-        quantity,
-        receiverName,
-        receiverTel,
-        address: `${commune}, ${quartier}, ${avenue}`,
-      };
-
-      console.log("ORDER:", payload);
-
-      toast.success("Commande envoyée !");
-      router.refresh();
-    } catch (e: any) {
-      toast.error("Erreur lors de la commande");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  //
+  // VALIDATE FORM
   const validateOrderForm = ({
     receiverName,
     receiverTel,
@@ -183,7 +148,41 @@ const MainComponent = ({
     });
   }, [receiverName, receiverTel, paymentNumber, commune, quartier, avenue]);
 
-  const isDisabled = !!formError;
+  // SUBMIT
+  const handleSubmit = async () => {
+    if (formError) {
+      toast.error(formError);
+      return;
+    }
+
+    if (!selectedArticle) {
+      toast.error("Sélectionnez une variante");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        productId: product.id,
+        articleId: selectedArticle.id,
+        quantity,
+        receiverName,
+        receiverTel,
+        paymentNumber,
+        address: `${commune}, ${quartier}, ${avenue}`,
+      };
+
+      console.log("ORDER:", payload);
+
+      toast.success("Commande envoyée !");
+      router.refresh();
+    } catch {
+      toast.error("Erreur lors de la commande");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!product.Article.length) return null;
 
@@ -200,7 +199,7 @@ const MainComponent = ({
         Finaliser votre achat
       </h2>
 
-      {/* PRODUCT CARD */}
+      {/* PRODUCT */}
       <div
         className="flex gap-4 p-4 rounded-xl border"
         style={{
@@ -215,25 +214,20 @@ const MainComponent = ({
           height={120}
           className="rounded-lg object-cover"
         />
-
-        <div className="flex flex-col flex-1">
-          <h3 className="font-semibold line-clamp-2">
-            {capitalizeText(product.name)}
-          </h3>
-
+        <div>
+          <h3 className="font-semibold">{capitalizeText(product.name)}</h3>
           <p className="text-sm opacity-70 line-clamp-2">
             {capitalizeText(product.description)}
           </p>
-
-          <div className="mt-2 font-bold text-lg">
+          <div className="mt-2 font-bold">
             {total.toLocaleString()} {companyPrefs.currency}
           </div>
         </div>
       </div>
 
-      {/* ARTICLE SELECT */}
+      {/* 1. VARIANTE */}
       <div className="space-y-3">
-        <Label>Choisir une variante</Label>
+        <h3 className="text-sm font-medium">1. Variante</h3>
 
         <RadioGroup
           value={selectedArticleId}
@@ -243,43 +237,49 @@ const MainComponent = ({
           }}
         >
           {product.Article.map((item) => {
-            const isSelected = selectedArticleId === item.id;
+            const isSelected = item.id === selectedArticleId;
 
             return (
               <div
                 key={item.id}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border transition-all",
+                  "flex items-center justify-between p-3 border rounded-lg transition-all",
                   isSelected && "ring-2",
                 )}
                 style={{
                   borderColor: isSelected ? preferences.buttonColor : undefined,
                   backgroundColor: isSelected
                     ? `${preferences.buttonColor}10`
-                    : undefined, // léger fond
+                    : undefined,
                 }}
               >
                 <div className="flex items-center gap-3">
                   {/* RADIO CUSTOM */}
-                  <RadioGroupItem
-                    value={item.id}
-                    className="
-              relative h-4 w-4 rounded-full border
-              data-[state=checked]:border-transparent
-            "
-                    style={{
-                      borderColor: preferences.buttonColor,
-                      backgroundColor: isSelected
-                        ? preferences.buttonColor
-                        : "transparent",
-                    }}
-                  />
+                  <div className="relative flex items-center justify-center">
+                    <RadioGroupItem
+                      value={item.id}
+                      className="h-4 w-4 border"
+                      style={{
+                        borderColor: preferences.buttonColor,
+                      }}
+                    />
+
+                    {/* DOT INTERNE */}
+                    {isSelected && (
+                      <span
+                        className="absolute h-2 w-2 rounded-full"
+                        style={{
+                          backgroundColor: preferences.buttonColor,
+                        }}
+                      />
+                    )}
+                  </div>
 
                   {/* LABEL */}
                   <span>
                     {item.color
                       ? capitalizeText(returnDataValue(item.color, ColorsData))
-                      : "Autres"}
+                      : "Unique"}
                   </span>
 
                   {item.size && <span>{item.size}</span>}
@@ -293,9 +293,9 @@ const MainComponent = ({
         </RadioGroup>
       </div>
 
-      {/* QUANTITY */}
+      {/* 2. QUANTITÉ */}
       <div className="space-y-2">
-        <Label>Quantité</Label>
+        <h3 className="text-sm font-medium">2. Quantité</h3>
         <Input
           type="number"
           min={1}
@@ -305,122 +305,107 @@ const MainComponent = ({
         />
       </div>
 
-      {/* FORM */}
+      {/* 3. RECEVEUR */}
       <div className="space-y-4">
-        <Label>Informations du receveur</Label>
+        <h3 className="flex items-center gap-2 text-sm font-medium">
+          <User className="w-4 h-4" />
+          3. Receveur
+        </h3>
 
-        <div className="space-y-2">
+        <Input
+          placeholder="Nom complet"
+          value={receiverName}
+          onChange={(e) => setReceiverName(e.target.value)}
+        />
+
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2">+243</span>
           <Input
-            placeholder="Nom complet"
-            value={receiverName}
-            onChange={(e) => setReceiverName(e.target.value)}
+            className="pl-14"
+            placeholder="Numéro WhatsApp"
+            value={receiverTel}
+            onChange={(e) => setReceiverTel(e.target.value.replace(/\D/g, ""))}
+            maxLength={9}
           />
         </div>
+        <p className="text-xs text-muted-foreground">
+          Numero du receveur de prference Whatsapp. Numero à 9 chiffres sans le
+          0
+        </p>
+      </div>
 
-        {/* PHONES */}
-        {/* PHONES */}
-        <div className="space-y-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* CONTACT */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                Numéro du receveur (WhatsApp)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">
-                  +243
-                </span>
-                <Input
-                  className="pl-14"
-                  placeholder="Ex: 832226622"
-                  value={receiverTel}
-                  onChange={(e) =>
-                    setReceiverTel(e.target.value.replace(/\D/g, ""))
-                  }
-                  maxLength={9}
-                />
-              </div>
-            </div>
+      {/* 4. ADRESSE */}
+      <div className="space-y-4">
+        <h3 className="flex items-center gap-2 text-sm font-medium">
+          <MapPin className="w-4 h-4" />
+          4. Adresse
+        </h3>
 
-            {/* PAYMENT */}
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">
-                Numéro de paiement mobile
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">
-                  +243
-                </span>
-                <Input
-                  className="pl-14"
-                  placeholder="Mpesa / Airtel Money"
-                  value={paymentNumber}
-                  onChange={(e) =>
-                    setPaymentNumber(e.target.value.replace(/\D/g, ""))
-                  }
-                  maxLength={9}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <SelectorProducts
+            data={communesKinshasa.map((c) => ({
+              label: c,
+              value: c.toLowerCase(),
+            }))}
+            onChange={(val) => {
+              setCommune(val as string);
+              setQuartier("");
+            }}
+            value={commune}
+            placeholder="Commune"
+          />
 
-          {/* HELPER TEXT */}
-          <p className="text-xs text-muted-foreground">
-            Le premier numéro sera utilisé pour contacter le receveur. Le second
-            servira pour effectuer le paiement mobile.
-          </p>
-        </div>
-
-        {/* ADDRESS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* COMMUNE */}
-          <div>
-            <SelectorProducts
-              data={communesKinshasa.map((c) => ({
-                label: c,
-                value: c.toLowerCase(),
+          <SelectorProducts
+            data={communesQuartiers
+              .filter((cq) => cq.name.toLowerCase() === commune.toLowerCase())
+              .flatMap((cq) => cq.quartiers)
+              .map((q) => ({
+                label: q,
+                value: q.toLowerCase(),
               }))}
-              onChange={(val) => {
-                setCommune(val as string);
-                setQuartier("");
-              }}
-              value={commune}
-              placeholder="Commune"
-            />
-          </div>
-
-          {/* QUARTIER */}
-          <div>
-            <SelectorProducts
-              data={communesQuartiers
-                .filter((cq) => cq.name.toLowerCase() === commune.toLowerCase())
-                .flatMap((cq) => cq.quartiers)
-                .map((q) => ({
-                  label: q,
-                  value: q.toLowerCase(),
-                }))}
-              onChange={setQuartier}
-              value={quartier}
-              placeholder="Quartier"
-              disabled={!commune}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Input
-            placeholder="Avenue, numéro"
-            value={avenue}
-            onChange={(e) => setAvenue(e.target.value)}
+            onChange={setQuartier}
+            value={quartier}
+            placeholder="Quartier"
+            disabled={!commune}
           />
-          {/* HELPER TEXT */}
-          <p className="text-xs text-muted-foreground">ex: Busu-melo, 14</p>
         </div>
+
+        <Input
+          placeholder="Avenue, numéro"
+          value={avenue}
+          onChange={(e) => setAvenue(e.target.value)}
+        />
+      </div>
+
+      {/* 5. PAIEMENT */}
+      <div className="space-y-4">
+        <h3 className="flex items-center gap-2 text-sm font-medium">
+          <Phone className="w-4 h-4" />
+          5. Paiement
+        </h3>
+
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2">+243</span>
+          <Input
+            className="pl-14"
+            placeholder="Numéro Mobile Money"
+            value={paymentNumber}
+            onChange={(e) =>
+              setPaymentNumber(e.target.value.replace(/\D/g, ""))
+            }
+            maxLength={9}
+          />
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Ce numéro sera utilisé pour effectuer le paiement mobile. Numero à 9
+          chiffres sans le 0
+        </p>
       </div>
 
       {/* CTA */}
       <Button
-        disabled={isDisabled || loading}
+        disabled={!!formError || loading}
         onClick={handleSubmit}
         className="w-full h-12"
         style={{
