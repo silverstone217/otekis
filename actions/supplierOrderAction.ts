@@ -307,10 +307,11 @@ export const createSupplierOrder = async ({
 
     // if(!order){}
 
-    // CREATE INVOICES AFTER PAYMENT
+    // 6. CREATE INVOICES AFTER PAYMENT
     const invArticle = `${productShop.Product.type} - ${article.color} - ${article.size}`;
 
-    const invoices = await prisma.supplierInvoice.create({
+    //   const invoices =
+    await prisma.supplierInvoice.create({
       data: {
         clientEmail: user.email!,
         clientName: user.name || user.email!,
@@ -340,6 +341,38 @@ export const createSupplierOrder = async ({
         deliveryNumber: delivery.phone,
       },
     });
+
+    // 7. reduce ARticle stock
+    await prisma.$transaction(async (tx) => {
+      const article = await tx.supplierArticle.findUnique({
+        where: { id: articleId },
+        select: { stock: true, productId: true },
+      });
+
+      if (article && article.stock >= quantity) {
+        // 1. Update article stock (sécurisé)
+        await tx.supplierArticle.update({
+          where: { id: articleId },
+          data: {
+            stock: {
+              decrement: quantity,
+            },
+          },
+        });
+
+        // 2. Update product stock (global)
+        await tx.supplierProduct.update({
+          where: { id: article.productId },
+          data: {
+            stock: {
+              decrement: quantity,
+            },
+          },
+        });
+      }
+    });
+
+    // 8. Add notifications for client. shop, suppliers et admins
 
     return {
       error: false,
