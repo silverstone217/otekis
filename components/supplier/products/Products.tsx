@@ -54,7 +54,7 @@ const Products = () => {
         </div>
       )}
 
-      {/* exemple */}
+      {/* PRODUCT LIST */}
       <Suspense>
         <div
           className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3
