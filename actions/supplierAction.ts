@@ -244,39 +244,37 @@ export const updatePrincipalInfo = async (data: ProductInfo) => {
     const slug =
       name === isProductExist.name ? isProductExist.slug : generateSlug(name);
 
-    await prisma.supplierProduct.update({
-      where: { id: isProductExist.id },
-      data: {
-        name,
-        slug,
-        brand: data.brand,
-        description: data.description,
-        price: data.price,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      const updatedProduct = await tx.supplierProduct.update({
+        where: { id: isProductExist.id },
+        data: {
+          name,
+          slug,
+          brand: data.brand,
+          description: data.description,
+          price: data.price,
+        },
+      });
 
-    // FIX PRICE FOR ALL SHOPS MANUALLY
-    const getAllProductsShop = await prisma.supplierProductShop.findMany({
-      where: { productId: isProductExist.id },
-    });
+      const shops = await tx.supplierProductShop.findMany({
+        where: { productId: updatedProduct.id },
+      });
 
-    if (getAllProductsShop.length > 0) {
-      // Mettre à jour les relations liées au produit
       await Promise.all(
-        getAllProductsShop.map(async (supplierProductShop) => {
-          const benefit = Number(
-            Math.round(
-              (supplierProductShop.percentage * isProductExist.price) / 100,
-            ),
+        shops.map((shop) => {
+          const benefit = Math.round(
+            (shop.percentage * updatedProduct.price) / 100,
           );
-          const price = benefit + isProductExist.price;
-          await prisma.supplierProductShop.update({
-            where: { id: supplierProductShop.id },
-            data: { price },
+
+          return tx.supplierProductShop.update({
+            where: { id: shop.id },
+            data: {
+              price: updatedProduct.price + benefit,
+            },
           });
         }),
       );
-    }
+    });
 
     return {
       error: false,

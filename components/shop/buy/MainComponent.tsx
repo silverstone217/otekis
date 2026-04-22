@@ -168,6 +168,14 @@ const MainComponent = ({
     setLoading(true);
 
     try {
+      toast.info(
+        "Vous avez 30 secondes pour valider le paiement sur votre mobile.",
+      );
+
+      setTimeout(() => {
+        toast.info("Valider le paiement sur votre telephone.");
+      }, 1000);
+
       const payload: CreateSupplierOrderType = {
         productId: product.id,
         articleId: selectedArticle.id,
@@ -193,8 +201,9 @@ const MainComponent = ({
       }
 
       // console.log("ORDER:", payload);
-
-      toast.success(result.message || "Commande envoyée !");
+      toast.success(
+        "Votre paiement a été effectué avec succès, en attente de validation de la commande",
+      );
       router.refresh();
     } catch {
       toast.error("Erreur lors de la commande");

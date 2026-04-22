@@ -115,7 +115,7 @@ const PaymentSheetComponent = ({
 
   const QuantityOfArticlesToBuy = ArticlesToBuy.reduce(
     (acc, val) => acc + val.quantity,
-    0
+    0,
   );
 
   const [commune, setCommune] = useState("");
@@ -139,9 +139,9 @@ const PaymentSheetComponent = ({
   const deliveryChoiceSysteme = useMemo(
     () =>
       deliveryService.find((d) =>
-        d.name.toLocaleLowerCase().includes(deliveryChoice.toLocaleLowerCase())
+        d.name.toLocaleLowerCase().includes(deliveryChoice.toLocaleLowerCase()),
       ),
-    [deliveryChoice, deliveryService]
+    [deliveryChoice, deliveryService],
   );
 
   // console.log(deliveryService, deliveryChoice, deliveryChoiceId);
@@ -149,7 +149,7 @@ const PaymentSheetComponent = ({
   // LUMINANCE
   const luminance = useMemo(
     () => luminanceColor(preferences.background),
-    [preferences.background]
+    [preferences.background],
   );
 
   const parts = useMemo(
@@ -157,12 +157,12 @@ const PaymentSheetComponent = ({
       `${receiverAddress}, ${quartier}, ${commune}`
         .split(",")
         .map((p) => p.trim()),
-    [commune, quartier, receiverAddress]
+    [commune, quartier, receiverAddress],
   );
 
   const isValidAddress = useMemo(
     () => parts.length === 4 && parts.every((part) => part.length > 0),
-    [parts]
+    [parts],
   );
 
   return (
@@ -520,7 +520,7 @@ const PaymentSheetComponent = ({
                     </p>
                     <p className="font-bold text-sm tabular-nums">
                       {returnFormatedMoney(
-                        product.totalPriceAfterDiscount * exchange
+                        product.totalPriceAfterDiscount * exchange,
                       )}{" "}
                       <span className="text-xs"> {currency}</span>
                     </p>

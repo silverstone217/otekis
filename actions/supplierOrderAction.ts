@@ -3,6 +3,17 @@
 import { prisma } from "@/lib/prisma";
 import { getUser } from "./actions";
 import { exChangeRate, getCurrencySymbol } from "./companyAction";
+import {
+  FLEXPAIE_MERCHANT_CODE,
+  FLEXPAIE_TOKEN,
+  FLEXPAIE_URL_API,
+} from "@/utils/envVariables";
+import { v4 } from "uuid";
+import { checkFlexpaiePaymentAfterDelais } from "./flexpaieAction";
+import {
+  PaymentFlexpaieDataType,
+  PaymentFlexpaieResponseType,
+} from "./OrderPaymentAction";
 
 type canThisOrderBeProccessedType = {
   productShopId: string;
@@ -249,6 +260,82 @@ export const createSupplierOrder = async ({
     // 4.PAIEMENT SUR FLEXPAIE MOBILE
     const totalAmount = deliveryPrice + amount;
     // FONCTION FLEXPAIE
+    // proceed to create order
+    const transaction_id = v4().toString().replace(/-/g, "");
+    /*  const flexpaieApiToken = FLEXPAIE_TOKEN;
+    const flexpaieApiUrl = FLEXPAIE_URL_API;
+
+    // URL to notify
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://otekis.com"
+        : "http://localhost:3000";
+
+    const notify_url = `${baseUrl}/panier`;
+
+    // AMOUNT BASED ON DELIVERY METHOD
+    const amountFlexpaie = delivery.name.includes("otekis")
+      ? totalAmount
+      : totalAmount + deliveryPrice;
+
+    // FLEXPAIE PAYMENT DATA
+    const flexpaieData: PaymentFlexpaieDataType = {
+      merchant: FLEXPAIE_MERCHANT_CODE,
+      type: "1",
+      phone:
+        receiver.number.length === 9 ? "243" + receiver.number : paymentNumber,
+      reference: transaction_id,
+      amount: amountFlexpaie.toString(),
+      currency: currency,
+      callbackUrl: notify_url,
+    };
+
+    // call flexpaie api to init payment
+    const response = await fetch(flexpaieApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${flexpaieApiToken}`,
+      },
+      body: JSON.stringify(flexpaieData),
+    });
+
+    // console.log("Flexpaie response:", response);
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de l'initialisation du paiement");
+    }
+
+    //   GET RESPONSE
+    const dataResponse = (await response.json()) as PaymentFlexpaieResponseType;
+
+    // console.log("Flexpaie data:", data);
+
+    // Paiement accepté, préparer les données de commande
+    const paymentCode = dataResponse.code;
+
+    if (paymentCode !== "0") {
+      return {
+        error: true,
+        message: `Le paiement a échoué: ${dataResponse.message}`,
+        data: null,
+      };
+    }
+
+    const paymentRef = dataResponse.orderNumber;
+
+    // WAIT 30 SECONDS BEFORE CALLING THE NEW ORDER ACTION TO ENSURE PAYMENT IS PROCESSED
+    const isPaymentSuccessful = await checkFlexpaiePaymentAfterDelais(
+      paymentRef,
+      35,
+    );
+    if (!isPaymentSuccessful) {
+      return {
+        error: true,
+        message: "Le paiement n'a pas été confirmé. Veuillez réessayer.",
+        data: null,
+      };
+    } */
 
     // SHARES MONEY
     const supplierAmount = productShop.Product.price * quantity * exchange;
@@ -267,7 +354,7 @@ export const createSupplierOrder = async ({
         totalAmount: amount,
         currency,
         paymentMethod: "flexpaie",
-        paymentRef: "FLEXPAIE-456",
+        paymentRef: /*paymentRef ||*/ transaction_id,
         deliveryCompanyId: delivery.id,
         status: "en cours de traitement",
         productShopId,
@@ -293,17 +380,21 @@ export const createSupplierOrder = async ({
             shopId,
           },
         },
-        // ------ OTEKIS
-        otekisEarning: {
-          create: {
-            amount: deliveryPrice,
-            exchangeRate: exchange,
-            currency,
-            type: "delivery",
-          },
-        },
       },
     });
+
+    // ------ OTEKIS EARNING
+    if (delivery.name.includes("otekis")) {
+      await prisma.otekisEarning.create({
+        data: {
+          amount: deliveryPrice,
+          exchangeRate: exchange,
+          currency,
+          type: "delivery",
+          orderId: order.id,
+        },
+      });
+    }
 
     // if(!order){}
 
@@ -326,7 +417,7 @@ export const createSupplierOrder = async ({
         exchange: exchange,
         currency,
         paymentMethod: "flexpaie",
-        paymentRef: "FLEXPAIE-456",
+        paymentRef: /*paymentRef ||*/ transaction_id,
 
         productName: productShop.Product.name,
         productUid: productShop.Product.uid,
