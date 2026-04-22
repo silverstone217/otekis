@@ -114,7 +114,12 @@ const Orders = () => {
       {/* HEADER AVEC STATS RAPIDES */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Commandes</h2>
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-2xl font-bold tracking-tight">Commandes</h2>
+            <Badge variant="secondary" className="rounded-full px-2 py-0">
+              {filteredOrders.length}
+            </Badge>
+          </div>
           <p className="text-sm text-muted-foreground">
             Gérez vos expéditions et suivez vos gains en temps réel.
           </p>
@@ -178,7 +183,8 @@ const Orders = () => {
 
       {/* GRID LIST */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {!loading && filteredOrders.length > 0 ? (
+        {!loading &&
+          filteredOrders.length > 0 &&
           filteredOrders.map((order) => {
             const config =
               statusConfig[order.status] ||
@@ -195,11 +201,8 @@ const Orders = () => {
               >
                 {/* TOP: Status & ID */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-8 w-8 rounded-lg bg-primary/5 flex 
-                    tems-center justify-center"
-                    >
+                  <div className="flex items-center gap-2 justify-center">
+                    <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center flex-shrink-0">
                       <Package className="h-4 w-4 text-primary" />
                     </div>
                     <span
@@ -214,6 +217,7 @@ const Orders = () => {
                     className={cn(
                       "px-2.5 py-0.5 rounded-full border shadow-none",
                       config.color,
+                      "flex items-center justify-center",
                     )}
                   >
                     <Icon className="w-3 h-3 mr-1.5" strokeWidth={3} />
@@ -292,8 +296,9 @@ const Orders = () => {
                 </div>
               </Link>
             );
-          })
-        ) : (
+          })}
+
+        {!loading && filteredOrders.length === 0 && (
           <div
             className="flex flex-col items-center justify-center py-20 border-2
            border-dashed rounded-3xl bg-muted/10 md:col-span-2 lg:col-span-3"
