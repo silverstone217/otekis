@@ -96,9 +96,14 @@ const MainComponent = ({
 
   // PRICE
   //   const finalPrice = product.price + beneficeAfterDiscount;
+  // const total = useMemo(
+  //   () => totalPriceAfterDiscount * quantity * companyPrefs.exchange,
+  //   [quantity, totalPriceAfterDiscount],
+  // );
+
   const total = useMemo(
-    () => totalPriceAfterDiscount * quantity * companyPrefs.exchange,
-    [quantity, totalPriceAfterDiscount],
+    () => productShop.price * quantity * companyPrefs.exchange,
+    [quantity, productShop],
   );
 
   const stock = useMemo(

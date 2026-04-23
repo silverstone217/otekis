@@ -14,7 +14,9 @@ import {
   PaymentFlexpaieDataType,
   PaymentFlexpaieResponseType,
 } from "./OrderPaymentAction";
+import { OrderStatusType } from "@/types/orders";
 
+// -------- CAN THIS ORDER BE PROCESSED ---------
 type canThisOrderBeProccessedType = {
   productShopId: string;
   quantity: number;
@@ -139,6 +141,7 @@ export const canThisOrderBeProccessed = async ({
   }
 };
 
+// -------- CREATE AN ORDER ---------
 export interface CreateSupplierOrderType {
   productId: string;
   articleId: string;
@@ -358,8 +361,9 @@ export const createSupplierOrder = async ({
         deliveryCompanyId: delivery.id,
         status: "en cours de traitement",
         productShopId,
+        articleId,
         deliveryPrice,
-        paymentStatus: "paye",
+        paymentStatus: "payé",
 
         // EARNINGS
         // ----------SUPPLIER
@@ -474,6 +478,159 @@ export const createSupplierOrder = async ({
     return {
       error: true,
       message: "Impossible d'effectuer cette action, reessayer ulterieurement!",
+    };
+  }
+};
+
+// -------- UPDATE STATUS OF AN ORDER ---------
+export type UpdateStatusType = {
+  orderId: string;
+  status: OrderStatusType;
+};
+
+export const updateStatusSupplierOrder = async ({
+  orderId,
+  status,
+}: UpdateStatusType) => {
+  try {
+    // AUTH
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message: "Acces refusé ! ",
+      };
+    }
+
+    // IS ORDER EXIST
+    const order = await prisma.supplierOrder.findUnique({
+      where: { id: orderId },
+      include: {
+        supplierEarning: {
+          select: { supplierId: true },
+        },
+      },
+    });
+
+    if (!order) {
+      return {
+        error: true,
+        message: "Cette commande n'est plus disponible ! ",
+      };
+    }
+
+    // IS STATUS SAME ?
+    if (status === order.status) {
+      return {
+        error: true,
+        message: "Cette commande a deja ce status! ",
+      };
+    }
+
+    // IS USER SUPPLIER OR CLIENT TO THIS ORDER OR ADMIN ?
+    const supplierId = order.supplierEarning?.supplierId;
+    const clientId = order.clientId;
+    const isAdmin = user.role.includes("admin");
+
+    // 🔒 AUTHORIZATION PAR ROLE
+    let isAllowed = false;
+
+    // SUPPLIER
+    if (user.id === supplierId) {
+      isAllowed = [
+        "en cours de traitement",
+        "en attente de livraison",
+        "en cours de livraison",
+      ].includes(status);
+    }
+
+    // CLIENT
+    if (user.id === clientId) {
+      isAllowed = status === "annulé";
+    }
+
+    // ADMIN
+    if (isAdmin) {
+      isAllowed = true;
+    }
+
+    if (!isAllowed) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas effectuer cette action",
+      };
+    }
+
+    // 🔁 WORKFLOW CONTROL
+    const forbiddenTransitions = [
+      ["livré", "en cours de traitement"],
+      ["annulé", "en cours de traitement"],
+    ];
+
+    if (
+      forbiddenTransitions.some(
+        ([from, to]) => order.status === from && status === to,
+      )
+    ) {
+      return {
+        error: true,
+        message: "Transition de statut invalide",
+      };
+    }
+    // UPDATE NOW
+    // ✅ UPDATE
+    await prisma.supplierOrder.update({
+      where: { id: order.id },
+      data: {
+        status,
+        paymentStatus:
+          status === "annulé"
+            ? "en attente de remboursement"
+            : order.paymentStatus,
+      },
+    });
+
+    // 💰 GESTION FACTURE
+    if (status === "annulé" && order.paymentRef) {
+      await prisma.$transaction(async (tx) => {
+        // 1. UPDATE INVOICE
+        const invoice = await tx.supplierInvoice.findFirst({
+          where: { paymentRef: order.paymentRef },
+        });
+
+        if (invoice) {
+          await tx.supplierInvoice.update({
+            where: { id: invoice.id },
+            data: {
+              status: "rembourse", // "remboursé",
+            },
+          });
+        }
+
+        // 2. DELETE EARNINGS (SAFE)
+        await tx.supplierShopEarning.deleteMany({
+          where: { orderId: order.id },
+        });
+
+        await tx.supplierEarning.deleteMany({
+          where: { orderId: order.id },
+        });
+
+        await tx.otekisEarning.deleteMany({
+          where: { orderId: order.id },
+        });
+      });
+    }
+
+    return {
+      error: false,
+      message: "Statut mis à jour avec succès",
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: "Erreur serveur",
     };
   }
 };

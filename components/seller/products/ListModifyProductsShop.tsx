@@ -697,16 +697,18 @@ export function AddProductToShopSheet({
               </>
             )}
             {/* Promotion */}
-            <ControlLine
-              label="Promotion (%)"
-              value={promotion}
-              min={0}
-              max={100}
-              step={5}
-              onChange={setPromotion}
-              icon={<Plus />}
-              disabled={loading}
-            />
+            {product.origin === "otekis" && (
+              <ControlLine
+                label="Promotion (%)"
+                value={promotion}
+                min={0}
+                max={100}
+                step={5}
+                onChange={setPromotion}
+                icon={<Plus />}
+                disabled={loading}
+              />
+            )}
           </div>
         </div>
         <SheetFooter

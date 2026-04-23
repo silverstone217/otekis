@@ -15,11 +15,17 @@ import {
   CreditCard,
   ChevronRight,
   Search,
+  Truck,
+  Box,
 } from "lucide-react";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { SupplierEarning, SupplierOrder } from "@/lib/generated/prisma/client";
+import {
+  SupplierEarning,
+  SupplierOrder,
+  SupplierPaymentMethode,
+} from "@/lib/generated/prisma/client";
 import { returnFormatedMoney } from "@/utils/functions";
 import {
   Select,
@@ -43,12 +49,22 @@ const statusConfig: Record<
     color: "bg-amber-500/10 text-amber-600 border-amber-200/50",
     icon: Clock,
   },
-  valide: {
+  "en attente de livraison": {
     label: "Confirmée",
     color: "bg-emerald-500/10 text-emerald-600 border-emerald-200/50",
+    icon: Box,
+  },
+  "en cours de livraison": {
+    label: "Confirmée",
+    color: "bg-emerald-700/10 text-emerald-800 border-emerald-400/50",
+    icon: Truck,
+  },
+  livré: {
+    label: "Livrée",
+    color: "bg-indingo-400/10 text-indingo-500 border-indingo-200/50",
     icon: CheckCircle2,
   },
-  annule: {
+  annulé: {
     label: "Annulée",
     color: "bg-rose-500/10 text-rose-600 border-rose-200/50",
     icon: XCircle,
@@ -70,13 +86,47 @@ const STATUS_DATA = [
   },
   {
     label: "Annulée",
-    value: "annule",
+    value: "annulé",
   },
   {
     label: "Livrée",
-    value: "livre",
+    value: "livré",
   },
 ];
+
+const PaymentMethod: Record<
+  SupplierPaymentMethode,
+  { label: string; value: SupplierPaymentMethode }
+> = {
+  airtelMoney: {
+    label: "Airtel Money",
+    value: "airtelMoney",
+  },
+  bank: {
+    label: "Paiement bancaire",
+    value: "bank",
+  },
+  cash: {
+    label: "Cash",
+    value: "cash",
+  },
+  cinetpay: {
+    label: "Paiment mobile",
+    value: "cinetpay",
+  },
+  flexpaie: {
+    label: "Paiment mobile",
+    value: "flexpaie",
+  },
+  mpesa: {
+    label: "M-Pesa",
+    value: "mpesa",
+  },
+  orangeMoney: {
+    label: "Orange Money",
+    value: "orangeMoney",
+  },
+};
 
 const Orders = () => {
   const [loading, setLoading] = useState(false);
@@ -202,7 +252,10 @@ const Orders = () => {
                 {/* TOP: Status & ID */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2 justify-center">
-                    <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center flex-shrink-0">
+                    <div
+                      className="h-8 w-8 rounded-lg bg-primary/5 flex items-center 
+                    justify-center shrink-0"
+                    >
                       <Package className="h-4 w-4 text-primary" />
                     </div>
                     <span
@@ -254,8 +307,8 @@ const Orders = () => {
                       Votre Gain
                     </span>
                     <div
-                      className="flex items-center gap-1.5 
-                    text-emerald-600 font-bold"
+                      className={`flex items-center gap-1.5 
+                    ${order.supplierEarning?.amount ? "text-emerald-600" : "text-pink-700"} font-bold`}
                     >
                       <TrendingUp className="h-3 w-3" />
                       <span className="text-lg">
@@ -280,13 +333,13 @@ const Orders = () => {
                     <div
                       className={cn(
                         "h-2 w-2 rounded-full",
-                        order.paymentStatus === "valide"
+                        order.paymentStatus === "paye"
                           ? "bg-emerald-500"
                           : "bg-amber-500",
                       )}
                     />
                     <span className="text-[11px] font-medium text-muted-foreground uppercase">
-                      {order.paymentMethod}
+                      {PaymentMethod[order.paymentMethod].label}
                     </span>
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground font-medium italic">

@@ -717,6 +717,7 @@ model SupplierOrder {
   clientId          String
   shopId            String
   productShopId     String
+  articleId         String
   deliveryCompanyId String
 
   totalAmount Float

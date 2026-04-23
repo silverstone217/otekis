@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {
+    root: __dirname,
+  },
   env: {
     // firebsae api keys
     API_KEY: process.env.API_KEY,

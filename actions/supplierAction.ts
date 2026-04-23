@@ -256,12 +256,12 @@ export const updatePrincipalInfo = async (data: ProductInfo) => {
         },
       });
 
-      const shops = await tx.supplierProductShop.findMany({
+      const productShops = await tx.supplierProductShop.findMany({
         where: { productId: updatedProduct.id },
       });
 
       await Promise.all(
-        shops.map((shop) => {
+        productShops.map((shop) => {
           const benefit = Math.round(
             (shop.percentage * updatedProduct.price) / 100,
           );
