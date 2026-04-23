@@ -1,33 +1,38 @@
 import { getUser } from "@/actions/actions";
-import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
 import ShopCartLogin from "@/components/auth/ShopCartLogin";
-import MainOrders from "@/components/shop/orders/MainOrders";
 import { prisma } from "@/lib/prisma";
 import { preferenceDefaults } from "@/utils/preferences";
 import { capitalizeText } from "@/utils/shopFunctions";
-import { Order, OrderItem, Preferences } from "@/lib/generated/prisma/client";
+import { Preferences, ProductOrigin } from "@/lib/generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
+import MainOrdersList from "@/components/shop/orders/MainOrdersList";
 
 // Get shop by slug and preferences
 const getShopBySlug = async (slug: string) => {
   const shop = await prisma.shop.findUnique({
     where: { slug },
-    include: { Preferences: true, ProductShop: true },
+    include: {
+      Preferences: true,
+      ProductShop: true,
+      supplierProductShops: true,
+    },
   });
   if (!shop) return null;
 
   return shop;
 };
 
+// PROPS
 type Props = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
+// METADATA
 export async function generateMetadata(
-  props: Props
+  props: Props,
 ): // parent: ResolvingMetadata
 Promise<Metadata> {
   const params = await props.params;
@@ -71,59 +76,149 @@ Promise<Metadata> {
   };
 }
 
-// MY ORDERS
-export type ProductInfo = {
-  image?: string | null;
-  name?: string | null;
-  articleId?: string | null;
-  productId?: string | null;
-};
-
-export type OrderWithProductInfo = Order & {
-  productInfo: ProductInfo[];
-  orderItems: OrderItem[];
-};
-
-const getMyOrders = async (shopId: string, userId: string) => {
+// GET ORDERS OTEKIS FOR SHOP WITH CLIENT ID
+const getOrdersForShop = async (shopId: string, clientId: string) => {
+  // 1. GET ORDERS + ITEMS
   const orders = await prisma.order.findMany({
-    where: {
-      shopId,
-      clientId: userId,
-    },
+    where: { shopId, clientId },
+    orderBy: { createdAt: "desc" },
     include: {
       orderItems: true,
     },
-    orderBy: {
-      createdAt: "desc", // order by date
+  });
+
+  // 2. GET ALL ARTICLE IDS
+  const articleIds = [
+    ...new Set(
+      orders.flatMap((order) => order.orderItems.map((item) => item.articleId)),
+    ),
+  ];
+
+  // 3. FETCH ALL ARTICLES + PRODUCTS (1 seule requête)
+  const articles = await prisma.article.findMany({
+    where: {
+      id: { in: articleIds },
+    },
+    include: {
+      Product: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          price: true,
+          origin: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
-  const filteredOrders = await Promise.all(
-    orders.map(async (order) => {
-      const productInfo = await Promise.all(
-        order.orderItems.map(async (item) => {
-          const article = await prisma.article.findUnique({
-            where: { id: item.articleId },
-            include: { Product: true },
-          });
+  // 4. CREATE MAP POUR ACCÈS RAPIDE
+  const articleMap = new Map(articles.map((a) => [a.id, a]));
 
-          return {
-            image: article?.Product.image,
-            name: article?.Product.name,
-            articleId: article?.id,
-            productId: article?.Product.id,
-          };
-        })
-      );
+  // 5. FORMAT FINAL
+  const formattedOrders = orders.map((order) => ({
+    ...order,
+    orderItems: order.orderItems.map((item) => {
+      const article = articleMap.get(item.articleId);
 
       return {
-        ...order,
-        productInfo,
-      };
-    })
-  );
+        id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+        discount: item.discount,
+        currency: item.currency,
+        articleId: item.articleId,
 
-  return filteredOrders;
+        product: article
+          ? {
+              id: article.Product.id,
+              name: article.Product.name,
+              image: article.Product.image,
+              price: article.Product.price,
+              origin: article.Product.origin,
+              createdAt: article.Product.createdAt,
+            }
+          : null, // sécurité si article supprimé
+      };
+    }),
+  }));
+
+  return formattedOrders;
+};
+
+// GET ORDERS OTEKIS FOR SHOP WITH CLIENT ID
+const getSupplierOrders = async (shopId: string) => {
+  const orders = await prisma.supplierOrder.findMany({
+    where: { shopId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      article: {
+        include: {
+          Product: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              price: true,
+              origin: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // format orders
+  const formattedOrders = orders.map((order) => ({
+    ...order,
+
+    product: {
+      id: order.article.Product.id,
+      name: order.article.Product.name,
+      image: order.article.Product.image,
+      price: order.article.Product.price,
+      origin: order.article.Product.origin,
+      createdAt: order.article.Product.createdAt,
+    },
+
+    article: {
+      id: order.article.id,
+      color: order.article.color,
+      size: order.article.size,
+      stock: order.article.stock,
+    },
+  }));
+
+  return formattedOrders;
+};
+
+export type UnifiedOrder = {
+  id: string;
+  createdAt: Date;
+  status: string;
+  totalAmount: number;
+  currency: "USD" | "CDF" | string;
+  exchange: number;
+
+  product: {
+    id: string;
+    name: string;
+    image: string;
+    price: number;
+    origin: ProductOrigin;
+    createdAt: Date;
+  } | null;
+
+  article: {
+    id: string;
+    color: string | null;
+    size: string | null;
+    stock: number;
+  } | null;
+
+  quantity: number;
 };
 
 async function CommandesPage(props: { params: Promise<{ slug: string }> }) {
@@ -154,24 +249,63 @@ async function CommandesPage(props: { params: Promise<{ slug: string }> }) {
     );
   }
 
-  const myOrders = (await getMyOrders(
-    shop.id,
-    user.id
-  )) as OrderWithProductInfo[];
+  const otekisOrders = await getOrdersForShop(shop.id, user.id);
+  const supplierOrders = await getSupplierOrders(shop.id);
 
-  const currency = await getCurrencySymbol();
-  const exchange = await exChangeRate();
+  // const allOrders = [...otekisOrders, ...supplierOrders].sort(
+  //   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  // );
+
+  const normalizedOtekis = otekisOrders.map((order) => {
+    const firstItem = order.orderItems[0];
+
+    return {
+      id: order.id,
+      createdAt: order.createdAt,
+      status: order.status,
+      totalAmount: order.totalAmount,
+      currency: order.currency,
+      exchange: order.exchange,
+
+      product: firstItem?.product ?? null,
+
+      article: firstItem
+        ? {
+            id: firstItem.articleId,
+            color: null,
+            size: null,
+            stock: 0,
+          }
+        : null,
+
+      quantity: firstItem?.quantity ?? 0,
+    };
+  });
+
+  const normalizedSupplier = supplierOrders.map((order) => ({
+    id: order.id,
+    createdAt: order.createdAt,
+    status: order.status,
+    totalAmount: order.totalAmount,
+    currency: order.currency,
+    exchange: order.exchange,
+
+    product: order.product,
+
+    article: order.article,
+
+    quantity: order.quantity,
+  }));
+
+  const allOrders: UnifiedOrder[] = [
+    ...normalizedOtekis,
+    ...normalizedSupplier,
+  ].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return (
-    <div>
-      <MainOrders
-        myOrders={myOrders}
-        shopPreferences={preferences}
-        shop={shop}
-        currency={currency}
-        exchange={exchange}
-      />
-    </div>
+    <MainOrdersList shop={shop} orders={allOrders} preferences={preferences} />
   );
 }
 

@@ -259,8 +259,6 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         exchange={exchange}
       />
 
-      {Header === 3 && <div className="py-10" />}
-
       {/* <CurrentCategory
         shop={shop}
         preferences={preferences}
@@ -275,7 +273,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         products={filteredProducts() as Product[]}
       /> */}
       {/* desc shop */}
-      <div className="p4-8"></div>
+      <div className="py-8"></div>
       {preferences.showDescription && (
         <section
           className="w-full relative overflow-hidden flex items-center justify-center px-6 py-20 lg:py-32"

@@ -266,7 +266,7 @@ const MainCatalogueComponent = ({
   return (
     <div
       className={`mx-auto w-full max-w-7xl flex flex-col gap-10 items-start justify-start px-4
-        ${Number(Header) === 3 ? "pt-24" : "pt-4"}
+        ${Number(Header) === 3 ? "pt-24" : "pt-10"}
         `}
     >
       {/* filter */}

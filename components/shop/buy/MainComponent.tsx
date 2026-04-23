@@ -36,6 +36,7 @@ import {
   createSupplierOrder,
   CreateSupplierOrderType,
 } from "@/actions/supplierOrderAction";
+import { SuccessOrderModal } from "./SuccessOrderModal";
 
 type Props = {
   shop: Shop;
@@ -54,6 +55,7 @@ const MainComponent = ({
   preferences,
   companyPrefs,
   product,
+  shop,
   supplierProductShops: productShop,
 }: Props) => {
   const router = useRouter();
@@ -78,6 +80,10 @@ const MainComponent = ({
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
   const [avenue, setAvenue] = useState("");
+
+  // SUCCESS
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState("");
 
   // benefit
   const benefit = productShop ? productShop.price! - (product.price ?? 0) : 0;
@@ -199,7 +205,7 @@ const MainComponent = ({
 
       const result = await createSupplierOrder(payload);
 
-      if (result.error) {
+      if (result.error || !result.data) {
         toast.error(result.message || "Commande invalide");
         setLoading(false);
         return;
@@ -209,7 +215,22 @@ const MainComponent = ({
       toast.success(
         "Votre paiement a été effectué avec succès, en attente de validation de la commande",
       );
+
+      // RESET FORM
+      setPaymentNumber("");
+      setAvenue("");
+      setCommune("");
+      setQuartier("");
+      setReceiverName("");
+      setReceiverTel("");
+      setSelectedArticleId(product.Article[0]?.id ?? "");
+      setQuantity(1);
+
       router.refresh();
+
+      // ACTION SUCCESS
+      setCreatedOrderId(result.data.id);
+      setShowSuccess(true);
     } catch {
       toast.error("Erreur lors de la commande");
     } finally {
@@ -522,6 +543,15 @@ const MainComponent = ({
           `Payer ${total.toLocaleString()} ${companyPrefs.currency}`
         )}
       </Button>
+
+      {/* SUCCESS MODAL */}
+      <SuccessOrderModal
+        isOpen={showSuccess}
+        orderId={createdOrderId}
+        shopSlug={shop.slug}
+        preferences={preferences}
+        openChange={(open) => setShowSuccess(open)}
+      />
     </div>
   );
 };

@@ -472,6 +472,7 @@ export const createSupplierOrder = async ({
     return {
       error: false,
       message: "Commande envoyée!",
+      data: order,
     };
   } catch (error) {
     console.error("Erreur commande", error);

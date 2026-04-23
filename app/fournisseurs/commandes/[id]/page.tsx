@@ -104,7 +104,7 @@ async function page({ params }: Props) {
   }
 
   return (
-    <div className="max-w-4xl w-full p-4 mx-auto ">
+    <div className=" w-full">
       <MainOrdeComponent
         order={order}
         product={product}

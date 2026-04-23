@@ -143,6 +143,7 @@ model Article {
   updatedAt DateTime @updatedAt
 
   Cart Cart[]
+  // orderItems OrderItem[]
 }
 
 model HistoryOrder {
@@ -339,6 +340,7 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  // article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 // Factures
@@ -658,6 +660,7 @@ model SupplierArticle {
   updatedAt DateTime @updatedAt
 
   // Cart Cart[]
+  supplierOrders SupplierOrder[]
 }
 
 // PERMITTED SUPPLIER PRODUCT SHOP
@@ -751,6 +754,7 @@ model SupplierOrder {
 
   productShop     SupplierProductShop @relation(fields: [productShopId], references: [id], onDelete: Cascade)
   deliveryCompany DeliveryCompany     @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
+  article         SupplierArticle     @relation(fields: [articleId], references: [id])
 
   supplierEarning     SupplierEarning?
   supplierShopEarning SupplierShopEarning?
