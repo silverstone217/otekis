@@ -102,19 +102,19 @@ const MainMyOrder = ({
 
   // refund
   const [refundPhoneNumber, setRefundPhoneNumber] = useState(
-    myOrder.refundPhoneNumber ?? ""
+    myOrder.refundPhoneNumber ?? "",
   );
   const [refundReceiverName, setRefundReceiverName] = useState(
-    myOrder.refundReceiverName ?? ""
+    myOrder.refundReceiverName ?? "",
   );
   const [paymentMethodRefund] = useState(
-    myOrder.paymentMethodRefund ?? "mpesa"
+    myOrder.paymentMethodRefund ?? "mpesa",
   );
 
   // Calcul total articles
   const totalArticles = myOrder.orderItems.reduce(
     (acc, item) => acc + item.quantity,
-    0
+    0,
   );
 
   // Couleurs et styles personnalisés
@@ -164,7 +164,7 @@ const MainMyOrder = ({
       deliveryInfo && deliveryInfo.paymentMethod === "mobile_money"
         ? myOrder.totalAmount + myOrder.deliveryPrice
         : myOrder.totalAmount,
-    [deliveryInfo, myOrder.deliveryPrice, myOrder.totalAmount]
+    [deliveryInfo, myOrder.deliveryPrice, myOrder.totalAmount],
   );
 
   // console.log(deliveryInfo && deliveryInfo.validationPossible);
@@ -429,7 +429,7 @@ const MainMyOrder = ({
                     </div>
                   </div>
                 </Link>
-              )
+              ),
           )}
         </div>
       </section>
@@ -589,7 +589,7 @@ const ModifyOrderUserInfo = ({
   const [receiver, setReceiver] = useState(myOrder.receiverName ?? "");
   const [receiverPhone, setReceiverPhone] = useState(myOrder.receiverTel ?? "");
   const [receiverAddress, setReceiverAddress] = useState(
-    myOrder.receiverAddress ?? ""
+    myOrder.receiverAddress ?? "",
   );
 
   const [description, setDescription] = useState(myOrder.description ?? "");

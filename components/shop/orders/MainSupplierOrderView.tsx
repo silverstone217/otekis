@@ -23,6 +23,32 @@ import { Separator } from "@/components/ui/separator";
 import { returnFormatedMoney } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { cn } from "@/lib/utils";
+import { UnifiedOrder } from "@/app/(shop)/[slug]/commandes/page";
+import {
+  DeliveryCompany,
+  Preferences,
+  ProductOrigin,
+  Shop,
+  SupplierArticle,
+  SupplierOrder,
+  SupplierProduct,
+} from "@/lib/generated/prisma/client";
+import { PaymentMethod } from "@/utils/supplier";
+import { useRouter } from "next/navigation";
+import { updateStatusSupplierOrder } from "@/actions/supplierOrderAction";
+import { OrderStatusType } from "@/types/orders";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // Sous-composant pour l'ID copiable
 const CopyableOrderId = ({ orderId }: { orderId: string }) => (
@@ -31,6 +57,15 @@ const CopyableOrderId = ({ orderId }: { orderId: string }) => (
   </div>
 );
 
+type Props = {
+  order: SupplierOrder;
+  article: SupplierArticle;
+  shop: Shop;
+  preferences: Preferences;
+  deliveryCompany: DeliveryCompany | null;
+  product: SupplierProduct;
+};
+
 const MainSupplierOrderView = ({
   order,
   product,
@@ -38,14 +73,41 @@ const MainSupplierOrderView = ({
   shop,
   preferences,
   deliveryCompany,
-}: any) => {
+}: Props) => {
   const { buttonColor: borderColor, buttonRadius: borderRadius } = preferences;
 
   const statusColors: Record<string, string> = {
     "en cours de traitement": "text-amber-600 bg-amber-50 border-amber-200",
-    valide: "text-blue-600 bg-blue-50 border-blue-200",
-    livre: "text-emerald-600 bg-emerald-50 border-emerald-200",
-    annule: "text-rose-600 bg-rose-50 border-rose-200",
+    "en attente de livraison": "text-blue-600 bg-blue-50 border-blue-200",
+    "en cours de livraison": "text-indigo-600 bg-indigo-50 border-indigo-200",
+    livré: "text-emerald-600 bg-emerald-50 border-emerald-200",
+    annulé: "text-rose-600 bg-rose-50 border-rose-200",
+  };
+
+  const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    try {
+      setLoading(true);
+
+      const result = await updateStatusSupplierOrder({
+        orderId: order.id,
+        status: newStatus as OrderStatusType,
+      });
+
+      if (result.error) {
+        throw new Error(result.message);
+      }
+
+      toast.success(result.message || "Statut mis à jour");
+      //   location.reload();
+      router.refresh();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,6 +175,16 @@ const MainSupplierOrderView = ({
                 </p>
               </div>
             </div>
+
+            {/* CANCEL ORDER IF STILL on TRAITEMENT */}
+            {order.status === "en cours de traitement" && (
+              <CancelOrderComponent
+                onClick={handleUpdateStatus}
+                loading={loading}
+                preferences={preferences}
+                orderId={order.id}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -125,7 +197,7 @@ const MainSupplierOrderView = ({
             <div className="flex justify-between items-center border-b pb-3">
               <span className="text-sm font-medium">Mode de paiement</span>
               <Badge variant="outline" className="capitalize">
-                {order.paymentMethod}
+                {PaymentMethod[order.paymentMethod].label}
               </Badge>
             </div>
 
@@ -216,17 +288,25 @@ const MainSupplierOrderView = ({
       {deliveryCompany && (
         <section>
           <Card
-            style={{ borderColor, borderRadius }}
+            style={{ borderColor, borderRadius, color: preferences.textColor }}
             className="border border-dashed bg-primary/5"
           >
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                <div
+                  className="h-12 w-12 bg-white rounded-full 
+                flex items-center justify-center shadow-sm"
+                >
                   <Truck className="w-6 h-6 text-primary" />
                 </div>
-                <div>
+                <div style={{ color: preferences.textColor }}>
                   <h4 className="font-bold text-sm">Pris en charge par</h4>
-                  <p className="text-lg font-black text-primary uppercase">
+                  <p
+                    className={cn(
+                      "text-sm font-medium capitalize mt-0.5",
+                      preferences.textColor,
+                    )}
+                  >
                     {deliveryCompany.name}
                   </p>
                 </div>
@@ -255,8 +335,89 @@ const MainSupplierOrderView = ({
           </div>
         </div>
       </section>
+
+      {/* SECTION 6: FACTURES SI DISPONIBLE */}
+      <section className="pt-10 border-t">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <CreditCard className="w-5 h-5 text-primary" />
+          <p>
+            Les factures sont générées une fois la commande expédiée ou annulée
+            et sont disponibles ici.
+          </p>
+        </div>
+
+        {order.status === "livré" ||
+          (order.status === "annulé" && (
+            <button
+              className={`mt-4 px-4 py-2 rounded font-bold hover:opacity-85 transition-colors`}
+              style={{
+                backgroundColor: preferences.buttonColor,
+                color: preferences.buttonTextColor,
+              }}
+              onClick={() =>
+                toast("Fonction de téléchargement non implémentée")
+              }
+            >
+              Télécharger la facture
+            </button>
+          ))}
+      </section>
     </div>
   );
 };
 
 export default MainSupplierOrderView;
+
+type CancelOrderComponentProps = {
+  orderId: string;
+  onClick: (newStatus: string) => void;
+  loading: boolean;
+  preferences: Preferences;
+};
+
+const CancelOrderComponent = async ({
+  onClick,
+  loading,
+  preferences,
+}: CancelOrderComponentProps) => {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          disabled={loading}
+          className={`mt-4 w-full bg-rose-600 hover:bg-rose-700
+                   text-white font-bold py-2 px-4 
+                  rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          Annuler la commande
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Etes vous sur de vouloir annuler la commande?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Cette action est irreversible, la commande sera annulée et le client
+            en sera informé. Vous serez remboursé si le paiement a déjà été
+            effectué, selon les modalités de remboursement de la plateforme. Si
+            vous avez des questions, contactez le support avant de continuer.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        {/* FORM */}
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive hover:bg-destructive/70"
+            onClick={() => onClick("annulé")}
+            disabled={loading}
+          >
+            {loading ? "En cours..." : "Continuer"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};

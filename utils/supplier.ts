@@ -1,3 +1,5 @@
+import { SupplierPaymentMethode } from "@/lib/generated/prisma/enums";
+
 export const IsAvailableProducts = [
   {
     label: "Pour tous les vendeurs",
@@ -70,4 +72,39 @@ export const validateAvenue = (avenue: string) => {
     return "Format invalide (ex: Samba, 12 ou Samba, 12C)";
   }
   return null;
+};
+
+// PAYMENT METHODS
+export const PaymentMethod: Record<
+  SupplierPaymentMethode,
+  { label: string; value: SupplierPaymentMethode }
+> = {
+  airtelMoney: {
+    label: "Airtel Money",
+    value: "airtelMoney",
+  },
+  bank: {
+    label: "Paiement bancaire",
+    value: "bank",
+  },
+  cash: {
+    label: "Cash",
+    value: "cash",
+  },
+  cinetpay: {
+    label: "Paiment mobile",
+    value: "cinetpay",
+  },
+  flexpaie: {
+    label: "Paiment mobile",
+    value: "flexpaie",
+  },
+  mpesa: {
+    label: "M-Pesa",
+    value: "mpesa",
+  },
+  orangeMoney: {
+    label: "Orange Money",
+    value: "orangeMoney",
+  },
 };

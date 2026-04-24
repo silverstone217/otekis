@@ -21,11 +21,7 @@ import {
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  SupplierEarning,
-  SupplierOrder,
-  SupplierPaymentMethode,
-} from "@/lib/generated/prisma/client";
+import { SupplierEarning, SupplierOrder } from "@/lib/generated/prisma/client";
 import { returnFormatedMoney } from "@/utils/functions";
 import {
   Select,
@@ -35,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PaymentMethod } from "@/utils/supplier";
 
 type OrdersWIthSupplierEarning = SupplierOrder & {
   supplierEarning: SupplierEarning;
@@ -93,40 +90,6 @@ const STATUS_DATA = [
     value: "livré",
   },
 ];
-
-const PaymentMethod: Record<
-  SupplierPaymentMethode,
-  { label: string; value: SupplierPaymentMethode }
-> = {
-  airtelMoney: {
-    label: "Airtel Money",
-    value: "airtelMoney",
-  },
-  bank: {
-    label: "Paiement bancaire",
-    value: "bank",
-  },
-  cash: {
-    label: "Cash",
-    value: "cash",
-  },
-  cinetpay: {
-    label: "Paiment mobile",
-    value: "cinetpay",
-  },
-  flexpaie: {
-    label: "Paiment mobile",
-    value: "flexpaie",
-  },
-  mpesa: {
-    label: "M-Pesa",
-    value: "mpesa",
-  },
-  orangeMoney: {
-    label: "Orange Money",
-    value: "orangeMoney",
-  },
-};
 
 const Orders = () => {
   const [loading, setLoading] = useState(false);
