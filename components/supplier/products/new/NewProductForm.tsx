@@ -385,9 +385,26 @@ const NewProductForm = () => {
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setImage(e.target.files[0]);
+                        const file = e.target.files?.[0];
+
+                        if (!file) return;
+
+                        const maxSize = 2 * 1024 * 1024; // 2MB
+
+                        // CHECK TYPE
+                        if (!file.type.startsWith("image/")) {
+                          toast.error("Veuillez sélectionner une image valide");
+                          return;
                         }
+
+                        // CHECK SIZE
+                        if (file.size > maxSize) {
+                          toast.error("L'image doit être inférieure à 2MB");
+                          return;
+                        }
+
+                        // ✅ OK
+                        setImage(file);
                       }}
                       className="hidden text-sm"
                     />

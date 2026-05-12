@@ -12,6 +12,7 @@ import Articles from "./Articles";
 import ModifyAddress from "./ModifyAddress";
 import AvaiabillityForm from "./AvaiabillityForm";
 import ProductDangerZone from "./ProductDangerZone";
+import ModifyAdditionnalImages from "./ModifyAdditionnalImages";
 
 type Props = {
   product: SupplierProduct & {
@@ -21,7 +22,10 @@ type Props = {
 };
 
 const MainForm = ({ product }: Props) => {
+  // IMAGE INFOS
   const ImageProps = { image: product.image, productId: product.id };
+
+  // PRINCIAL INFORMATIONS
   const ProductInfo = {
     name: product.name,
     description: product.description,
@@ -30,6 +34,7 @@ const MainForm = ({ product }: Props) => {
     productId: product.id,
   };
 
+  // CLASSIFICATION INFOS
   const ProductClassification = {
     state: product.state,
     category: product.category,
@@ -39,6 +44,7 @@ const MainForm = ({ product }: Props) => {
     productId: product.id,
   };
 
+  // ARTICLES INFOS
   const ProductArticles = {
     articles: product.Article.map((a) => ({
       color: a.color,
@@ -56,31 +62,13 @@ const MainForm = ({ product }: Props) => {
         <ModifyImage ImageProps={ImageProps} />
 
         {/* Modify Images(others) */}
-        <div className="w-full flex flex-col gap-3">
-          {/* LABEL */}
-          <div>
-            <p className="text-sm font-medium">Les images du produit</p>
-            <p className="text-xs text-muted-foreground">
-              Modifiez les image additionnelles du produit
-            </p>
-          </div>
-
-          <div
-            className="
-            relative w-full h-64
-           grid grid-cols-2 gap-4
-          "
-          >
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                className=" rounded-xl overflow-hidden
-            border bg-muted w-full
-            "
-                key={i.toString()}
-              ></div>
-            ))}
-          </div>
-        </div>
+        <ModifyAdditionnalImages
+          ImageProps={{
+            images: product.images,
+            productId: product.id,
+            productImage: product.image,
+          }}
+        />
 
         {/* Informations Principals */}
         <PrincipalsInformations ProductInfo={ProductInfo} />

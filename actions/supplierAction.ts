@@ -182,7 +182,7 @@ export const supplierProductImages = async (data: {
 
     await prisma.supplierProduct.update({
       where: { id: isProductExists.id },
-      data: { image: data.image },
+      data: { image: data.image, images: data.images },
     });
 
     return {

@@ -177,9 +177,26 @@ const ModifyImage = ({ ImageProps }: Props) => {
             type="file"
             accept="image/*"
             onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setNewImage(e.target.files[0]);
+              const file = e.target.files?.[0];
+
+              if (!file) return;
+
+              const maxSize = 2 * 1024 * 1024; // 2MB
+
+              // CHECK TYPE
+              if (!file.type.startsWith("image/")) {
+                toast.error("Veuillez sélectionner une image valide");
+                return;
               }
+
+              // CHECK SIZE
+              if (file.size > maxSize) {
+                toast.error("L'image doit être inférieure à 2MB");
+                return;
+              }
+
+              // ✅ OK
+              setNewImage(file);
             }}
             className="hidden"
           />
