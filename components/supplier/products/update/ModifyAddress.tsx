@@ -15,6 +15,7 @@ type AddressType = {
   address: string;
   contactNumber: string;
   paymentNumber: string;
+  deliveryPrice: number;
 };
 
 const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
@@ -32,6 +33,9 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
 
   const [contactNumber, setContactNumber] = useState(rest.contactNumber ?? "");
   const [paymentNumber, setPaymentNumber] = useState(rest.paymentNumber ?? "");
+  const [deliveryPrice, setDeliveryPrice] = useState(
+    rest.deliveryPrice?.toString() ?? "",
+  );
 
   const [formData, setFormData] = useState(initial);
 
@@ -43,14 +47,17 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
       formData.quartier !== initial.quartier ||
       formData.avenue !== initial.avenue ||
       contactNumber !== rest.contactNumber ||
-      paymentNumber !== rest.paymentNumber;
+      paymentNumber !== rest.paymentNumber ||
+      deliveryPrice !== rest.deliveryPrice?.toString();
 
     const isValid =
       formData.commune &&
       formData.quartier &&
       /^.+,\s*\d+[a-zA-Z]?$/.test(formData.avenue) &&
       isValidNumber(contactNumber) &&
-      isValidNumber(paymentNumber);
+      isValidNumber(paymentNumber) &&
+      !isNaN(Number(deliveryPrice)) &&
+      Number(deliveryPrice) >= 0;
 
     return hasChanged && isValid;
   }, [
@@ -60,6 +67,7 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
     initial,
     rest.contactNumber,
     rest.paymentNumber,
+    rest.deliveryPrice,
   ]);
 
   const handleUpdate = async () => {
@@ -91,19 +99,24 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
         );
         return;
       }
+      if (isNaN(Number(deliveryPrice)) || Number(deliveryPrice) < 0) {
+        toast.error("Le prix de livraison doit être un nombre positif");
+        return;
+      }
 
       const payload = {
         address: `${formData.commune}, ${formData.quartier}, ${formData.avenue}`,
         productId,
         contactNumber,
         paymentNumber,
+        deliveryPrice: parseFloat(deliveryPrice),
       };
 
       const result = await upadteAddressProduct(payload);
 
       if (result.error) throw new Error(result.message);
 
-      toast.success("Adresse mise à jour");
+      toast.success(result.message);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || "Une erreur est survenue");
@@ -192,6 +205,24 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
           <p className="text-xs text-muted-foreground">
             Format : Nom de l’avenue, numéro (ex: Samba, 12)
           </p>
+        </div>
+
+        {/* DELIVERY PRICE */}
+        <div className="grid w-full items-center gap-2 col-span-1">
+          <label htmlFor="deliveryPrice" className="text-sm font-medium">
+            Prix de livraison (USD)*
+          </label>
+          <Input
+            id="deliveryPrice"
+            type="number"
+            placeholder="Ex: 3.5"
+            required
+            min="0"
+            step="0.1"
+            value={deliveryPrice}
+            onChange={(e) => setDeliveryPrice(e.target.value)}
+            className="text-sm"
+          />
         </div>
 
         {/* CONTACTS */}

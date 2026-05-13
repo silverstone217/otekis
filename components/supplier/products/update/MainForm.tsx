@@ -85,6 +85,7 @@ const MainForm = ({ product }: Props) => {
           productId={product.id}
           contactNumber={product.contactNumber}
           paymentNumber={product.paymentNumber}
+          deliveryPrice={product.deliveryPrice}
         />
 
         {/* AV */}

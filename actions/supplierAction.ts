@@ -74,6 +74,7 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
       image,
       contactNumber,
       paymentNumber,
+      deliveryPrice,
     } = validatedData.data;
 
     // CREATE PRODUCT IN DATABASE
@@ -116,6 +117,7 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
         },
         quality: "original",
         stock: articles.reduce((total, article) => total + article.quantity, 0),
+        deliveryPrice,
       },
     });
 
@@ -498,6 +500,7 @@ export const upadteAddressProduct = async (data: {
   productId: string;
   contactNumber: string;
   paymentNumber: string;
+  deliveryPrice: number;
 }) => {
   try {
     // CHECK USER AUTHENTICATION
@@ -536,6 +539,7 @@ export const upadteAddressProduct = async (data: {
         address: data.address.trim(),
         contactNumber: data.contactNumber,
         paymentNumber: data.paymentNumber,
+        deliveryPrice: data.deliveryPrice,
       },
     });
 

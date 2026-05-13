@@ -97,6 +97,7 @@ const NewProductForm = () => {
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
   const [avenue, setAvenue] = useState("");
+  const [deliveryPrice, setDeliveryPrice] = useState("");
 
   const [contactNumber, setContactNumber] = useState("");
   const [paymentNumber, setPaymentNumber] = useState("");
@@ -161,6 +162,11 @@ const NewProductForm = () => {
     );
     if (paymentError) newErrors.paymentNumber = paymentError;
 
+    if (isNaN(Number(deliveryPrice)) || Number(deliveryPrice) < 0) {
+      newErrors.deliveryPrice =
+        "Le prix de livraison doit être un nombre positif";
+    }
+
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -215,6 +221,7 @@ const NewProductForm = () => {
         articles,
         contactNumber,
         paymentNumber,
+        deliveryPrice: parseFloat(deliveryPrice),
         image: imageUrl, // L'URL de l'image sera définie après l'upload
       };
 
@@ -272,6 +279,8 @@ const NewProductForm = () => {
       setContactNumber("");
       setPaymentNumber("");
       setPrice("");
+      setArticles([{ color: "", size: "", quantity: 1 }]);
+      setDeliveryPrice("");
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Une erreur est survenue lors de l'ajout du produit");
@@ -632,6 +641,24 @@ const NewProductForm = () => {
               <p className="text-xs text-muted-foreground">
                 Format : Nom de l’avenue, numéro (ex: Samba, 12)
               </p>
+            </div>
+
+            {/* DELIVERY PRICE */}
+            <div className="grid w-full items-center gap-2 col-span-1">
+              <label htmlFor="deliveryPrice" className="text-sm font-medium">
+                Prix de livraison (USD)*
+              </label>
+              <Input
+                id="deliveryPrice"
+                type="number"
+                placeholder="Ex: 3.5"
+                required
+                min="0"
+                step="0.1"
+                value={deliveryPrice}
+                onChange={(e) => setDeliveryPrice(e.target.value)}
+                className="text-sm"
+              />
             </div>
 
             {/* CONTACTS */}

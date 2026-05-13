@@ -142,7 +142,7 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Cart Cart[]
+  Cart       Cart[]
   orderItems OrderItem[]
 }
 
@@ -339,7 +339,7 @@ model OrderItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
@@ -628,6 +628,7 @@ model SupplierProduct {
   isAvailable SupplierProductAvailability @default(for_all)
 
   address       String
+  deliveryPrice Float         @default(3.5)
   contactNumber String        @default("832222662")
   paymentNumber String        @default("832222662")
   origin        ProductOrigin @default(supplier)

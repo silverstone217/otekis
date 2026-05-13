@@ -54,6 +54,9 @@ export const NewSupplierProductSchema = z
     avenue: z.string().regex(/^.+,\s*\d+[a-zA-Z]?$/, {
       message: "Format invalide (ex: Samba, 12 ou Samba, 12C)",
     }),
+    deliveryPrice: z.number().refine((val) => val >= 0, {
+      message: "Le prix de livraison doit être un nombre positif",
+    }),
   })
   .refine(
     (data) => {

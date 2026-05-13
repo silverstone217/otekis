@@ -100,6 +100,8 @@ const MainComponent = ({
     totalPriceAfterDiscount,
   );
 
+  const deliveryPrice = product.deliveryPrice ?? 0;
+
   // PRICE
   //   const finalPrice = product.price + beneficeAfterDiscount;
   // const total = useMemo(
