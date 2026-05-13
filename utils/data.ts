@@ -63,7 +63,8 @@ export const AdminLinksPage = [
   },
   {
     name: "Traitement et commandes",
-    path: "/commandes/status/en_cours_de_traitement",
+    path: "/commandes",
+    // path: "/commandes/status/en_cours_de_traitement",
     icon: ShoppingBag,
     roles: ["super_admin", "admin", "employee"],
   },

@@ -22,6 +22,10 @@ import {
 } from "lucide-react";
 import { ProductsByCategoryType } from "@/actions/adminsActions";
 import { capitalizeText } from "@/utils/shopFunctions";
+import { cleanInvalidOrders } from "@/actions/regulators";
+import { toast } from "sonner";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
 
@@ -74,12 +78,35 @@ export default function OverviewMainComponent({
   const totals = total_product.reduce((arr, prod) => {
     return arr + prod.value;
   }, 0);
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const regulateOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await cleanInvalidOrders();
+      if (res.error) {
+        toast.error("Erreur lors du nettoyage des commandes invalides");
+        return;
+      }
+      toast.success(res.message);
+      router.refresh();
+    } catch (error) {
+      toast.error("Erreur lors du nettoyage des commandes invalides");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-y-4">
         <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
-        <Button variant="outline">Exporter</Button>
+        <Button variant="outline" disabled={loading} onClick={regulateOrders}>
+          {loading ? "Nettoyage en cours..." : "Exporter"}
+        </Button>
       </div>
 
       {/* Stat Cards */}

@@ -58,7 +58,8 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
   `}
     >
       <div
-        className={`w-full max-w-7xl mx-auto flex items-center justify-between gap-10 flex-shrink-0
+        className={`w-full max-w-7xl mx-auto flex items-center justify-between
+           gap-10 shrink-0
       ${isOpen ? "flex-wrap" : ""}
       transition-all duration-500 ease-in-out
       `}
@@ -71,7 +72,7 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
         </Link>
 
         {/* small screen open menu */}
-        <div className="lg:hidden flex-shrink-0">
+        <div className="lg:hidden shrink-0">
           <button
             onClick={toggleMenu}
             className="flex items-center justify-center
@@ -98,7 +99,7 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
             {/* links */}
             <div className="w-full flex flex-1 flex-col gap-4 2xl:mt-2">
               {AdminLinksPage.filter((lk) =>
-                user ? lk.roles.includes(user?.role) : lk.roles.length === 3
+                user ? lk.roles.includes(user?.role) : lk.roles.length === 3,
               ).map((link, idx) => (
                 <Link
                   key={idx}
@@ -115,7 +116,7 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
              hover:opacity-70 relative
              `}
                 >
-                  <link.icon className="w-8 flex-shrink-0" />
+                  <link.icon className="w-8 shrink-0" />
                   <span>{link.name}</span>
                   {user &&
                     link.name
@@ -133,7 +134,10 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
               ))}
             </div>
 
-            <div className="w-full flex flex-col items-start justify-start gap-4 flex-shrink-0 pt-6 border-t-2">
+            <div
+              className="w-full flex flex-col items-start justify-start 
+            gap-4 shrink-0 pt-6 border-t-2"
+            >
               {/* <Link
                 href={"/"}
                 onClick={() => setIsOpen(false)}
@@ -195,7 +199,7 @@ const HeaderSmallScreen = ({ initialCount }: Props) => {
                   variant={"destructive"}
                   className="w-full py-5 flex items-center justify-center gap-4"
                 >
-                  <LogOut className="w-8 flex-shrink-0" />
+                  <LogOut className="w-8 shrink-0" />
                   <span>Deconnexion</span>
                 </Button>
               )}

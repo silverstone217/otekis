@@ -143,7 +143,7 @@ model Article {
   updatedAt DateTime @updatedAt
 
   Cart Cart[]
-  // orderItems OrderItem[]
+  orderItems OrderItem[]
 }
 
 model HistoryOrder {
@@ -340,7 +340,7 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  // article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 // Factures

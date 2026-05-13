@@ -265,7 +265,7 @@ export const createSupplierOrder = async ({
     // FONCTION FLEXPAIE
     // proceed to create order
     const transaction_id = v4().toString().replace(/-/g, "");
-    /*  const flexpaieApiToken = FLEXPAIE_TOKEN;
+    const flexpaieApiToken = FLEXPAIE_TOKEN;
     const flexpaieApiUrl = FLEXPAIE_URL_API;
 
     // URL to notify
@@ -338,7 +338,7 @@ export const createSupplierOrder = async ({
         message: "Le paiement n'a pas été confirmé. Veuillez réessayer.",
         data: null,
       };
-    } */
+    }
 
     // SHARES MONEY
     const supplierAmount = productShop.Product.price * quantity * exchange;
