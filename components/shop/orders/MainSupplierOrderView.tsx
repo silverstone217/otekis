@@ -284,8 +284,8 @@ const MainSupplierOrderView = ({
         </Card>
       </section>
 
-      {/* SECTION 4: INFO LIVREUR SI DISPONIBLE */}
-      {deliveryCompany && (
+      {/* SECTION 4.1: INFO LIVREUR SI DISPONIBLE */}
+      {deliveryCompany && !product.isDelivering && (
         <section>
           <Card
             style={{ borderColor, borderRadius, color: preferences.textColor }}
@@ -308,6 +308,42 @@ const MainSupplierOrderView = ({
                     )}
                   >
                     {deliveryCompany.name}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+      )}
+
+      {/* SECTION 4.1: INFO FOURNISSEUR - LIVREUR SI DISPONIBLE */}
+      {product.isDelivering && (
+        <section>
+          <Card
+            style={{ borderColor, borderRadius, color: preferences.textColor }}
+            className="border border-dashed bg-primary/5"
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-12 w-12 bg-white rounded-full 
+                flex items-center justify-center shadow-sm"
+                >
+                  <Truck className="w-6 h-6 text-primary" />
+                </div>
+                <div style={{ color: preferences.textColor }}>
+                  <h4 className="font-bold text-sm">Pris en charge par</h4>
+                  <p
+                    className={cn(
+                      "text-sm font-medium capitalize mt-0.5",
+                      preferences.textColor,
+                    )}
+                  >
+                    {order.deliverName} - {order.deliverPhone}
+                  </p>
+
+                  <p>
+                    {order.deliveryPrice} {order.currency}{" "}
                   </p>
                 </div>
               </div>

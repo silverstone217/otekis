@@ -131,6 +131,8 @@ export const canThisOrderBeProccessed = async ({
         shopId: productShop.shopId,
         exchange,
         supplierId: productShop.Product.supplierId,
+        supplierName: productShop.Product.Supplier.name,
+        supplierTel: productShop.Product.paymentNumber,
       },
     };
   } catch (error) {
@@ -209,8 +211,15 @@ export const createSupplierOrder = async ({
       };
     }
 
-    const { article, productShop, shopId, exchange, supplierId } =
-      existingProductShop;
+    const {
+      article,
+      productShop,
+      shopId,
+      exchange,
+      supplierId,
+      supplierName,
+      supplierTel,
+    } = existingProductShop;
 
     // 3. GET INFOS
     const shop = await prisma.shop.findUnique({
@@ -403,6 +412,8 @@ export const createSupplierOrder = async ({
 
         deliveryPrice,
         deliveryCompanyId: isSupplierDelivering ? null : deliveryInfos.id,
+        deliverName: supplierName ?? deliveryInfos?.name,
+        deliverPhone: supplierTel ?? deliveryInfos?.phone,
 
         status: "en cours de traitement",
         paymentStatus: "payé",

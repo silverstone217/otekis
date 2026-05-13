@@ -130,6 +130,64 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
         </Badge>
       </div>
 
+      {/* ACTIONS ADMIN */}
+      {!isFinal && (
+        <div
+          className="bg-card border rounded-2xl p-5 shadow-sm space-y-4 
+            border-t-4 border-t-primary"
+        >
+          <div
+            className="flex items-center gap-2 font-black text-[10px] 
+              uppercase tracking-widest"
+          >
+            <AlertCircle className="w-3.5 h-3.5 text-primary" /> Management
+            Statut
+          </div>
+          <div className="flex flex-col gap-2">
+            {order.status === "en cours de traitement" && (
+              <Button
+                onClick={() => handleUpdateStatus("en attente de livraison")}
+                disabled={loading}
+                className="w-full h-11 rounded-xl shadow-lg shadow-primary/20 
+                    font-bold"
+              >
+                Confirmer la commande
+              </Button>
+            )}
+
+            {order.status === "en attente de livraison" && (
+              <Button
+                onClick={() => handleUpdateStatus("en cours de livraison")}
+                disabled={loading}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 h-11 
+                    rounded-xl shadow-lg shadow-indigo-200 font-bold"
+              >
+                Lancer l'expédition
+              </Button>
+            )}
+
+            {order.status === "en cours de livraison" && (
+              <Button
+                onClick={() => handleUpdateStatus("livré")}
+                disabled={loading}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 h-11 rounded-xl shadow-lg shadow-emerald-200 font-bold"
+              >
+                Confirmer Livraison
+              </Button>
+            )}
+
+            <Button
+              variant="ghost"
+              onClick={() => handleUpdateStatus("annulé")}
+              disabled={loading}
+              className="w-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-[10px] font-bold uppercase tracking-widest"
+            >
+              Annuler la vente
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* --- COLONNE GAUCHE: PRODUIT & CLIENT --- */}
         <div className="lg:col-span-2 space-y-6">
@@ -314,7 +372,17 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
                     className="px-2 py-0.5 bg-white/10 rounded-full 
                   text-[9px] font-bold uppercase tracking-wider"
                   >
-                    {order.deliveryCompany?.name || "Standard"}
+                    {order.deliveryCompany?.name || order.deliverName || "N/A"}{" "}
+                    - +(243){" "}
+                    {order.deliveryCompany?.phone ||
+                      order.deliverPhone ||
+                      "N/A"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs capitalize">
+                  <span className="text-slate-400">Methode de paiement</span>
+                  <span className="font-bold">
+                    {order.paymentMethod || "N/A"}
                   </span>
                 </div>
               </div>
@@ -358,66 +426,6 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
               </div>
             </div>
           </div>
-
-          {/* ACTIONS ADMIN */}
-          {!isFinal && (
-            <div
-              className="bg-card border rounded-2xl p-5 shadow-sm space-y-4 
-            border-t-4 border-t-primary"
-            >
-              <div
-                className="flex items-center gap-2 font-black text-[10px] 
-              uppercase tracking-widest"
-              >
-                <AlertCircle className="w-3.5 h-3.5 text-primary" /> Management
-                Statut
-              </div>
-              <div className="flex flex-col gap-2">
-                {order.status === "en cours de traitement" && (
-                  <Button
-                    onClick={() =>
-                      handleUpdateStatus("en attente de livraison")
-                    }
-                    disabled={loading}
-                    className="w-full h-11 rounded-xl shadow-lg shadow-primary/20 
-                    font-bold"
-                  >
-                    Confirmer la commande
-                  </Button>
-                )}
-
-                {order.status === "en attente de livraison" && (
-                  <Button
-                    onClick={() => handleUpdateStatus("en cours de livraison")}
-                    disabled={loading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 h-11 
-                    rounded-xl shadow-lg shadow-indigo-200 font-bold"
-                  >
-                    Lancer l'expédition
-                  </Button>
-                )}
-
-                {order.status === "en cours de livraison" && (
-                  <Button
-                    onClick={() => handleUpdateStatus("livré")}
-                    disabled={loading}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 h-11 rounded-xl shadow-lg shadow-emerald-200 font-bold"
-                  >
-                    Confirmer Livraison
-                  </Button>
-                )}
-
-                <Button
-                  variant="ghost"
-                  onClick={() => handleUpdateStatus("annulé")}
-                  disabled={loading}
-                  className="w-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-[10px] font-bold uppercase tracking-widest"
-                >
-                  Annuler la vente
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

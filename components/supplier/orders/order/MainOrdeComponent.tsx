@@ -302,16 +302,33 @@ const MainOrdeComponent = ({ article, order, product, shop }: Props) => {
                 <Truck className="w-4 h-4 text-primary" /> Expédition
               </div>
               <div className="space-y-3">
-                <p className="font-bold text-base capitalize">
-                  {order.deliveryCompany?.name || "En attente d'assignation"}
-                </p>
-                <div
-                  className="bg-muted/50 p-2 rounded-lg text-[11px] 
-                text-muted-foreground flex items-center gap-2"
-                >
-                  <Info className="w-3 h-3" />
-                  Code de validation requis à la livraison.
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Transporteur</span>
+                  <span
+                    className="px-2 py-0.5 bg-white/10 rounded-full 
+                  text-[9px] font-bold uppercase tracking-wider"
+                  >
+                    {order.deliveryCompany?.name || order.deliverName || "N/A"}{" "}
+                    - +(243){" "}
+                    {order.deliveryCompany?.phone ||
+                      order.deliverPhone ||
+                      "N/A"}
+                  </span>
                 </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Frais Livraison</span>
+                  <span className="font-bold text-amber-400">
+                    {order.deliveryPrice} {order.currency}
+                  </span>
+                </div>
+
+                {product.isDelivering && (
+                  <p className="text-xs">
+                    <Info className="w-3.5 h-3.5 text-blue-500 inline-block text-xs mr-1.5" />{" "}
+                    Les frais de livraison sont perçus à la livraison.
+                  </p>
+                )}
+
                 {order.ShipmentNumber && (
                   <p
                     className="text-xs font-mono bg-primary/5 p-2 rounded 

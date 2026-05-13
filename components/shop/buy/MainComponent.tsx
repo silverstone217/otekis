@@ -649,11 +649,8 @@ const MainComponent = ({
           borderRadius: preferences.buttonRadius,
         }}
       >
-        {loading ? (
-          <Loader2 className="animate-spin w-4 h-4" />
-        ) : (
-          `Payer ${(total + (isSupplierDelivering ? 0 : typeof deliveryPriceFinal === "number" ? deliveryPriceFinal : 0)).toLocaleString()} ${companyPrefs.currency}`
-        )}
+        {loading && <Loader2 className="animate-spin w-4 h-4" />}
+        {`Payer ${(total + (isSupplierDelivering ? 0 : typeof deliveryPriceFinal === "number" ? deliveryPriceFinal : 0)).toLocaleString()} ${companyPrefs.currency}`}
       </Button>
 
       {/* SUCCESS MODAL */}

@@ -742,7 +742,9 @@ model SupplierOrder {
   receiverAddress String
   receiverTel     String
   receiverName    String
-  deliveryPrice   Float  @default(0)
+  deliveryPrice   Float   @default(0)
+  deliverName     String?
+  deliverPhone    String?
 
   ShipmentNumber String?
   ValidationCode String?
