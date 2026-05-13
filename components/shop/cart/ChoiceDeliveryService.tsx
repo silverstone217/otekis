@@ -129,7 +129,8 @@ const ChoiceDeliveryService = ({
         const filteredCompanies = result
           .map((service) => {
             const registered = deliveryService.find(
-              (r) => r.name.toLowerCase() === service.company.name.toLowerCase()
+              (r) =>
+                r.name.toLowerCase() === service.company.name.toLowerCase(),
             );
 
             if (registered) {
@@ -168,14 +169,14 @@ const ChoiceDeliveryService = ({
     // Recherche le service correspondant dans la liste des compagnies
     const selectedService = companies.find(
       (service) =>
-        service.company.name.toLowerCase() === deliveryChoice.toLowerCase()
+        service.company.name.toLowerCase() === deliveryChoice.toLowerCase(),
     );
 
     if (selectedService) {
       const newDelPrice =
         currency === "$"
           ? toUpperInteger(
-              parseFloat((selectedService.price / exchangeValue).toFixed(2))
+              parseFloat((selectedService.price / exchangeValue).toFixed(2)),
             )
           : toUpperInteger(parseFloat(selectedService.price.toFixed(2)));
 
@@ -183,9 +184,9 @@ const ChoiceDeliveryService = ({
       setDeliveryPrice(
         deliveryPaymentMethode !== "cash"
           ? toUpperInteger(
-              returnRealValueWithPercentage(newDelPrice, cinetPayPercentage)
+              returnRealValueWithPercentage(newDelPrice, cinetPayPercentage),
             )
-          : newDelPrice
+          : newDelPrice,
       );
 
       // PAYMENT METHOD

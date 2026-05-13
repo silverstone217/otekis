@@ -628,6 +628,7 @@ model SupplierProduct {
   isAvailable SupplierProductAvailability @default(for_all)
 
   address       String
+  isDelivering  Boolean       @default(false)
   deliveryPrice Float         @default(3.5)
   contactNumber String        @default("832222662")
   paymentNumber String        @default("832222662")
@@ -717,12 +718,12 @@ enum SupplierCurrency {
 
 // ORDERS SUPPLIER PRODUCTS
 model SupplierOrder {
-  id                String @id @default(cuid())
+  id                String  @id @default(cuid())
   clientId          String
   shopId            String
   productShopId     String
   articleId         String
-  deliveryCompanyId String
+  deliveryCompanyId String?
 
   totalAmount Float
   quantity    Int
@@ -754,7 +755,7 @@ model SupplierOrder {
   updatedAt DateTime @updatedAt
 
   productShop     SupplierProductShop @relation(fields: [productShopId], references: [id], onDelete: Cascade)
-  deliveryCompany DeliveryCompany     @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
+  deliveryCompany DeliveryCompany?    @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
   article         SupplierArticle     @relation(fields: [articleId], references: [id])
 
   supplierEarning     SupplierEarning?

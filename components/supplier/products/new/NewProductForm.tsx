@@ -97,6 +97,7 @@ const NewProductForm = () => {
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
   const [avenue, setAvenue] = useState("");
+  const [isDelivering, setIsDelivering] = useState(false);
   const [deliveryPrice, setDeliveryPrice] = useState("");
 
   const [contactNumber, setContactNumber] = useState("");
@@ -223,6 +224,7 @@ const NewProductForm = () => {
         paymentNumber,
         deliveryPrice: parseFloat(deliveryPrice),
         image: imageUrl, // L'URL de l'image sera définie après l'upload
+        isDelivering,
       };
 
       // SEND DATA to API
@@ -281,6 +283,7 @@ const NewProductForm = () => {
       setPrice("");
       setArticles([{ color: "", size: "", quantity: 1 }]);
       setDeliveryPrice("");
+      setIsDelivering(false);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Une erreur est survenue lors de l'ajout du produit");
@@ -643,22 +646,52 @@ const NewProductForm = () => {
               </p>
             </div>
 
-            {/* DELIVERY PRICE */}
-            <div className="grid w-full items-center gap-2 col-span-1">
-              <label htmlFor="deliveryPrice" className="text-sm font-medium">
-                Prix de livraison (USD)*
-              </label>
-              <Input
-                id="deliveryPrice"
-                type="number"
-                placeholder="Ex: 3.5"
-                required
-                min="0"
-                step="0.1"
-                value={deliveryPrice}
-                onChange={(e) => setDeliveryPrice(e.target.value)}
-                className="text-sm"
-              />
+            <div className={`grid w-full grid-cols-1 sm:grid-cols-2 gap-4`}>
+              {/* LIVRAISON */}
+              <div className="grid w-full items-center gap-2 col-span-1">
+                <label htmlFor="isDelivering" className="text-sm font-medium">
+                  Proposez-vous la livraison ?
+                </label>
+
+                <SelectorProducts
+                  data={[
+                    { label: "Oui", value: "yes" },
+                    { label: "Non", value: "no" },
+                  ]}
+                  onChange={(val) => {
+                    setIsDelivering(val === "yes");
+                    if (val !== "yes") {
+                      setDeliveryPrice("");
+                    }
+                  }}
+                  value={isDelivering ? "yes" : "no"}
+                  placeholder="Sélectionnez une option"
+                  disabled={loading}
+                />
+              </div>
+
+              {/* DELIVERY PRICE */}
+              {isDelivering && (
+                <div className="grid w-full items-center gap-2 col-span-1">
+                  <label
+                    htmlFor="deliveryPrice"
+                    className="text-sm font-medium"
+                  >
+                    Prix de livraison ($)*
+                  </label>
+                  <Input
+                    id="deliveryPrice"
+                    type="number"
+                    placeholder="Ex: 3.5"
+                    required
+                    min="0"
+                    step="0.1"
+                    value={deliveryPrice}
+                    onChange={(e) => setDeliveryPrice(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+              )}
             </div>
 
             {/* CONTACTS */}

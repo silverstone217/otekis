@@ -5,6 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import {
+  DeliveryCompany,
+  PaymentMethod,
+  PaymentMethodOrder,
   Preferences,
   Shop,
   SupplierArticle,
@@ -37,6 +40,8 @@ import {
   CreateSupplierOrderType,
 } from "@/actions/supplierOrderAction";
 import { SuccessOrderModal } from "./SuccessOrderModal";
+import { useCurrentUser } from "@/hooks/UserAuth";
+import ChoiceDeliveryService from "../cart/ChoiceDeliveryService";
 
 type Props = {
   shop: Shop;
@@ -47,8 +52,10 @@ type Props = {
   companyPrefs: {
     currency: "USD" | "CDF";
     exchange: number;
+    paymentMethod: PaymentMethodOrder;
   };
   supplierProductShops: SupplierProductShop;
+  deliveryService: DeliveryCompany[];
 };
 
 const MainComponent = ({
@@ -56,6 +63,7 @@ const MainComponent = ({
   companyPrefs,
   product,
   shop,
+  deliveryService,
   supplierProductShops: productShop,
 }: Props) => {
   const router = useRouter();
@@ -101,6 +109,50 @@ const MainComponent = ({
   );
 
   const deliveryPrice = product.deliveryPrice ?? 0;
+  const isSupplierDelivering = product.isDelivering ?? false;
+  const exchange = companyPrefs.exchange;
+  const currency = companyPrefs.currency;
+
+  const user = useCurrentUser();
+  const [isBuyingGeneralTermsAccepted, setIsBuyingGeneralTermsAccepted] =
+    useState(user ? user.isBuyingGeneralTermsAccepted : false);
+  const [isBuyingTermsAccepted, setIsBuyingTermsAccepted] = useState(false);
+
+  // Fetch delivery price
+  const [deliveryPriceFinal, setDeliveryPriceFinal] = useState<
+    "Zone non couverte" | "non-specifie" | number
+  >("non-specifie");
+
+  const [deliveryChoice, setDeliveryChoice] = useState("");
+  const [deliveryPaymentMethode, setDeliveryPaymentMethode] = useState("");
+
+  const changedDeliveryPrice = useMemo(
+    () =>
+      isSupplierDelivering && currency === "CDF"
+        ? deliveryPrice * exchange
+        : isSupplierDelivering && currency === "USD"
+          ? deliveryPrice
+          : typeof deliveryPriceFinal === "number"
+            ? currency === "CDF"
+              ? deliveryPriceFinal
+              : deliveryPriceFinal / exchange
+            : 0,
+    [
+      deliveryPrice,
+      exchange,
+      currency,
+      deliveryPriceFinal,
+      isSupplierDelivering,
+    ],
+  );
+
+  const deliveryChoiceSysteme = useMemo(
+    () =>
+      deliveryService.find((d) =>
+        d.name.toLocaleLowerCase().includes(deliveryChoice.toLocaleLowerCase()),
+      ),
+    [deliveryChoice, deliveryService],
+  );
 
   // PRICE
   //   const finalPrice = product.price + beneficeAfterDiscount;
@@ -200,9 +252,11 @@ const MainComponent = ({
         },
         productShopId: productShop.id,
         paymentNumber,
-        deliveryId: "",
+        deliveryId: deliveryChoiceSysteme?.id ?? deliveryChoice,
 
         amount: total,
+        deliveryPrice: changedDeliveryPrice,
+        isSupplierDelivering: isSupplierDelivering,
       };
 
       const result = await createSupplierOrder(payload);
@@ -501,11 +555,67 @@ const MainComponent = ({
         </p>
       </div>
 
-      {/* 5. PAIEMENT */}
+      {/* 5. LIVRAISON */}
+      {/* 5.1 SUPPLIER DELIVERY */}
+      {isSupplierDelivering && (
+        <div
+          className="text-sm text-blue-500 bg-blue-500/10 
+          border border-blue-500/20 rounded-lg p-3 flex items-center gap-2"
+        >
+          <MapPin className="w-4 h-4" />
+          Livraison disponible pour ce produit. Frais de livraison:{" "}
+          {changedDeliveryPrice.toLocaleString()} {currency}
+          <br />
+          (Les frais de livraison sont payes à la livraison au livreur){" "}
+        </div>
+      )}
+
+      {/* 5.2 DELIVERY COMPANY */}
+      {!isSupplierDelivering && (
+        <div>
+          <ChoiceDeliveryService
+            deliveryChoice={deliveryChoice}
+            setDeliveryChoice={setDeliveryChoice}
+            preferences={preferences}
+            commune={commune}
+            quartier={quartier}
+            deliveryPrice={deliveryPriceFinal}
+            setDeliveryPrice={setDeliveryPriceFinal}
+            deliveryService={deliveryService}
+            setDeliveryPaymentMethode={setDeliveryPaymentMethode}
+            currency={currency === "USD" ? "$" : "CDF"}
+            exchange={exchange}
+            exchangeValue={exchange}
+            cinetPayPercentage={0}
+            deliveryPaymentMethode={deliveryPaymentMethode}
+            isBuying={loading}
+          />
+          <div
+            className="mt-2 p-3 text-sm rounded-lg border bg-yellow-500/10 
+          border-yellow-500/20 flex items-center gap-2"
+          >
+            <p className="text-xs text-muted-foreground f">
+              {typeof deliveryPriceFinal === "number" && (
+                <span>Frais de livraison </span>
+              )}{" "}
+              <span className="font-bold">
+                {deliveryPriceFinal}{" "}
+                {typeof deliveryPriceFinal === "number"
+                  ? currency === "USD"
+                    ? "$"
+                    : "CDF"
+                  : ""}
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 6. PAIEMENT */}
       <div className="space-y-4">
         <h3 className="flex items-center gap-2 text-sm font-medium">
           <Phone className="w-4 h-4" />
-          5. Paiement
+          6. Paiement
         </h3>
 
         <div className="relative">
@@ -542,7 +652,7 @@ const MainComponent = ({
         {loading ? (
           <Loader2 className="animate-spin w-4 h-4" />
         ) : (
-          `Payer ${total.toLocaleString()} ${companyPrefs.currency}`
+          `Payer ${(total + (isSupplierDelivering ? 0 : typeof deliveryPriceFinal === "number" ? deliveryPriceFinal : 0)).toLocaleString()} ${companyPrefs.currency}`
         )}
       </Button>
 

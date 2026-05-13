@@ -16,6 +16,7 @@ type AddressType = {
   contactNumber: string;
   paymentNumber: string;
   deliveryPrice: number;
+  isDelivering: boolean;
 };
 
 const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
@@ -36,6 +37,7 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
   const [deliveryPrice, setDeliveryPrice] = useState(
     rest.deliveryPrice?.toString() ?? "",
   );
+  const [isDelivering, setIsDelivering] = useState(rest.isDelivering ?? false);
 
   const [formData, setFormData] = useState(initial);
 
@@ -48,7 +50,8 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
       formData.avenue !== initial.avenue ||
       contactNumber !== rest.contactNumber ||
       paymentNumber !== rest.paymentNumber ||
-      deliveryPrice !== rest.deliveryPrice?.toString();
+      deliveryPrice !== rest.deliveryPrice?.toString() ||
+      isDelivering !== rest.isDelivering;
 
     const isValid =
       formData.commune &&
@@ -57,7 +60,8 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
       isValidNumber(contactNumber) &&
       isValidNumber(paymentNumber) &&
       !isNaN(Number(deliveryPrice)) &&
-      Number(deliveryPrice) >= 0;
+      Number(deliveryPrice) >= 0 &&
+      (isDelivering ? Number(deliveryPrice) > 0 : true);
 
     return hasChanged && isValid;
   }, [
@@ -68,6 +72,7 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
     rest.contactNumber,
     rest.paymentNumber,
     rest.deliveryPrice,
+    rest.isDelivering,
   ]);
 
   const handleUpdate = async () => {
@@ -110,6 +115,7 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
         contactNumber,
         paymentNumber,
         deliveryPrice: parseFloat(deliveryPrice),
+        isDelivering,
       };
 
       const result = await upadteAddressProduct(payload);
@@ -207,22 +213,50 @@ const ModifyAddress = ({ address, productId, ...rest }: AddressType) => {
           </p>
         </div>
 
-        {/* DELIVERY PRICE */}
-        <div className="grid w-full items-center gap-2 col-span-1">
-          <label htmlFor="deliveryPrice" className="text-sm font-medium">
-            Prix de livraison (USD)*
-          </label>
-          <Input
-            id="deliveryPrice"
-            type="number"
-            placeholder="Ex: 3.5"
-            required
-            min="0"
-            step="0.1"
-            value={deliveryPrice}
-            onChange={(e) => setDeliveryPrice(e.target.value)}
-            className="text-sm"
-          />
+        {/* DELIVERY OPTIONS */}
+        <div className={`grid w-full grid-cols-1 sm:grid-cols-2 gap-4`}>
+          {/* LIVRAISON */}
+          <div className="grid w-full items-center gap-2 col-span-1">
+            <label htmlFor="isDelivering" className="text-sm font-medium">
+              Proposez-vous la livraison ?
+            </label>
+
+            <SelectorProducts
+              data={[
+                { label: "Oui", value: "yes" },
+                { label: "Non", value: "no" },
+              ]}
+              onChange={(val) => {
+                setIsDelivering(val === "yes");
+                if (val !== "yes") {
+                  setDeliveryPrice("");
+                }
+              }}
+              value={isDelivering ? "yes" : "no"}
+              placeholder="Sélectionnez une option"
+              disabled={loading}
+            />
+          </div>
+
+          {/* DELIVERY PRICE */}
+          {isDelivering && (
+            <div className="grid w-full items-center gap-2 col-span-1">
+              <label htmlFor="deliveryPrice" className="text-sm font-medium">
+                Prix de livraison ($)*
+              </label>
+              <Input
+                id="deliveryPrice"
+                type="number"
+                placeholder="Ex: 3.5"
+                required
+                min="0"
+                step="0.1"
+                value={deliveryPrice}
+                onChange={(e) => setDeliveryPrice(e.target.value)}
+                className="text-sm"
+              />
+            </div>
+          )}
         </div>
 
         {/* CONTACTS */}

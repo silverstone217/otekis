@@ -57,6 +57,7 @@ export const NewSupplierProductSchema = z
     deliveryPrice: z.number().refine((val) => val >= 0, {
       message: "Le prix de livraison doit être un nombre positif",
     }),
+    isDelivering: z.boolean(),
   })
   .refine(
     (data) => {

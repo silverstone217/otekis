@@ -158,6 +158,8 @@ export interface CreateSupplierOrderType {
 
   deliveryId: string;
   paymentNumber: string;
+  isSupplierDelivering: boolean;
+  deliveryPrice: number;
 }
 export const createSupplierOrder = async ({
   amount,
@@ -168,6 +170,8 @@ export const createSupplierOrder = async ({
   productShopId,
   quantity,
   receiver,
+  deliveryPrice,
+  isSupplierDelivering,
 }: CreateSupplierOrderType) => {
   try {
     const user = await getUser();
@@ -243,21 +247,56 @@ export const createSupplierOrder = async ({
 
     // SIMULATION DE LIVRAISON ET PRIX DE LIVRAISON
     // DELIVERY INFO
-    const delivery = await prisma.deliveryCompany.findFirst({
-      where: {
-        name: {
-          contains: "otekis",
-        },
-      },
-    });
 
-    const deliveryPrice = 5000; // en CDF
+    let deliveryInfos: {
+      id: string | null;
+      name: string;
+      phone: string;
+      paymentMethod: "cash" | "mobile_money";
+    } | null = null;
 
-    if (!delivery) {
-      return {
-        error: true,
-        message: "Livreur non trouvé!",
+    if (!isSupplierDelivering && deliveryId) {
+      const deliveryCompany = await prisma.deliveryCompany.findUnique({
+        where: { id: deliveryId },
+        select: { id: true, name: true, phone: true, paymentMethod: true },
+      });
+
+      if (!deliveryCompany) {
+        return {
+          error: true,
+          message: "Livreur non trouvé!",
+        };
+      }
+
+      deliveryInfos = {
+        id: deliveryCompany.id,
+        name: deliveryCompany.name,
+        phone: deliveryCompany.phone,
+        paymentMethod: deliveryCompany.paymentMethod,
       };
+    } else {
+      // LOOK SUPPLIER INFO FOR DELIVERY
+      const supplier = await prisma.user.findUnique({
+        where: { id: supplierId },
+        select: {
+          name: true,
+          tel: true,
+        },
+      });
+
+      if (!supplier) {
+        return {
+          error: true,
+          message: "Livreur non trouvé, reessayez plus tard!",
+        };
+      } else {
+        deliveryInfos = {
+          id: null,
+          name: supplier.name || "non précisé",
+          phone: supplier.tel || "non précisé",
+          paymentMethod: "cash",
+        };
+      }
     }
 
     // 4.PAIEMENT SUR FLEXPAIE MOBILE
@@ -277,16 +316,14 @@ export const createSupplierOrder = async ({
     const notify_url = `${baseUrl}/panier`;
 
     // AMOUNT BASED ON DELIVERY METHOD
-    const amountFlexpaie = delivery.name.includes("otekis")
-      ? totalAmount
-      : totalAmount + deliveryPrice;
+    const amountFlexpaie =
+      deliveryInfos.paymentMethod === "mobile_money" ? totalAmount : amount;
 
     // FLEXPAIE PAYMENT DATA
     const flexpaieData: PaymentFlexpaieDataType = {
       merchant: FLEXPAIE_MERCHANT_CODE,
       type: "1",
-      phone:
-        receiver.number.length === 9 ? "243" + receiver.number : paymentNumber,
+      phone: paymentNumber.length === 9 ? "243" + paymentNumber : paymentNumber,
       reference: transaction_id,
       amount: amountFlexpaie.toString(),
       currency: currency,
@@ -348,21 +385,26 @@ export const createSupplierOrder = async ({
     const order = await prisma.supplierOrder.create({
       data: {
         clientId: user.id,
-        exchange: exchange,
+        shopId: shopId,
+        productShopId,
+        articleId,
+
         quantity,
+
         receiverAddress: receiver.address,
         receiverName: receiver.name,
         receiverTel: receiver.number,
-        shopId: shopId,
+
         totalAmount: amount,
         currency,
+        exchange: exchange,
         paymentMethod: "flexpaie",
         paymentRef: /*paymentRef ||*/ transaction_id,
-        deliveryCompanyId: delivery.id,
-        status: "en cours de traitement",
-        productShopId,
-        articleId,
+
         deliveryPrice,
+        deliveryCompanyId: isSupplierDelivering ? null : deliveryInfos.id,
+
+        status: "en cours de traitement",
         paymentStatus: "payé",
 
         // EARNINGS
@@ -388,7 +430,7 @@ export const createSupplierOrder = async ({
     });
 
     // ------ OTEKIS EARNING
-    if (delivery.name.includes("otekis")) {
+    if (deliveryInfos?.name.includes("otekis")) {
       await prisma.otekisEarning.create({
         data: {
           amount: deliveryPrice,
@@ -432,8 +474,8 @@ export const createSupplierOrder = async ({
         receiverNumber: receiver.number,
         receiverAddress: receiver.address,
 
-        deliveryName: delivery.name,
-        deliveryNumber: delivery.phone,
+        deliveryName: deliveryInfos?.name,
+        deliveryNumber: deliveryInfos?.phone,
       },
     });
 

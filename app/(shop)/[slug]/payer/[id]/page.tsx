@@ -241,6 +241,7 @@ async function page({ params }: Props) {
         preferences={preferences}
         shop={shop}
         supplierProductShops={supplierProductShops}
+        deliveryService={deliveryService}
       />
     </div>
   );
