@@ -32,7 +32,7 @@ export type OrderWithProductDetails = Order & {
 export const getMyOrderById = async (
   id: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  shopCategory: string
+  shopCategory: string,
 ): Promise<OrderWithProductDetails | null> => {
   const order = await prisma.order.findUnique({
     where: { id },
@@ -62,7 +62,7 @@ export const getMyOrderById = async (
           returnDataValue(article?.Product.type, AllProductsTypes)
         }`,
       };
-    })
+    }),
   );
 
   return {
@@ -309,10 +309,10 @@ export const cancelOrderByUser = async (data: CancelOderType) => {
     // Préparer les données de mise à jour
     const updateData: any = {
       status: validated.status,
-      paymentStatus: "en cours de remboursement",
-      paymentMethodRefund: validated.paymentMethodRefund,
-      refundReceiverName: validated.refundReceiverName,
-      refundPhoneNumber: validated.refundPhoneNumber,
+      paymentStatus: "remboursé", //"en cours de remboursement",
+      // paymentMethodRefund: validated.paymentMethodRefund,
+      // refundReceiverName: validated.refundReceiverName,
+      // refundPhoneNumber: validated.refundPhoneNumber,
     };
     if (shopProfitWaitedExist) {
       updateData.shopProfitWaited = { delete: true };
@@ -432,9 +432,9 @@ export const updateCancelOrderByUser = async (data: CancelOderType) => {
 
     // Préparer les données de mise à jour
     const updateData: any = {
-      paymentMethodRefund: validated.paymentMethodRefund,
-      refundReceiverName: validated.refundReceiverName,
-      refundPhoneNumber: validated.refundPhoneNumber,
+      // paymentMethodRefund: validated.paymentMethodRefund,
+      // refundReceiverName: validated.refundReceiverName,
+      // refundPhoneNumber: validated.refundPhoneNumber,
     };
     if (shopProfitWaitedExist) {
       updateData.shopProfitWaited = { delete: true };

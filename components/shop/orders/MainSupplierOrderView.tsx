@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -16,6 +16,8 @@ import {
   TrendingUp,
   CreditCard,
   Calendar,
+  Download,
+  FileText,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +32,7 @@ import {
   ProductOrigin,
   Shop,
   SupplierArticle,
+  SupplierEarning,
   SupplierOrder,
   SupplierProduct,
 } from "@/lib/generated/prisma/client";
@@ -49,6 +52,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { Button } from "@/components/ui/button";
+import {
+  DeliveryInvoice,
+  ProductInvoice,
+} from "@/components/admins/orders/supplier/InvoiceTemplates";
 
 // Sous-composant pour l'ID copiable
 const CopyableOrderId = ({ orderId }: { orderId: string }) => (
@@ -80,12 +89,17 @@ const MainSupplierOrderView = ({
     "en cours de traitement": "text-amber-600 bg-amber-50 border-amber-200",
     "en attente de livraison": "text-blue-600 bg-blue-50 border-blue-200",
     "en cours de livraison": "text-indigo-600 bg-indigo-50 border-indigo-200",
-    livré: "text-emerald-600 bg-emerald-50 border-emerald-200",
-    annulé: "text-rose-600 bg-rose-50 border-rose-200",
+    livrée: "text-emerald-600 bg-emerald-50 border-emerald-200",
+    annulée: "text-rose-600 bg-rose-50 border-rose-200",
   };
 
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleUpdateStatus = async (newStatus: string) => {
     try {
@@ -382,21 +396,75 @@ const MainSupplierOrderView = ({
           </p>
         </div>
 
-        {order.status === "livré" ||
-          (order.status === "annulé" && (
-            <button
-              className={`mt-4 px-4 py-2 rounded font-bold hover:opacity-85 transition-colors`}
-              style={{
-                backgroundColor: preferences.buttonColor,
-                color: preferences.buttonTextColor,
-              }}
-              onClick={() =>
-                toast("Fonction de téléchargement non implémentée")
+        {/* INVOICES */}
+        {isClient && order.status === "livrée" && (
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 
+          bg-muted/20 p-4 rounded-2xl border 
+            mt-6
+          "
+          >
+            {/* Bouton Facture Commande */}
+            <PDFDownloadLink
+              document={
+                <ProductInvoice
+                  order={
+                    order as SupplierOrder & {
+                      supplierEarning: SupplierEarning | null;
+                      deliveryCompany: DeliveryCompany | null;
+                    }
+                  }
+                  product={product}
+                  article={article}
+                  shop={shop}
+                />
               }
+              fileName={`facture_commande_${order.id}.pdf`}
             >
-              Télécharger la facture
-            </button>
-          ))}
+              {({ loading }) => (
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                  disabled={loading}
+                >
+                  <FileText className="w-4 h-4 text-emerald-500" />
+                  {loading ? "Génération..." : "Télécharger Facture Commande"}
+                  <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                </Button>
+              )}
+            </PDFDownloadLink>
+
+            {/* Bouton Facture Livraison */}
+            <PDFDownloadLink
+              document={
+                <DeliveryInvoice
+                  order={
+                    order as SupplierOrder & {
+                      supplierEarning: SupplierEarning | null;
+                      deliveryCompany: DeliveryCompany | null;
+                    }
+                  }
+                  product={product}
+                  article={article}
+                  shop={shop}
+                />
+              }
+              fileName={`facture_livraison_${order.id}.pdf`}
+            >
+              {({ loading }) => (
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                  disabled={loading}
+                >
+                  <Truck className="w-4 h-4 text-indigo-500" />
+                  {loading ? "Génération..." : "Télécharger Facture Livraison"}
+                  <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                </Button>
+              )}
+            </PDFDownloadLink>
+          </div>
+        )}
       </section>
     </div>
   );
@@ -447,7 +515,7 @@ const CancelOrderComponent = async ({
           <AlertDialogCancel>Annuler</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive hover:bg-destructive/70"
-            onClick={() => onClick("annulé")}
+            onClick={() => onClick("annulée")}
             disabled={loading}
           >
             {loading ? "En cours..." : "Continuer"}

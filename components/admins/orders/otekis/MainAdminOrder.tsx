@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -22,16 +22,29 @@ import {
   CreditCard,
   BadgeCheck,
   ChevronRight,
+  FileText,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { returnFormatedMoney } from "@/utils/functions";
-import { Order, DeliveryOrder } from "@/lib/generated/prisma/client";
+import {
+  Order,
+  DeliveryOrder,
+  DeliveryCompany,
+} from "@/lib/generated/prisma/client";
 import { useRouter } from "next/navigation";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { OrderProductsType } from "@/actions/admins/orders/adminsOrders";
+import { updateStatusSupplierOrder } from "@/actions/supplierOrderAction";
+import { OrderStatusType } from "@/types/orders";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import {
+  OtekisDeliveryInvoice,
+  OtekisProductInvoice,
+} from "./OtekisInvoiceTemplates";
 
 type Props = {
   order: Order;
@@ -42,6 +55,11 @@ type Props = {
     slug: string;
   };
   deliveryInfo: DeliveryOrder | null;
+  deliveryCompany: {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
   products: OrderProductsType[];
 };
 
@@ -64,31 +82,60 @@ const statusConfig: Record<
     color: "bg-violet-500/10 text-violet-600 border-violet-200",
     icon: Truck,
   },
-  livré: {
+  livrée: {
     label: "Terminée",
     color: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
     icon: CheckCircle2,
   },
-  annulé: {
+  annulée: {
     label: "Annulée",
     color: "bg-rose-500/10 text-rose-600 border-rose-200",
     icon: XCircle,
   },
 };
 
-const MainAdminOrder = ({ order, shop, deliveryInfo, products }: Props) => {
+const MainAdminOrder = ({
+  order,
+  shop,
+  deliveryInfo,
+  deliveryCompany,
+  products,
+}: Props) => {
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const config =
     statusConfig[order.status] || statusConfig["en cours de traitement"];
   const Icon = config.icon;
-  const isFinal = order.status === "annulé" || order.status === "livré";
+  const isFinal = order.status === "annulée" || order.status === "livrée";
 
   // Note: Tu devras créer cette action ou adapter celle du fournisseur
   const handleUpdateStatus = async (newStatus: string) => {
-    toast.info("Mise à jour vers : " + newStatus);
-    // Implémenter l'appel API ici
+    try {
+      setLoading(true);
+
+      const result = await updateStatusSupplierOrder({
+        orderId: order.id,
+        status: newStatus as OrderStatusType,
+      });
+
+      if (result.error) {
+        throw new Error(result.message);
+      }
+
+      toast.success(result.message || "Statut mis à jour");
+      //   location.reload();
+      router.refresh();
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -126,6 +173,62 @@ const MainAdminOrder = ({ order, shop, deliveryInfo, products }: Props) => {
           {config.label}
         </Badge>
       </div>
+
+      {/* INVOICES */}
+      {isClient && order.status === "livrée" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/20 p-4 rounded-2xl border border-dashed">
+          {/* Bouton Facture Commande */}
+          <PDFDownloadLink
+            document={
+              <OtekisProductInvoice
+                order={order}
+                deliveryInfo={deliveryInfo}
+                shop={shop}
+                products={products}
+              />
+            }
+            fileName={`facture_commande_${order.id}.pdf`}
+          >
+            {({ loading }) => (
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                disabled={loading}
+              >
+                <FileText className="w-4 h-4 text-emerald-500" />
+                {loading ? "Génération..." : "Télécharger Facture Commande"}
+                <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+              </Button>
+            )}
+          </PDFDownloadLink>
+
+          {/* Bouton Facture Livraison */}
+          <PDFDownloadLink
+            document={
+              <OtekisDeliveryInvoice
+                order={order}
+                deliveryInfo={deliveryInfo}
+                shop={shop}
+                products={products}
+                deliveryCompany={deliveryCompany}
+              />
+            }
+            fileName={`facture_livraison_${order.id}.pdf`}
+          >
+            {({ loading }) => (
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                disabled={loading}
+              >
+                <Truck className="w-4 h-4 text-indigo-500" />
+                {loading ? "Génération..." : "Télécharger Facture Livraison"}
+                <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+              </Button>
+            )}
+          </PDFDownloadLink>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* --- COLONNE GAUCHE: PRODUITS & CLIENT --- */}
@@ -404,7 +507,7 @@ const MainAdminOrder = ({ order, shop, deliveryInfo, products }: Props) => {
 
                 {order.status === "en cours de livraison" && (
                   <Button
-                    onClick={() => handleUpdateStatus("livré")}
+                    onClick={() => handleUpdateStatus("livrée")}
                     disabled={loading}
                     className="w-full bg-emerald-600 hover:bg-emerald-700 h-11 rounded-xl shadow-lg shadow-emerald-200 font-bold"
                   >
@@ -414,7 +517,7 @@ const MainAdminOrder = ({ order, shop, deliveryInfo, products }: Props) => {
 
                 <Button
                   variant="ghost"
-                  onClick={() => handleUpdateStatus("annulé")}
+                  onClick={() => handleUpdateStatus("annulée")}
                   disabled={loading}
                   className="w-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-[10px] font-bold uppercase tracking-widest"
                 >

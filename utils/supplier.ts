@@ -77,7 +77,7 @@ export const validateAvenue = (avenue: string) => {
 // PAYMENT METHODS
 export const PaymentMethod: Record<
   SupplierPaymentMethode,
-  { label: string; value: SupplierPaymentMethode }
+  { label: string; value: SupplierPaymentMethode | string }
 > = {
   airtelMoney: {
     label: "Airtel Money",
@@ -107,4 +107,13 @@ export const PaymentMethod: Record<
     label: "Orange Money",
     value: "orangeMoney",
   },
+};
+
+export const returnPaymentMethodLabel = (
+  method: SupplierPaymentMethode | string,
+) => {
+  return (
+    PaymentMethod[method as keyof typeof PaymentMethod]?.label ||
+    "Méthode inconnue"
+  );
 };

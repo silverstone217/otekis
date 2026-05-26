@@ -20,6 +20,9 @@ import {
   Phone,
   AlertCircle,
   Clock,
+  Truck,
+  FileText,
+  Download,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,6 +59,13 @@ import { FactureOrderWithProductsDetailsType } from "@/actions/factureActions";
 import FactureOrderView from "./FactureOrderView";
 import FactureDeliveryView from "./FactureDeliveryView";
 import FactureRefundOrder from "./FactureRefundOrder";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import {
+  OrderProductsType,
+  OtekisDeliveryInvoice,
+  OtekisProductInvoice,
+} from "@/components/admins/orders/otekis/OtekisInvoiceTemplates";
+import { DeliveryInfoOrderType } from "@/app/(shop)/[slug]/commandes/[id]/page";
 
 interface MainOrderProps {
   myOrder: OrderWithProductDetails;
@@ -74,13 +84,22 @@ interface MainOrderProps {
   otekisPrefs: OtekisPreferences | null;
   factureOrder: FactureOrderWithProductsDetailsType | null;
   factureDelivery: FactureDeliverOrder | null;
+
+  products: OrderProductsType[];
+  deliveryCompany: {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
+
+  deliveryInfoOrder: DeliveryInfoOrderType;
 }
 
 const NotPermitedValidatedStatus = [
   "en cours d'annulation",
-  "annulé",
+  "annulée",
   "remboursé",
-  "livré",
+  "livrée",
 ];
 
 const MainMyOrder = ({
@@ -93,6 +112,9 @@ const MainMyOrder = ({
   otekisPrefs,
   factureOrder,
   factureDelivery,
+  deliveryCompany,
+  products,
+  deliveryInfoOrder,
 }: MainOrderProps) => {
   const [isCLient, setIsClient] = useState(false);
 
@@ -125,17 +147,22 @@ const MainMyOrder = ({
   const handleCancelOrder = async () => {
     const formData: CancelOderType = {
       orderId: myOrder.id,
-      status: "en cours d'annulation",
-      paymentMethodRefund,
-      refundPhoneNumber: refundPhoneNumber.trim(),
-      refundReceiverName: refundReceiverName.trim().toLocaleLowerCase(),
+      status: "annulée", //"en cours d'annulation",
+      // paymentMethodRefund,
+      // refundPhoneNumber: refundPhoneNumber.trim(),
+      // refundReceiverName: refundReceiverName.trim().toLocaleLowerCase(),
     };
     const result = await cancelOrderByUser(formData);
     if (result.error) {
       toast.error(result.message);
       return;
     }
-    toast.success("Commande est en cours d'annulation");
+    toast.success(
+      "Commande est annulée et en cours de traitement pour remboursement",
+      {
+        duration: 5000,
+      },
+    );
     router.refresh();
   };
 
@@ -143,10 +170,10 @@ const MainMyOrder = ({
   const handleUpdateCancelOrder = async () => {
     const formData: CancelOderType = {
       orderId: myOrder.id,
-      status: "en cours d'annulation",
-      paymentMethodRefund,
-      refundPhoneNumber: refundPhoneNumber.trim(),
-      refundReceiverName: refundReceiverName.trim().toLocaleLowerCase(),
+      status: "annulée", //"en cours d'annulation",
+      // paymentMethodRefund,
+      // refundPhoneNumber: refundPhoneNumber.trim(),
+      // refundReceiverName: refundReceiverName.trim().toLocaleLowerCase(),
     };
     const result = await updateCancelOrderByUser(formData);
     if (result.error) {
@@ -441,16 +468,65 @@ const MainMyOrder = ({
           style={{ borderColor, borderRadius }}
           className="border shadow-sm flex flex-col divide-y divide-gray-200"
         >
-          {/* FACTURE */}
-          <FactureOrderView
-            currency={currency}
-            deliveryInfo={deliveryInfo}
-            exchange={exchange}
-            factureOrder={factureOrder}
-            myOrder={myOrder}
-            shop={shop}
-            shopPreferences={shopPreferences}
-          />
+          {isCLient && myOrder.status === "livrée" && (
+            <div
+              className="grid grid-cols-1
+            sm:grid-cols-2 gap-4 bg-muted/20 p-4 rounded-2xl border border-dashed"
+            >
+              {/* Bouton Facture Commande */}
+              <PDFDownloadLink
+                document={
+                  <OtekisProductInvoice
+                    order={myOrder}
+                    deliveryInfo={deliveryInfoOrder}
+                    shop={shop}
+                    products={products}
+                  />
+                }
+                fileName={`facture_commande_${myOrder.id}.pdf`}
+              >
+                {({ loading }) => (
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                    disabled={loading}
+                  >
+                    <FileText className="w-4 h-4 text-emerald-500" />
+                    {loading ? "Génération..." : "Télécharger Facture Commande"}
+                    <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                  </Button>
+                )}
+              </PDFDownloadLink>
+
+              {/* Bouton Facture Livraison */}
+              <PDFDownloadLink
+                document={
+                  <OtekisDeliveryInvoice
+                    order={myOrder}
+                    deliveryInfo={deliveryInfoOrder}
+                    shop={shop}
+                    products={products}
+                    deliveryCompany={deliveryCompany}
+                  />
+                }
+                fileName={`facture_livraison_${myOrder.id}.pdf`}
+              >
+                {({ loading }) => (
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                    disabled={loading}
+                  >
+                    <Truck className="w-4 h-4 text-indigo-500" />
+                    {loading
+                      ? "Génération..."
+                      : "Télécharger Facture Livraison"}
+                    <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                  </Button>
+                )}
+              </PDFDownloadLink>
+            </div>
+          )}
 
           {/* DELIVERY DOC */}
           <FactureDeliveryView
@@ -719,7 +795,7 @@ const ModifyOrderUserInfo = ({
               placeholder="John Doe"
               className="w-full border-b-2 border-gray-300 
                 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors !bg-transparent"
+              transition-colors bg-transparent!"
               defaultValue={receiver}
               onChange={(e) => setReceiver(e.target.value)}
               required
@@ -756,7 +832,7 @@ const ModifyOrderUserInfo = ({
               placeholder="817596369"
               className="w-full border-b-2 border-gray-300 
                 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors !bg-transparent"
+              transition-colors bg-transparent!"
               defaultValue={receiverPhone}
               onChange={(e) => setReceiverPhone(e.target.value)}
               required
@@ -797,7 +873,7 @@ const ModifyOrderUserInfo = ({
               placeholder="82 Busumelo, Kasa-Vubu, Kinshasa, RDC"
               className="w-full border-b-2 border-gray-300 
                 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors !bg-transparent"
+              transition-colors bg-transparent!"
               defaultValue={receiverAddress}
               onChange={(e) => setReceiverAddress(e.target.value)}
               required
@@ -839,7 +915,7 @@ const ModifyOrderUserInfo = ({
               name="recDesc"
               placeholder="specifier comment vous livrer ou un mot additionnel"
               className="w-full border-b-2 border-gray-300 focus:border-blue-600 focus:outline-none py-2 
-              transition-colors resize-none h-24 !bg-transparent"
+              transition-colors resize-none h-24 bg-transparent!"
               defaultValue={description}
               onChange={(e) => setDescription(e.target.value)}
               required
@@ -948,18 +1024,18 @@ export function CancelOrderDialog({
           <DialogDescription>
             Êtes-vous sûr de vouloir annuler cette commande ? Cette action est
             irréversible.
-            <br />
+            {/* <br />
             Entrer le numéro de téléphone et le nom du destinataire pour le
-            remboursement
+            remboursement */}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex w-full gap-1 items-center flex-wrap">
+        {/* <div className="flex w-full gap-1 items-center flex-wrap">
           <span className="text-gray-500 text-sm">Methode de paiment: </span>
           <span className="font-bold capitalize">{paymentMethodRefund}</span>
-        </div>
+        </div> */}
 
-        <div className="w-full grid gap-1.5">
+        {/* <div className="w-full grid gap-1.5">
           <Label className="text-gray-500 text-sm">Nom du destinataire</Label>
           <Input
             type="text"
@@ -972,9 +1048,9 @@ export function CancelOrderDialog({
             minLength={3}
             maxLength={60}
           />
-        </div>
+        </div> */}
 
-        <div className="w-full grid gap-1.5">
+        {/* <div className="w-full grid gap-1.5">
           <Label className="text-gray-500 text-sm">
             Telephone du destinataire
           </Label>
@@ -989,7 +1065,7 @@ export function CancelOrderDialog({
             minLength={9}
             maxLength={9}
           />
-        </div>
+        </div> */}
 
         <DialogFooter className="flex gap-4 justify-end">
           {/* cancel */}
@@ -1004,9 +1080,9 @@ export function CancelOrderDialog({
               variant="destructive"
               onClick={handleConfirm}
               disabled={
-                loading ||
-                isEmptyString(refundReceiverName) ||
-                isEmptyString(refundPhoneNumber)
+                loading /*||
+               isEmptyString(refundReceiverName) ||
+                isEmptyString(refundPhoneNumber)*/
               }
             >
               {loading ? "Annulation..." : "Confirmer"}

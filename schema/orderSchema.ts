@@ -75,7 +75,7 @@ export const ModifyUserOrderInfoSchema = z.object({
 export const CancelOrderByUserSchema = z.object({
   orderId: z.string().min(2).max(50),
   status: z.string().default("en cours d'annulation"),
-  refundPhoneNumber: z.string().min(9).max(10),
-  refundReceiverName: z.string().min(2).max(60),
-  paymentMethodRefund: z.string().default("mpesa"),
+  // refundPhoneNumber: z.string().min(9).max(10),
+  // refundReceiverName: z.string().min(2).max(60),
+  // paymentMethodRefund: z.string().default("mpesa"),
 });

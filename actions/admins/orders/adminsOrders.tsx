@@ -65,7 +65,17 @@ export const getOtekisOrder = async (id: string) => {
       },
 
       // DELIVERY
-      deliveryOrder: true,
+      deliveryOrder: {
+        include: {
+          deliveryCompany: {
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+            },
+          },
+        },
+      },
 
       // ITEMS
       orderItems: {

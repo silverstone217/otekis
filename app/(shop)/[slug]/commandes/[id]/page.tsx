@@ -17,6 +17,44 @@ import { Preferences } from "@/lib/generated/prisma/client";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
+import { getOtekisOrder } from "@/actions/admins/orders/adminsOrders";
+
+export type DeliveryInfoOrderType =
+  | ({
+      deliveryCompany: {
+        id: string;
+        name: string;
+        phone: string;
+      } | null;
+    } & {
+      id: string;
+      description: string | null;
+      percentage: string;
+
+      createdAt: Date;
+      updatedAt: Date;
+
+      clientId: string;
+
+      status: string;
+      currency: string;
+      exchange: number;
+
+      receiverTel: string;
+      receiverName: string;
+
+      deliveryPrice: number;
+
+      orderId: string;
+
+      deliveryId: string | null;
+      deliveryCompanyId: string | null;
+
+      deliveryDate: Date | null;
+
+      deliveryAddress: string;
+    })
+  | null;
 
 // Get shop by slug and preferences
 const getShopBySlug = async (slug: string) => {
@@ -35,7 +73,7 @@ const otekisPrefs = async () => {
 };
 
 export async function generateMetadata(
-  props: Props
+  props: Props,
 ): // parent: ResolvingMetadata
 Promise<Metadata> {
   const params = await props.params;
@@ -141,6 +179,20 @@ async function MyOrderPage(props: {
   // FACTURE DELIVERY
   const factureDelivery = await getFactureDeliveryOrderById(myOrder.id);
 
+  const order = await getOtekisOrder(id);
+  if (!order) {
+    return <div>Order not found</div>;
+  }
+
+  const products = order.products;
+
+  const deliveryInfoOrder = order.deliveryOrder;
+  const deliveryCompany = deliveryInfoOrder?.deliveryCompany as {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
+
   return (
     <div>
       <MainMyOrder
@@ -153,6 +205,9 @@ async function MyOrderPage(props: {
         otekisPrefs={await otekisPrefs()}
         factureOrder={factureOrder}
         factureDelivery={factureDelivery}
+        deliveryCompany={deliveryCompany}
+        products={products}
+        deliveryInfoOrder={deliveryInfoOrder}
       />
     </div>
   );

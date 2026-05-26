@@ -15,6 +15,7 @@ import {
   PaymentFlexpaieResponseType,
 } from "./OrderPaymentAction";
 import { OrderStatusType } from "@/types/orders";
+import { pusher } from "@/lib/pusher-server";
 
 // -------- CAN THIS ORDER BE PROCESSED ---------
 type canThisOrderBeProccessedType = {
@@ -521,6 +522,11 @@ export const createSupplierOrder = async ({
     });
 
     // 8. Add notifications for client. shop, suppliers et admins
+
+    const count = await prisma.order.count({
+      where: { status: "en cours de traitement" },
+    });
+    await pusher.trigger("orders-channel", "order-count-updated", { count });
 
     return {
       error: false,

@@ -34,6 +34,11 @@ async function OtekisOrderpage({ params }: Props) {
   const products = order.products;
   const shop = order.shop;
   const deliveryInfo = order.deliveryOrder;
+  const deliveryCompany = deliveryInfo?.deliveryCompany as {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
 
   return (
     <div>
@@ -41,6 +46,7 @@ async function OtekisOrderpage({ params }: Props) {
         order={order}
         shop={shop}
         deliveryInfo={deliveryInfo}
+        deliveryCompany={deliveryCompany}
         products={products}
       />
     </div>

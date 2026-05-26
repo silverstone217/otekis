@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Package,
@@ -17,6 +17,8 @@ import {
   AlertCircle,
   Info,
   PackageCheck,
+  Download,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +36,11 @@ import { useRouter } from "next/navigation";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { updateStatusSupplierOrder } from "@/actions/supplierOrderAction";
 import { OrderStatusType } from "@/types/orders";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import {
+  DeliveryInvoice,
+  ProductInvoice,
+} from "@/components/admins/orders/supplier/InvoiceTemplates";
 
 // Types mis à jour avec tes nouveaux gains
 type Props = {
@@ -65,12 +72,12 @@ const statusConfig: Record<
     color: "bg-blue-500/10 text-blue-600 border-blue-200",
     icon: Truck,
   },
-  livré: {
+  livrée: {
     label: "Terminée",
     color: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
     icon: CheckCircle2,
   },
-  annulé: {
+  annulée: {
     label: "Annulée",
     color: "bg-rose-500/10 text-rose-600 border-rose-200",
     icon: XCircle,
@@ -79,12 +86,17 @@ const statusConfig: Record<
 
 const MainOrdeComponent = ({ article, order, product, shop }: Props) => {
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const config =
     statusConfig[order.status] || statusConfig["en cours de traitement"];
   const Icon = config.icon;
-  const isFinal = order.status === "annulé" || order.status === "livré";
+  const isFinal = order.status === "annulée" || order.status === "livrée";
 
   const handleUpdateStatus = async (newStatus: string) => {
     try {
@@ -136,6 +148,61 @@ const MainOrdeComponent = ({ article, order, product, shop }: Props) => {
         </Badge>
       </div>
 
+      {/* INVOICES */}
+      {isClient && order.status === "livrée" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/20 p-4 rounded-2xl border border-dashed">
+          {/* Bouton Facture Commande */}
+          <PDFDownloadLink
+            document={
+              <ProductInvoice
+                order={order}
+                product={product}
+                article={article}
+                shop={shop}
+              />
+            }
+            fileName={`facture_commande_${order.id}.pdf`}
+          >
+            {({ loading }) => (
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                disabled={loading}
+              >
+                <FileText className="w-4 h-4 text-emerald-500" />
+                {loading ? "Génération..." : "Télécharger Facture Commande"}
+                <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+              </Button>
+            )}
+          </PDFDownloadLink>
+
+          {/* Bouton Facture Livraison */}
+          <PDFDownloadLink
+            document={
+              <DeliveryInvoice
+                order={order}
+                product={product}
+                article={article}
+                shop={shop}
+              />
+            }
+            fileName={`facture_livraison_${order.id}.pdf`}
+          >
+            {({ loading }) => (
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                disabled={loading}
+              >
+                <Truck className="w-4 h-4 text-indigo-500" />
+                {loading ? "Génération..." : "Télécharger Facture Livraison"}
+                <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+              </Button>
+            )}
+          </PDFDownloadLink>
+        </div>
+      )}
+
       {/* ACTIONS */}
       {!isFinal && (
         <div className="bg-card border rounded-2xl p-5 shadow-sm space-y-4">
@@ -163,23 +230,26 @@ const MainOrdeComponent = ({ article, order, product, shop }: Props) => {
               </Button>
             )}
 
-            {order.status === "en cours de livraison" && (
+            {order.status === "en cours de livraison" &&
+              product.isDelivering && (
+                <Button
+                  onClick={() => handleUpdateStatus("livrée")}
+                  disabled={loading}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 h-11 rounded-xl shadow-md shadow-emerald-200 font-bold"
+                >
+                  Confirmer la livraison
+                </Button>
+              )}
+            {order.status !== "livrée" && order.status !== "annulée" && (
               <Button
-                onClick={() => handleUpdateStatus("livre")}
+                variant="ghost"
+                onClick={() => handleUpdateStatus("annulée")}
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 h-11 rounded-xl shadow-md shadow-emerald-200 font-bold"
+                className="w-full text-rose-600 hover:bg-rose-50 hover:text-rose-700 text-xs font-semibold"
               >
-                Confirmer la livraison
+                Annuler la commande
               </Button>
             )}
-            <Button
-              variant="ghost"
-              onClick={() => handleUpdateStatus("annulé")}
-              disabled={loading}
-              className="w-full text-rose-600 hover:bg-rose-50 hover:text-rose-700 text-xs font-semibold"
-            >
-              Annuler la commande
-            </Button>
           </div>
         </div>
       )}
