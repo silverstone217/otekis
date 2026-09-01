@@ -110,8 +110,8 @@ Promise<Metadata> {
       canonical: `https://www.otekis.com/${shop.slug}/catalogues`,
     },
     robots: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
     },
   };
 }

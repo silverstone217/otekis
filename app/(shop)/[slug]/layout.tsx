@@ -120,8 +120,8 @@ const MyShopLayout = async (props: Props) => {
       canonical: `https://www.otekis.com/${shop.slug}`,
     },
     robots: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
     },
   };
 
