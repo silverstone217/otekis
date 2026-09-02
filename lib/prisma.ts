@@ -1,32 +1,30 @@
 // lib/prisma.ts
-
-import { PrismaPg } from "@prisma/adapter-pg"; // 💡 Importation de l'adaptateur
-import { Pool } from "pg"; // 💡 Nécessite l'installation de la dépendance 'pg'
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { PrismaClient } from "./generated/prisma/client";
 
 declare global {
-  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 
-// 2. Création de l'adaptateur et du pool de connexions
+// 1. Initialisation du pool PG
 const pool = new Pool({
-  // 💡 CRUCIAL : Récupérer l'URL ici, directement du Node.js standard
   connectionString: process.env.DATABASE_URL,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
 });
+
+// 2. Création de l'adaptateur
 const adapter = new PrismaPg(pool);
 
-// 3. Création de l'instance unique
-const prisma =
+// 3. Instanciation du client Prisma 7
+export const prisma =
   global.prisma ||
   new PrismaClient({
-    // 💡 NOUVEAU : On passe l'instance de l'adaptateur au lieu de l'URL
-    adapter: adapter,
+    adapter,
   });
 
-// 4. Stockage et Exportation de l'instance
 if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
-
-export { prisma };
