@@ -13,6 +13,7 @@ import ModifyAddress from "./ModifyAddress";
 import AvaiabillityForm from "./AvaiabillityForm";
 import ProductDangerZone from "./ProductDangerZone";
 import ModifyAdditionnalImages from "./ModifyAdditionnalImages";
+import ModifyFileArticle from "./ModifyFileArticle";
 
 type Props = {
   product: SupplierProduct & {
@@ -24,6 +25,9 @@ type Props = {
 const MainForm = ({ product }: Props) => {
   // IMAGE INFOS
   const ImageProps = { image: product.image, productId: product.id };
+
+  // IS PRODUCT FILE (NUMERICAL) OR NOT
+  const isProductFile = product.category === "digital";
 
   // PRINCIAL INFORMATIONS
   const ProductInfo = {
@@ -76,8 +80,22 @@ const MainForm = ({ product }: Props) => {
         {/* INFORMATION CLASS */}
         <Classifications ProductClassification={ProductClassification} />
 
+        {/* FILE  */}
+        {isProductFile && (
+          <ModifyFileArticle
+            productId={product.id}
+            articleId={product.Article[0]?.id ?? ""}
+            fileUrl={product.Article[0]?.file ?? null}
+          />
+        )}
+
         {/* ARTICLES */}
-        <Articles articles={ProductArticles.articles} productId={product.id} />
+        {!isProductFile && (
+          <Articles
+            articles={ProductArticles.articles}
+            productId={product.id}
+          />
+        )}
 
         {/* Address */}
         <ModifyAddress

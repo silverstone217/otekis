@@ -133,6 +133,7 @@ model Article {
   size          String?
   flavor        String?
   volume        String?
+  file          String?
   stock         Int     @default(0)
   productId     String
 
@@ -652,6 +653,7 @@ model SupplierArticle {
   size          String?
   flavor        String?
   volume        String?
+  file          String?
   stock         Int     @default(0)
   productId     String
 

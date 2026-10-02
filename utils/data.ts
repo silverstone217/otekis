@@ -19,6 +19,7 @@ import {
   Truck,
   ChartNoAxesCombined,
   BadgeDollarSign,
+  FileArchive,
 } from "lucide-react";
 
 export const siteName = process.env.SITE_NAME;
@@ -150,10 +151,16 @@ export const CategoriesData = [
     icon: MonitorSmartphone,
   },
   {
+    value: "digital",
+    label: "Produits numériques",
+    icon: FileArchive,
+  },
+  {
     value: "aliments",
     label: "Nourriture et boissons",
     icon: Banana,
   },
+
   {
     value: "autres",
     label: "Autres",
@@ -587,16 +594,74 @@ export const CosmeticsData = [
   },
 ];
 
+export const DigitalProductsData = [
+  {
+    value: "ebooks",
+    label: "Ebooks",
+  },
+  {
+    value: "software",
+    label: "Logiciels",
+  },
+  {
+    value: "software-games",
+    label: "Jeux vidéo PC",
+  },
+  {
+    value: "application-ios",
+    label: "Applications iOS",
+  },
+  {
+    value: "application-android",
+    label: "Applications Android (APK)",
+  },
+
+  {
+    value: "music",
+    label: "Musique",
+  },
+  {
+    value: "images",
+    label: "Images et photos",
+  },
+  {
+    value: "videos",
+    label: "Vidéos",
+  },
+  {
+    value: "courses",
+    label: "Cours en ligne",
+  },
+  {
+    value: "templates",
+    label: "Modèles et templates",
+  },
+  {
+    value: "graphics",
+    label: "Graphiques et illustrations",
+  },
+  {
+    value: "files",
+    label: "Fichiers(pp, pdf, docx, etc.)",
+  },
+  {
+    value: "other",
+    label: "Autre",
+  },
+];
+
 export const AllProductsTypes = [
   ...TypeClothesData,
   ...AccessoriesData,
   ...CosmeticsData,
+  ...DigitalProductsData,
 ];
 
 export const AllProductsTypesWithCategory = [
   ...TypeClothesData.map((type) => ({ ...type, category: "vetements" })),
   ...AccessoriesData.map((type) => ({ ...type, category: "accessoires" })),
   ...CosmeticsData.map((type) => ({ ...type, category: "cosmetiques" })),
+  ...DigitalProductsData.map((type) => ({ ...type, category: "digital" })),
 ];
 
 export const NewAllProductsTypesWithCategory = [
@@ -615,6 +680,13 @@ export const NewAllProductsTypesWithCategory = [
     value: `cosmetiques-${type.value}`,
     category: "cosmetiques",
   })),
+  ...DigitalProductsData.filter((type) => type.value !== "other").map(
+    (type) => ({
+      ...type,
+      value: `digital-${type.value}`,
+      category: "digital",
+    }),
+  ),
   {
     value: "autres-other",
     label: "Autre",

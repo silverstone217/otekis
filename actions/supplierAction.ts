@@ -16,6 +16,7 @@ import { storage } from "@/lib/firebase";
 import { deleteObject, ref } from "firebase/storage";
 import { DEFAULT_SUPPLIER_IMAGE } from "@/utils/envVariables";
 import { revalidatePath } from "next/cache";
+import { deleteArticleFile } from "@/lib/firebase-files";
 
 // GET SHOPS DATA
 export const getShopData = async () => {
@@ -76,6 +77,7 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
       paymentNumber,
       deliveryPrice,
       isDelivering,
+      file,
     } = validatedData.data;
 
     // CREATE PRODUCT IN DATABASE
@@ -114,6 +116,7 @@ export const createNewProduct = async (data: NewSupplierProductType) => {
             color: article.color,
             size: article.size,
             stock: article.quantity,
+            file: file ? file : null,
           })),
         },
         quality: "original",
@@ -496,6 +499,119 @@ export const deleteArticleById = async (data: {
   }
 };
 
+// MODIFY FILE ARTICLE
+export const updateArticleFile = async (data: {
+  articleId: string;
+  productId: string;
+  fileUrl: string | null;
+}) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    await prisma.supplierArticle.update({
+      where: { id: data.articleId },
+      data: {
+        file: data.fileUrl,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Fichier mis à jour avec succès!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la modification du fichier:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la modification du fichier",
+    };
+  }
+};
+
+// DELETE FILE ARTICLE
+export const deleteSupplierArticleFile = async (data: {
+  articleId: string;
+  productId: string;
+}) => {
+  try {
+    // CHECK USER AUTHENTICATION
+    const user = await getUser();
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message:
+          "Vous n'êtes pas autorisé à modifier un produit, connectez-vous",
+      };
+    }
+
+    // is product exist
+    const isProductExist = await prisma.supplierProduct.findUnique({
+      where: { id: data.productId },
+    });
+
+    if (!isProductExist) {
+      return {
+        error: true,
+        message: "Ce produit est introuvable",
+      };
+    }
+
+    // Check if the poduct is for current user
+    if (isProductExist.supplierId !== user.id) {
+      return {
+        error: true,
+        message: "Vous ne pouvez pas modifier ce produit!",
+      };
+    }
+
+    await prisma.supplierArticle.update({
+      where: { id: data.articleId },
+      data: {
+        file: null,
+      },
+    });
+
+    return {
+      error: false,
+      message: "Fichier supprimé avec succès!",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la suppression du fichier:", error);
+    return {
+      error: true,
+      message: "Une erreur est survenue lors de la suppression du fichier",
+    };
+  }
+};
+
 // UPDATE PRODUCT ADDRESS
 export const upadteAddressProduct = async (data: {
   address: string;
@@ -665,6 +781,13 @@ export const deleteProductById = async ({
   // 🔍 CHECK PRODUCT
   const product = await prisma.supplierProduct.findUnique({
     where: { id: productId },
+    select: {
+      id: true,
+      supplierId: true,
+      image: true,
+      images: true,
+      Article: true,
+    },
   });
 
   if (!product) {
@@ -679,6 +802,15 @@ export const deleteProductById = async ({
       error: true,
       message: "Vous ne pouvez pas modifier ce produit!",
     };
+  }
+
+  // Delete articles with files
+  if (product.Article?.length) {
+    await Promise.all(
+      product.Article.filter((a) => a.file).map(
+        (a) => a.file && deleteArticleFile(a.file),
+      ),
+    );
   }
 
   await prisma.supplierProduct.delete({

@@ -22,7 +22,7 @@ export const getUser = async () => {
 // delete products images
 export const updateImagesProductImages = async (
   productId: string,
-  images: string[]
+  images: string[],
 ) => {
   const product = await prisma.product.findUnique({
     where: { id: productId },
@@ -44,7 +44,7 @@ export const updateImagesProductImages = async (
 // change Admin role
 export const changeAdminRole = async (
   userId: string,
-  newRole: roleUserType
+  newRole: roleUserType,
 ) => {
   const getCurrentUser = await getUser();
   if (!getCurrentUser || getCurrentUser.role !== "super_admin") {
@@ -73,7 +73,7 @@ export const changeAdminRole = async (
 function buildProductName(
   productName: string,
   size?: string,
-  color?: string
+  color?: string,
 ): string {
   return `${productName} ${size ? size : ""} ${
     color ? returnDataValue(color, ColorsData) : ""
@@ -90,7 +90,8 @@ export const addItemForProduct = async (
     commandNumber: string;
     flavor?: string;
     volume?: string;
-  }
+    file?: string;
+  },
 ) => {
   try {
     const user = await getUser();
@@ -105,6 +106,7 @@ export const addItemForProduct = async (
     if (!product) {
       return { error: true, message: "Produit introuvable.", data: null };
     }
+    const isFileProduct = product.category === "digital";
 
     const { color, size, stock, commandNumber } = item;
     const { Article: articles } = product;
@@ -114,7 +116,7 @@ export const addItemForProduct = async (
       (a) =>
         a.color === color &&
         a.size === size &&
-        a.commandNumber === commandNumber
+        a.commandNumber === commandNumber,
     );
     if (isSameArticleExist) {
       return {
@@ -127,14 +129,14 @@ export const addItemForProduct = async (
 
     // article avec même color + size ? update stock + create history
     const existingArticle = articles.find(
-      (a) => a.color === color && a.size === size
+      (a) => a.color === color && a.size === size,
     );
 
     if (existingArticle) {
       const productName = buildProductName(
         product.name,
         existingArticle.size!,
-        existingArticle.color!
+        existingArticle.color!,
       );
       await prisma.historyOrder.create({
         data: {
@@ -145,10 +147,16 @@ export const addItemForProduct = async (
           productId,
         },
       });
-      const updatedArticle = await prisma.article.update({
-        where: { id: existingArticle.id },
-        data: { stock: existingArticle.stock + stock },
-      });
+
+      let updatedArticle;
+
+      if (!isFileProduct) {
+        updatedArticle = await prisma.article.update({
+          where: { id: existingArticle.id },
+          data: { stock: existingArticle.stock + stock },
+        });
+      }
+
       return {
         error: false,
         message: "Article ajouté avec succès",
@@ -166,12 +174,13 @@ export const addItemForProduct = async (
         commandNumber,
         flavor: item.flavor,
         volume: item.volume,
+        file: item.file,
       },
     });
     const productName = buildProductName(
       product.name,
       newArticle.size!,
-      newArticle.color!
+      newArticle.color!,
     );
 
     const newHistoryOrder = await prisma.historyOrder.create({
@@ -208,7 +217,7 @@ export const DeleteItemForProductWithHistoricOrder = async (
     stock: number;
     id: string;
     commandNumber: string;
-  }
+  },
 ) => {
   try {
     const user = await getUser();
@@ -300,7 +309,7 @@ export const DeleteItemForProductWithHistoricOrder = async (
 // delete article
 export const deleteItemForProduct = async (
   productId: string,
-  itemId: string
+  itemId: string,
 ) => {
   const getCurrentUser = await getUser();
   const isPermitted = getCurrentUser
@@ -357,7 +366,7 @@ export type ModifyStockArticleWithoutHistOrders = {
   stock: number;
 };
 export const modifyStockArticle = async (
-  data: ModifyStockArticleWithoutHistOrders
+  data: ModifyStockArticleWithoutHistOrders,
 ) => {
   const getCurrentUser = await getUser();
   const isPermitted = getCurrentUser

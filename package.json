@@ -81,7 +81,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/stream-buffers": "^3.0.8",
-    "baseline-browser-mapping": "^2.10.32",
+    "baseline-browser-mapping": "^2.11.27",
     "eslint": "^9",
     "eslint-config-next": "^16.0.7",
     "prisma": "^7.8.0",

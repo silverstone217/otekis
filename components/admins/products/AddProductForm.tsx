@@ -16,6 +16,7 @@ import {
   AccessoriesData,
   CategoriesData,
   CosmeticsData,
+  DigitalProductsData,
   MaterialsAccData,
   QualitiesData,
   StatesData,
@@ -180,7 +181,7 @@ const AddProductForm = () => {
       // delete imgs
       if (imgUrl) await deleteObject(ref(storage, imgUrl));
       imgUrls.forEach(
-        async (imgUrl) => await deleteObject(ref(storage, imgUrl))
+        async (imgUrl) => await deleteObject(ref(storage, imgUrl)),
       );
     } finally {
       setLoading(false);
@@ -214,7 +215,7 @@ const AddProductForm = () => {
                    }
                    `}
                 >
-                  <cat.icon className="w-8 flex-shrink-0 self-center " />
+                  <cat.icon className="w-8 shrink-0 self-center " />
                   <span className="text-sm ">{cat.label}</span>
                 </div>
               ))}
@@ -332,6 +333,25 @@ const AddProductForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {TypeClothesData.map((stat, idx) => (
+                      <SelectItem
+                        key={idx}
+                        value={stat.value}
+                        className="capitalize"
+                      >
+                        {stat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              {category === "digital" && (
+                <Select value={type} onValueChange={(val) => setType(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Type de produit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DigitalProductsData.map((stat, idx) => (
                       <SelectItem
                         key={idx}
                         value={stat.value}
@@ -567,7 +587,7 @@ const AddProductForm = () => {
                           onClick={() => {
                             const newImages = [...images];
                             const filteredImgs = newImages.filter(
-                              (im) => im !== img
+                              (im) => im !== img,
                             );
                             setImages(filteredImgs);
                           }}

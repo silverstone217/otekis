@@ -10,7 +10,7 @@ import {
   validateRequired,
 } from "@/utils/supplier";
 import { PackagePlus } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   CategoriesData,
@@ -41,46 +41,61 @@ import {
 import { PermittedSellersSelect } from "./PermittedSellersSelect";
 import { ProductArticles } from "./ProductArticles";
 import { Button } from "@/components/ui/button";
+import {
+  deleteArticleFile,
+  isZipFile,
+  MAX_ZIP_SIZE,
+  uploadArticleFile,
+  UploadedFile,
+} from "@/lib/firebase-files";
 
-// VALIDATE NUMBER
 export const validatePhoneNumber = (value: string, label: string) => {
   if (!value) return `${label} est requis`;
-
   if (!/^\d{9}$/.test(value)) {
     return `${label} doit contenir exactement 9 chiffres sans 0 ou +243`;
   }
-
   return "";
+};
+
+const formatFileSize = (bytes: number) => {
+  if (bytes >= 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} Go`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(0)} Mo`;
 };
 
 const NewProductForm = () => {
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   const router = useRouter();
+
+  const [category, setCategory] = useState("");
+  const isFileProduct = useMemo(() => category === "digital", [category]);
+
+  // 🔹 Steps dynamiques selon le type de produit
+  const steps = useMemo(() => {
+    const base = ["Produit", "Classification"];
+    if (isFileProduct) base.push("Fichier");
+    return [...base, "Variantes", "Localisation & Contacts", "Disponibilité"];
+  }, [isFileProduct]);
 
   const [step, setStep] = useState(0);
 
-  const steps = [
-    "Produit",
-    "Variantes",
-    "Classification",
-    "Localisation & Contacts",
-    "Disponibilité",
-  ];
+  // Revenir au step 0 si on change le nombre total de steps dynamiquement
+  useEffect(() => {
+    if (step >= steps.length) {
+      setStep(steps.length - 1);
+    }
+  }, [steps, step]);
 
-  const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
+  // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  // const [stock, setStock] = useState("");
-  const [category, setCategory] = useState("");
   const [type, setType] = useState("");
-
   const [quality, setQuality] = useState("original");
-  const [state, setState] = useState("nouveau"); // pas de choix pour l'instant, que du neuf
+  const [state, setState] = useState("nouveau");
   const [brand, setBrand] = useState("");
   const [target, setTarget] = useState("");
 
@@ -93,6 +108,7 @@ const NewProductForm = () => {
   ]);
 
   const [image, setImage] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   const [commune, setCommune] = useState("");
   const [quartier, setQuartier] = useState("");
@@ -105,108 +121,199 @@ const NewProductForm = () => {
 
   useEffect(() => {
     const fetchShops = async () => {
-      const res = await fetch("/api/supplier/shops-list");
-      const data = await res.json();
-      setShops(data);
+      try {
+        const res = await fetch("/api/supplier/shops-list");
+        const data = await res.json();
+        setShops(data);
+      } catch (err) {
+        console.error("Erreur chargement boutiques:", err);
+      }
     };
-
     fetchShops();
   }, []);
 
-  // CHECK ERRORRS
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    const nameError = validateName(name);
-    if (nameError) newErrors.name = nameError;
-
-    const descError = validateDescription(description);
-    if (descError) newErrors.description = descError;
-
-    const imageError = validateImage(image);
-    if (imageError) newErrors.image = imageError;
-
-    const articlesError = validateArticles(articles);
-    if (articlesError) newErrors.articles = articlesError;
-
-    const categoryError = validateRequired(category, "Catégorie");
-    if (categoryError) newErrors.category = categoryError;
-
-    const typeError = validateRequired(type, "Type");
-    if (typeError) newErrors.type = typeError;
-
-    const stateError = validateRequired(state, "État");
-    if (stateError) newErrors.state = stateError;
-
-    const targetError = validateRequired(target, "Cible");
-    if (targetError) newErrors.target = targetError;
-
-    const communeError = validateRequired(commune, "Commune");
-    if (communeError) newErrors.commune = communeError;
-
-    const quartierError = validateRequired(quartier, "Quartier");
-    if (quartierError) newErrors.quartier = quartierError;
-
-    const avenueError = validateAvenue(avenue);
-    if (avenueError) newErrors.avenue = avenueError;
-
-    // 🔹 NUMEROS
-    const contactError = validatePhoneNumber(
-      contactNumber,
-      "Le numéro de téléphone",
-    );
-    if (contactError) newErrors.contactNumber = contactError;
-
-    const paymentError = validatePhoneNumber(
-      paymentNumber,
-      "Le numéro de paiement",
-    );
-    if (paymentError) newErrors.paymentNumber = paymentError;
-
-    if (isNaN(Number(deliveryPrice)) || Number(deliveryPrice) < 0) {
-      newErrors.deliveryPrice =
-        "Le prix de livraison doit être un nombre positif";
+  useEffect(() => {
+    if (isFileProduct) {
+      setArticles([{ color: "other", size: "0", quantity: 1 }]);
+    } else {
+      setArticles([{ color: "", size: "", quantity: 1 }]);
+      setFile(null);
     }
+  }, [isFileProduct]);
 
-    setErrors(newErrors);
+  // 🔹 Validation par étape avant de faire Next
+  const validateCurrentStep = () => {
+    const currentStepLabel = steps[step];
 
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // HANDLE SUBMIT
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    let imageUrl = DEFAULT_SUPPLIER_IMAGE; // Valeur par défaut
-
-    try {
-      // If there are validation errors, show them in a toast and return
-      const isValid = validateForm();
-
-      if (!isValid || !image) {
-        const errorMessages = Object.values(errors);
-
-        toast.error(
-          <div className="flex flex-col gap-1">
-            <span className="text-red-700">
-              Remplissez correcetment le formulaire
-            </span>
-            {Object.values(errors).map((err, i) => (
-              <span key={i}>• {err}</span>
-            ))}
-          </div>,
-          {
-            duration: 8000,
-          },
-        );
-
-        setLoading(false);
-        return;
+    if (currentStepLabel === "Produit") {
+      const errImage = validateImage(image);
+      if (errImage) {
+        toast.error(errImage);
+        return false;
       }
 
-      // FORM DATA
+      const errName = validateName(name);
+      if (errName) {
+        toast.error(errName);
+        return false;
+      }
+
+      const errBrand = validateRequired(brand, "Marque");
+      if (errBrand) {
+        toast.error(errBrand);
+        return false;
+      }
+
+      const errDesc = validateDescription(description);
+      if (errDesc) {
+        toast.error(errDesc);
+        return false;
+      }
+
+      if (!price || parseFloat(price) <= 0) {
+        toast.error("Veuillez entrer un prix valide");
+        return false;
+      }
+    }
+
+    if (currentStepLabel === "Classification") {
+      const errCat = validateRequired(category, "Catégorie");
+      if (errCat) {
+        toast.error(errCat);
+        return false;
+      }
+
+      const errType = validateRequired(type, "Type");
+      if (errType) {
+        toast.error(errType);
+        return false;
+      }
+
+      const errState = validateRequired(state, "État");
+      if (errState) {
+        toast.error(errState);
+        return false;
+      }
+
+      const errTarget = validateRequired(target, "Cible");
+      if (errTarget) {
+        toast.error(errTarget);
+        return false;
+      }
+    }
+
+    if (currentStepLabel === "Fichier") {
+      if (isFileProduct && !file) {
+        toast.error("Le fichier ZIP est requis pour les produits numériques");
+        return false;
+      }
+    }
+
+    if (currentStepLabel === "Variantes") {
+      const errArt = validateArticles(articles);
+      if (errArt) {
+        toast.error(errArt);
+        return false;
+      }
+    }
+
+    if (currentStepLabel === "Localisation & Contacts") {
+      const errCommune = validateRequired(commune, "Commune");
+      if (errCommune) {
+        toast.error(errCommune);
+        return false;
+      }
+
+      const errQuartier = validateRequired(quartier, "Quartier");
+      if (errQuartier) {
+        toast.error(errQuartier);
+        return false;
+      }
+
+      const errAvenue = validateAvenue(avenue);
+      if (errAvenue) {
+        toast.error(errAvenue);
+        return false;
+      }
+
+      if (isDelivering) {
+        const dp = parseFloat(deliveryPrice);
+        if (isNaN(dp) || dp < 0) {
+          toast.error("Le prix de livraison doit être un nombre positif");
+          return false;
+        }
+      }
+
+      const errContact = validatePhoneNumber(
+        contactNumber,
+        "Le numéro de téléphone",
+      );
+      if (errContact) {
+        toast.error(errContact);
+        return false;
+      }
+
+      const errPayment = validatePhoneNumber(
+        paymentNumber,
+        "Le numéro de paiement",
+      );
+      if (errPayment) {
+        toast.error(errPayment);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const next = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault(); // 🛑 Empêche le clic de se propager au submit
+    if (validateCurrentStep()) {
+      setStep((s) => Math.min(s + 1, steps.length - 1));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    if (!isZipFile(selected)) {
+      toast.error("Format invalide", {
+        description: "Seuls les fichiers .zip sont acceptés.",
+      });
+      e.target.value = "";
+      return;
+    }
+
+    if (
+      selected.size >
+      Number(formatFileSize(MAX_ZIP_SIZE).replace(/[^0-9.]/g, "")) * 1024 * 1024
+    ) {
+      toast.error("Fichier trop volumineux", {
+        description: `Taille maximale : ${formatFileSize(MAX_ZIP_SIZE)}`,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    setFile(selected);
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validateCurrentStep()) return;
+
+    setLoading(true);
+    let imageUrl = DEFAULT_SUPPLIER_IMAGE;
+    let uploadedFile: UploadedFile | null = null;
+
+    try {
+      if (isFileProduct && file) {
+        uploadedFile = await uploadArticleFile(file, `oteki/supplier-products`);
+      }
+
       const formData: NewSupplierProductType = {
-        name: name.trim().toLocaleLowerCase(),
+        name: name.trim().toLowerCase(),
         description: description.trim(),
         price,
         category,
@@ -220,53 +327,54 @@ const NewProductForm = () => {
         avenue,
         permittedSellers,
         articles,
+        file: uploadedFile ? uploadedFile.url : undefined,
         contactNumber,
         paymentNumber,
-        deliveryPrice: parseFloat(deliveryPrice),
-        image: imageUrl, // L'URL de l'image sera définie après l'upload
+        deliveryPrice: parseFloat(deliveryPrice) || 0,
+        image: imageUrl,
         isDelivering,
       };
 
-      // SEND DATA to API
       const newProduct = await createNewProduct(formData);
 
       if (newProduct.error) {
-        console.error(newProduct.message);
-
+        if (uploadedFile) await deleteArticleFile(uploadedFile.path);
         toast.error(newProduct.message);
-
         setLoading(false);
         return;
       }
 
-      // IMAGE UPLOAD to Firebase Storage
-      const imgId = v4().toString().replace(/-/g, "");
-      const storageRef = ref(
-        storage,
-        `oteki/supplier-products/images/${imgId}`,
-      );
-      const snapshot = await uploadBytes(storageRef, image);
-      imageUrl = await getDownloadURL(snapshot.ref);
+      // Upload de l'image
+      if (image) {
+        const imgId = v4().toString().replace(/-/g, "");
+        const storageRef = ref(
+          storage,
+          `oteki/supplier-products/images/${imgId}`,
+        );
+        const snapshot = await uploadBytes(storageRef, image);
+        imageUrl = await getDownloadURL(snapshot.ref);
 
-      // SEND IMAGE URL TO UPDATE
-      if (newProduct.productId) {
-        const updateImage = await supplierProductImages({
-          image: imageUrl,
-          productId: newProduct.productId,
-          images: [],
-        });
+        if (newProduct.productId) {
+          const updateImage = await supplierProductImages({
+            image: imageUrl,
+            productId: newProduct.productId,
+            images: [],
+          });
 
-        if (updateImage.error) {
-          toast.error(updateImage.message);
+          if (updateImage.error) {
+            toast.error(updateImage.message);
+          }
         }
       }
 
-      toast.success(`${newProduct.message}: ${newProduct.productId}`);
+      toast.success(`${newProduct.message}`);
       router.refresh();
 
+      // Reset Form
       setName("");
       setDescription("");
       setImage(null);
+      setFile(null);
       setCategory("");
       setType("");
       setAvenue("");
@@ -275,7 +383,7 @@ const NewProductForm = () => {
       setIsAvailable("for_all");
       setPermittedSellers([]);
       setBrand("");
-      setState("");
+      setState("nouveau");
       setTarget("");
       setStep(0);
       setContactNumber("");
@@ -285,42 +393,39 @@ const NewProductForm = () => {
       setDeliveryPrice("");
       setIsDelivering(false);
     } catch (error) {
-      console.error("Error submitting form:", error);
+      if (uploadedFile) await deleteArticleFile(uploadedFile.path);
+      console.error("Erreur ajout produit:", error);
       toast.error("Une erreur est survenue lors de l'ajout du produit");
     } finally {
       setLoading(false);
     }
   }
 
+  const currentStepName = steps[step];
+
   return (
     <div className="mx-auto max-w-2xl p-4 w-full flex flex-col gap-6">
-      {/* TOP TEXT */}
       <div>
         <PackagePlus className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
-        <h3 className="text-center">Nouveau Produit</h3>
+        <h3 className="text-center font-bold text-lg">Nouveau Produit</h3>
       </div>
 
-      {/* STEPS */}
+      {/* STEPS INDICATOR */}
       <div className="flex items-center justify-between mb-4">
         {steps.map((label, i) => (
           <div key={i} className="flex-1 flex items-center">
             <div
-              className={`
-          flex items-center justify-center
-          w-8 h-8 rounded-full text-xs font-medium
-          ${
-            i <= step
-              ? "bg-primary text-white"
-              : "bg-muted text-muted-foreground"
-          }
-        `}
+              className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium transition-colors ${
+                i <= step
+                  ? "bg-primary text-white"
+                  : "bg-muted text-muted-foreground"
+              }`}
             >
               {i + 1}
             </div>
-
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-px mx-2 ${
+                className={`flex-1 h-px mx-2 transition-colors ${
                   i < step ? "bg-primary" : "bg-muted"
                 }`}
               />
@@ -329,48 +434,29 @@ const NewProductForm = () => {
         ))}
       </div>
 
-      <p className="text-sm text-muted-foreground mb-4">{steps[step]}</p>
+      <p className="text-sm font-semibold text-muted-foreground mb-2">
+        Étape {step + 1} : {currentStepName}
+      </p>
 
-      <div
-        key={step}
-        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
-      >
-        {/* STEP 0: Product Information et Prix */}
-        {step === 0 && (
-          <div className="space-y-4">
-            {/* IMAGE */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* STEP : PRODUIT */}
+        {currentStepName === "Produit" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
             <div className="w-full flex flex-col gap-2">
-              {/* <label htmlFor="image" className="text-sm font-medium">
-            Image du produit *
-          </label> */}
-
+              <label className="text-sm font-medium">Image du produit *</label>
               <div className="w-full">
                 {image ? (
-                  <div
-                    className="relative w-full h-64 rounded-xl overflow-hidden 
-                border bg-gray-100"
-                  >
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border bg-gray-100">
                     <Image
                       src={URL.createObjectURL(image)}
                       alt="Product Image"
                       fill
                       className="object-cover"
                     />
-
-                    {/* Bouton supprimer minimaliste */}
                     <button
                       type="button"
                       onClick={() => setImage(null)}
-                      className="
-                    absolute top-3 right-3
-                    h-8 w-8 flex items-center justify-center
-                    rounded-full
-                    bg-white/80 backdrop-blur
-                    border shadow-sm
-                    hover:bg-white
-                    transition
-                    font-bold
-                  "
+                      className="absolute top-3 right-3 h-8 w-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur border shadow-sm hover:bg-white transition font-bold"
                     >
                       ✕
                     </button>
@@ -378,53 +464,50 @@ const NewProductForm = () => {
                 ) : (
                   <label
                     htmlFor="image"
-                    className="
-                  flex flex-col items-center justify-center
-                  w-full h-64
-                  border border-dashed rounded-xl
-                  cursor-pointer
-                  hover:bg-gray-50
-                  transition
-                "
+                    className="flex flex-col items-center justify-center w-full h-64 border border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"
                   >
                     <div className="text-center space-y-1">
-                      <p className="text-sm text-gray-600">Ajouter une image</p>
-                      <p className="text-xs text-gray-400">PNG, JPG, WEBP</p>
+                      <p className="text-sm text-gray-600">
+                        Ajouter une image *
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        PNG, JPG, WEBP (Max 2 Mo)
+                      </p>
                     </div>
-
                     <Input
                       id="image"
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-
                         if (!file) return;
-
-                        const maxSize = 2 * 1024 * 1024; // 2MB
-
-                        // CHECK TYPE
                         if (!file.type.startsWith("image/")) {
                           toast.error("Veuillez sélectionner une image valide");
                           return;
                         }
-
-                        // CHECK SIZE
-                        if (file.size > maxSize) {
+                        if (
+                          file.size >
+                          Number(
+                            formatFileSize(2 * 1024 * 1024).replace(
+                              /[^0-9.]/g,
+                              "",
+                            ),
+                          ) *
+                            1024 *
+                            1024
+                        ) {
                           toast.error("L'image doit être inférieure à 2MB");
                           return;
                         }
-
-                        // ✅ OK
                         setImage(file);
                       }}
-                      className="hidden text-sm"
+                      className="hidden"
                     />
                   </label>
                 )}
               </div>
             </div>
-            {/* NAME */}
+
             <div className="grid w-full items-center gap-2">
               <label htmlFor="name" className="text-sm font-medium">
                 Nom du produit *
@@ -432,37 +515,32 @@ const NewProductForm = () => {
               <Input
                 id="name"
                 placeholder="Ex: T-shirt Otekis"
-                required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="text-sm"
                 disabled={loading}
               />
             </div>
 
-            {/* BRAND */}
             <div className="grid w-full items-center gap-2">
-              <label htmlFor="state" className="text-sm font-medium">
+              <label htmlFor="brand" className="text-sm font-medium">
                 Marque du produit *
               </label>
               <Input
-                placeholder="Ex: Nike, Apple..."
+                id="brand"
+                placeholder="Ex: Nike, Apple, Otekis..."
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="text-sm"
                 disabled={loading}
               />
             </div>
 
-            {/* DESCRIPTION */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="description" className="text-sm font-medium">
                 Description du produit *
               </label>
               <Textarea
                 id="description"
-                placeholder="Ex: Un t-shirt 100% coton bio avec le logo Otekis..."
-                required
+                placeholder="Description détaillée du produit..."
                 minLength={5}
                 maxLength={2000}
                 className="max-h-40 text-sm"
@@ -472,7 +550,6 @@ const NewProductForm = () => {
               />
             </div>
 
-            {/* PRICE */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="price" className="text-sm font-medium">
                 Prix ($) du produit *
@@ -481,32 +558,22 @@ const NewProductForm = () => {
                 id="price"
                 type="number"
                 placeholder="Ex: 29.99"
-                required
                 min="0"
                 step="0.01"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="text-sm"
+                disabled={loading}
               />
             </div>
           </div>
         )}
 
-        {/* STEP 1: Articles */}
-        {step === 1 && (
-          <ProductArticles articles={articles} setArticles={setArticles} />
-        )}
-
-        {/* STEP 2: Classification */}
-        {step === 2 && (
-          <div className="space-y-4">
-            {/* CATEGORY --- TYPE */}
+        {/* STEP : CLASSIFICATION */}
+        {currentStepName === "Classification" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* CATEGORY */}
               <div className="grid w-full items-center gap-2">
-                <label htmlFor="category" className="text-sm font-medium">
-                  Catégorie *
-                </label>
+                <label className="text-sm font-medium">Catégorie *</label>
                 <SelectProductCategory
                   categories={CategoriesData}
                   selectedCategory={category}
@@ -514,21 +581,16 @@ const NewProductForm = () => {
                     setCategory(cat);
                     setType("");
                   }}
-                  required
                   disabled={loading}
                 />
               </div>
 
-              {/* TYPE */}
               <div className="grid w-full items-center gap-2">
-                <label htmlFor="type" className="text-sm font-medium">
-                  Type de produit *
-                </label>
+                <label className="text-sm font-medium">Type de produit *</label>
                 <SelectProductType
                   types={NewAllProductsTypesWithCategory}
                   selectedType={type}
                   onTypeChange={setType}
-                  required
                   category={category}
                   disabled={!category || loading}
                 />
@@ -536,24 +598,8 @@ const NewProductForm = () => {
             </div>
 
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* QUALITY */}
-              {/* <div className="grid w-full items-center gap-2">
-              <label htmlFor="quality" className="text-sm font-medium">
-                Qualité
-              </label>
-              <SelectorProducts
-                data={QualitiesData}
-                onChange={setQuality}
-                value={quality}
-                placeholder="Sélectionnez une qualité"
-              />
-            </div> */}
-
-              {/* STATE */}
               <div className="grid w-full items-center gap-2">
-                <label htmlFor="state" className="text-sm font-medium">
-                  État du produit *
-                </label>
+                <label className="text-sm font-medium">État du produit *</label>
                 <SelectorProducts
                   data={StatesData}
                   onChange={setState}
@@ -563,11 +609,8 @@ const NewProductForm = () => {
                 />
               </div>
 
-              {/* Target */}
               <div className="grid w-full items-center gap-2">
-                <label htmlFor="quality" className="text-sm font-medium">
-                  Cible *
-                </label>
+                <label className="text-sm font-medium">Cible *</label>
                 <SelectorProducts
                   data={TargetData}
                   onChange={setTarget}
@@ -580,21 +623,84 @@ const NewProductForm = () => {
           </div>
         )}
 
-        {/* STEP 3: CONTACTS & Address */}
-        {step === 3 && (
-          <div className="space-y-4">
-            {/* ADDRESS */}
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* COMMUNE */}
-              <div className="grid w-full items-center gap-2">
-                <label htmlFor="commune" className="text-sm font-medium">
-                  Commune *
-                </label>
+        {/* STEP : FICHIER (Digital uniquement) */}
+        {currentStepName === "Fichier" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="w-full flex flex-col gap-2">
+              <p className="text-sm font-medium">
+                Ajouter le fichier téléchargeable (ZIP) *
+              </p>
 
+              <div className="w-full">
+                {file ? (
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border bg-gray-100 p-4">
+                    <div className="text-sm text-gray-700 space-y-1">
+                      <p className="font-medium break-all">{file.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {(file.size / (1024 * 1024)).toFixed(2)} Mo
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setFile(null)}
+                      disabled={loading}
+                      className="absolute top-3 right-3 h-8 w-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur border shadow-sm hover:bg-white transition font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="file"
+                    className="flex flex-col items-center justify-center w-full h-64 border border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"
+                  >
+                    <div className="text-center space-y-1">
+                      <p className="text-sm text-gray-600">
+                        Ajouter un fichier ZIP
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        ZIP uniquement (max {MAX_ZIP_SIZE / (1024 * 1024)} Mo)
+                      </p>
+                    </div>
+
+                    <Input
+                      id="file"
+                      type="file"
+                      accept=".zip,application/zip,application/x-zip-compressed"
+                      onChange={handleFileChange}
+                      disabled={loading}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP : VARIANTES */}
+        {currentStepName === "Variantes" && isFileProduct && (
+          <div className="animate-in fade-in duration-200">
+            <ProductArticles
+              articles={articles}
+              setArticles={setArticles}
+              isFileProduct={isFileProduct}
+            />
+          </div>
+        )}
+
+        {/* STEP : LOCALISATION & CONTACTS */}
+        {currentStepName === "Localisation & Contacts" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid w-full items-center gap-2">
+                <label className="text-sm font-medium">Commune *</label>
                 <SelectorProducts
-                  data={communesKinshasa.map((c) => {
-                    return { label: c, value: c.toLowerCase() };
-                  })}
+                  data={communesKinshasa.map((c) => ({
+                    label: c,
+                    value: c.toLowerCase(),
+                  }))}
                   onChange={(val) => {
                     setCommune(val as string);
                     setQuartier("");
@@ -602,15 +708,11 @@ const NewProductForm = () => {
                   value={commune}
                   placeholder="Sélectionnez la commune"
                   disabled={loading}
-                  required
                 />
               </div>
 
-              {/* QUARTIER */}
               <div className="grid w-full items-center gap-2">
-                <label htmlFor="quartier" className="text-sm font-medium">
-                  Quartier *
-                </label>
+                <label className="text-sm font-medium">Quartier *</label>
                 <SelectorProducts
                   data={communesQuartiers
                     .filter(
@@ -626,33 +728,27 @@ const NewProductForm = () => {
               </div>
             </div>
 
-            {/* ADDRESS 2 AVENUE ET NUMERO */}
             <div className="grid w-full items-center gap-2">
               <label htmlFor="avenue" className="text-sm font-medium">
                 Avenue et numéro *
               </label>
               <Input
                 id="avenue"
-                placeholder="Ex: busu-melo, 12"
+                placeholder="Ex: Samba, 12"
                 value={avenue}
                 onChange={(e) => setAvenue(e.target.value)}
-                className="text-sm"
                 disabled={loading}
-                required
               />
-
               <p className="text-xs text-muted-foreground">
                 Format : Nom de l’avenue, numéro (ex: Samba, 12)
               </p>
             </div>
 
-            <div className={`grid w-full grid-cols-1 sm:grid-cols-2 gap-4`}>
-              {/* LIVRAISON */}
-              <div className="grid w-full items-center gap-2 col-span-1">
-                <label htmlFor="isDelivering" className="text-sm font-medium">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid w-full items-center gap-2">
+                <label className="text-sm font-medium">
                   Proposez-vous la livraison ?
                 </label>
-
                 <SelectorProducts
                   data={[
                     { label: "Oui", value: "yes" },
@@ -660,9 +756,7 @@ const NewProductForm = () => {
                   ]}
                   onChange={(val) => {
                     setIsDelivering(val === "yes");
-                    if (val !== "yes") {
-                      setDeliveryPrice("");
-                    }
+                    if (val !== "yes") setDeliveryPrice("");
                   }}
                   value={isDelivering ? "yes" : "no"}
                   placeholder="Sélectionnez une option"
@@ -670,96 +764,71 @@ const NewProductForm = () => {
                 />
               </div>
 
-              {/* DELIVERY PRICE */}
               {isDelivering && (
-                <div className="grid w-full items-center gap-2 col-span-1">
+                <div className="grid w-full items-center gap-2">
                   <label
                     htmlFor="deliveryPrice"
                     className="text-sm font-medium"
                   >
-                    Prix de livraison ($)*
+                    Prix de livraison ($) *
                   </label>
                   <Input
                     id="deliveryPrice"
                     type="number"
                     placeholder="Ex: 3.5"
-                    required
                     min="0"
                     step="0.1"
                     value={deliveryPrice}
                     onChange={(e) => setDeliveryPrice(e.target.value)}
-                    className="text-sm"
+                    disabled={loading}
                   />
                 </div>
               )}
             </div>
 
-            {/* CONTACTS */}
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* CONTACT NUMBER */}
               <div className="grid w-full items-center gap-2">
                 <label htmlFor="contactNumber" className="text-sm font-medium">
-                  Numero de telephone (Whatsapp) *
+                  Numéro WhatsApp (9 chiffres) *
                 </label>
-
                 <div className="relative">
-                  <span
-                    className="
-                    absolute left-3 top-1/2 -translate-y-1/2
-                    text-sm text-foreground
-                    pointer-events-none
-                  "
-                  >
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-foreground pointer-events-none">
                     +243
                   </span>
-
                   <Input
                     id="contactNumber"
                     type="tel"
-                    placeholder="83222622"
-                    required
-                    minLength={9}
+                    placeholder="832226222"
                     maxLength={9}
                     value={contactNumber}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      setContactNumber(val);
-                    }}
+                    onChange={(e) =>
+                      setContactNumber(e.target.value.replace(/\D/g, ""))
+                    }
                     className="pl-12 text-sm"
+                    disabled={loading}
                   />
                 </div>
               </div>
 
-              {/* CONTACT PAYMENT */}
               <div className="grid w-full items-center gap-2">
                 <label htmlFor="paymentNumber" className="text-sm font-medium">
-                  Numero de paiement (MPESA, AIRTEL MONEY...)*
+                  Numéro de paiement Mobile Money *
                 </label>
-
                 <div className="relative">
-                  <span
-                    className="
-                    absolute left-3 top-1/2 -translate-y-1/2
-                    text-sm text-foreground
-                    pointer-events-none
-                  "
-                  >
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-foreground pointer-events-none">
                     +243
                   </span>
-
                   <Input
                     id="paymentNumber"
                     type="tel"
-                    placeholder="832222622"
-                    required
-                    minLength={9}
+                    placeholder="832226222"
                     maxLength={9}
                     value={paymentNumber}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      setPaymentNumber(val);
-                    }}
+                    onChange={(e) =>
+                      setPaymentNumber(e.target.value.replace(/\D/g, ""))
+                    }
                     className="pl-12 text-sm"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -767,48 +836,35 @@ const NewProductForm = () => {
           </div>
         )}
 
-        {/* STEP 4: Availability */}
-        {step === 4 && (
-          <div className="space-y-4">
-            {/* Is Available */}
+        {/* STEP : DISPONIBILITÉ */}
+        {currentStepName === "Disponibilité" && (
+          <div className="space-y-4 animate-in fade-in duration-200">
             <div className="grid w-full items-center gap-2">
-              <label htmlFor="isAvailable" className="text-sm font-medium">
+              <label className="text-sm font-medium">
                 Disponibilité du produit *
               </label>
               <SelectorProducts
                 data={IsAvailableProducts}
                 onChange={(val) => {
                   setIsAvailable(val as IsAvailableType);
-                  if (val !== "specific_sellers") {
-                    setPermittedSellers([]);
-                  }
+                  if (val !== "specific_sellers") setPermittedSellers([]);
                 }}
                 value={isAvailable}
                 placeholder="Sélectionnez une option de disponibilité"
                 disabled={loading}
-                required
               />
             </div>
 
-            {/* Permitted Sellers (if specific_sellers) */}
             {isAvailable === "specific_sellers" && (
               <div className="grid w-full items-center gap-2">
-                <label
-                  htmlFor="permittedSellers"
-                  className="text-sm font-medium"
-                >
+                <label className="text-sm font-medium">
                   Vendeurs autorisés
                 </label>
-
-                <p className="text-xs">
+                <p className="text-xs text-muted-foreground">
                   Sélectionnez les vendeurs autorisés à vendre ce produit.
-                  Ecrivez et ajoutez les vendeurs un par un dans le champ de
-                  sélection. Vous pourrez modifier cette liste plus tard si
-                  besoin.
                 </p>
-
                 <PermittedSellersSelect
-                  data={shops} // TODO: list of sellers
+                  data={shops}
                   value={permittedSellers}
                   onChange={setPermittedSellers}
                 />
@@ -817,28 +873,38 @@ const NewProductForm = () => {
           </div>
         )}
 
-        {/* BUTTONS AND NAVIGATIONS */}
-        <div className="flex items-center justify-between mt-6">
+        {/* NAVIGATION BUTTONS */}
+        {/* BUTTONS AND NAVIGATION */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t">
           <Button
             type="button"
             variant="ghost"
             onClick={prev}
-            disabled={step === 0}
+            disabled={step === 0 || loading}
           >
             Retour
           </Button>
 
           {step < steps.length - 1 ? (
-            <Button type="button" onClick={next}>
+            <Button
+              key="btn-next" // 👈 La key empêche React de réutiliser ce bouton pour le submit
+              type="button"
+              onClick={(e) => next(e)}
+              disabled={loading}
+            >
               Suivant
             </Button>
           ) : (
-            <Button type="submit" disabled={loading} onClick={handleSubmit}>
+            <Button
+              key="btn-submit" // 👈 Bouton complètement distinct dans le DOM
+              type="submit"
+              disabled={loading}
+            >
               {loading ? "Ajout..." : "Ajouter le produit"}
             </Button>
           )}
         </div>
-      </div>
+      </form>
     </div>
   );
 };

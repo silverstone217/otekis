@@ -23,6 +23,7 @@ export const NewSupplierProductSchema = z
     type: z.string().min(1, "Le type est requis"),
     state: z.string().min(1, "L'état est requis"),
     target: z.string().min(1, "La cible est requise"),
+    file: z.url("Le fichier doit être une URL valide").optional(),
 
     isAvailable: z.enum(
       ["for_all", "specific_sellers", "only_self", "not_available"],

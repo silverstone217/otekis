@@ -10,6 +10,7 @@ import { getUser } from "@/actions/actions";
 import { SearchX } from "lucide-react";
 import React from "react";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
+import { AddDigitalArticle } from "@/components/admins/products/articles/DigitalArticle";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -105,7 +106,15 @@ const ArticlesPage = async (props: Props) => {
         </div>
         {/* add items */}
         {/* navigate */}
-        <AddNewArticle product={product} />
+        {(product.category === "vetements" ||
+          product.category === "accessoires" ||
+          product.category === "cosmetiques") && (
+          <AddNewArticle product={product} />
+        )}
+
+        {product.category === "digital" && (
+          <AddDigitalArticle product={product} />
+        )}
       </div>
       {/* form */}
       {(product.category === "vetements" ||

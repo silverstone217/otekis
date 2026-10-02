@@ -18,16 +18,19 @@ export type ArticleType = {
   color: string;
   size: string;
   quantity: number;
+  isFileProduct?: boolean;
 };
 
 interface ProductArticlesProps {
   articles: ArticleType[];
   setArticles: React.Dispatch<React.SetStateAction<ArticleType[]>>;
+  isFileProduct?: boolean;
 }
 
 export const ProductArticles: React.FC<ProductArticlesProps> = ({
   articles,
   setArticles,
+  isFileProduct,
 }) => {
   const handleChange = (
     index: number,
@@ -94,6 +97,7 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
               <Select
                 value={article.color}
                 onValueChange={(value) => handleChange(index, "color", value)}
+                disabled={isFileProduct}
               >
                 <SelectTrigger className="h-9 w-full">
                   <SelectValue placeholder="Couleur" />
@@ -117,6 +121,7 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
               placeholder="Taille"
               value={article.size}
               onChange={(e) => handleChange(index, "size", e.target.value)}
+              disabled={isFileProduct}
             />
 
             {/* QUANTITY */}
@@ -126,6 +131,7 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
               className="h-9 w-full min-w-0 text-center"
               value={article.quantity}
               onChange={(e) => handleChange(index, "quantity", e.target.value)}
+              disabled={isFileProduct}
             />
 
             {/* DELETE */}
@@ -134,7 +140,10 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
               variant="ghost"
               size="icon"
               onClick={() => removeArticle(index)}
-              disabled={articles.length === 1}
+              disabled={
+                articles.length === 1 ||
+                (isFileProduct && articles.length === 1)
+              }
               className="
           h-9 w-9
           opacity-0
@@ -163,6 +172,7 @@ export const ProductArticles: React.FC<ProductArticlesProps> = ({
           hover:text-foreground
           transition
         "
+        disabled={isFileProduct && articles.length >= 1}
         onClick={addArticle}
       >
         <Plus className="h-4 w-4" />
