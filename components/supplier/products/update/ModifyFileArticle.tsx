@@ -77,10 +77,7 @@ const ModifyFileArticle = ({ productId, articleId, fileUrl }: Props) => {
 
     try {
       // 1. Upload sur Firebase Storage
-      uploadedFile = await uploadArticleFile(
-        file,
-        `oteki/supplier-products/${productId}`,
-      );
+      uploadedFile = await uploadArticleFile(file, `oteki/supplier-products`);
 
       // 2. Mise à jour de l'URL de l'article dans Prisma
       const res = await updateArticleFile({

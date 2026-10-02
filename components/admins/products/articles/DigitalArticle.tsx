@@ -86,7 +86,7 @@ export const AddDigitalArticle = ({ product }: { product: Product }) => {
 
     try {
       // 1. Upload sur Firebase
-      uploaded = await uploadArticleFile(file);
+      uploaded = await uploadArticleFile(file, `oteki/products/files`);
 
       // 2. Enregistrement en base
       const item = {
