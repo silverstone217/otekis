@@ -13,6 +13,9 @@ export async function GET() {
     where: {
       supplierId: user.id,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return NextResponse.json(products || []);
 }

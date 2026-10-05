@@ -787,6 +787,19 @@ export const deleteProductById = async ({
       image: true,
       images: true,
       Article: true,
+      supplierProductShops: {
+        select: {
+          shop: {
+            select: {
+              orders: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -811,6 +824,19 @@ export const deleteProductById = async ({
         (a) => a.file && deleteArticleFile(a.file),
       ),
     );
+  }
+
+  // Check if product has any orders in progress
+  const hasOrdersInProgress = product.supplierProductShops.some((shop) =>
+    shop.shop.orders.some((order) => order.id),
+  );
+
+  if (hasOrdersInProgress) {
+    return {
+      error: true,
+      message:
+        "Impossible de supprimer ce produit car il a des commandes en cours.",
+    };
   }
 
   await prisma.supplierProduct.delete({

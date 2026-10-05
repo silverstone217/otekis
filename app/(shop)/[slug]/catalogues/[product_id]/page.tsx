@@ -404,14 +404,18 @@ const page = async (props: Props) => {
           </div>
 
           {/* separators */}
-          {uniqueColors.length > 0 && uniqueColors[0] !== "nothing" && (
+          {uniqueColors.length > 0 && uniqueColors[0] !== "nothing" ? (
+            uniqueColors.length === 1 && uniqueColors[0] !== "other"
+          ) : (
             <div
               style={{ backgroundColor: "dimgray" }}
               className="w-full h-px opacity-75 "
             />
           )}
           {/* colors */}
-          {uniqueColors.length > 0 && uniqueColors[0] !== "nothing" && (
+          {uniqueColors.length > 0 && uniqueColors[0] !== "nothing" ? (
+            uniqueColors.length === 1 && uniqueColors[0] !== "other"
+          ) : (
             <div className="w-full flex gap-3 flex-col">
               <h3 className="font-semibold uppercase">Couleurs</h3>
               <div className="flex w-full flex-wrap gap-4">

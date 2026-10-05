@@ -309,82 +309,85 @@ export const createSupplierOrder = async ({
       }
     }
 
+    const userAdmin = user.role.includes("admin");
+
+    // Paiement Flexpaie ignoré uniquement en développement ET pour un admin
+    const isDevelopment = process.env.NODE_ENV === "development";
+    const isAdminUser = user.role === "admin" || user.role === "super_admin";
+    const skipPayment = isDevelopment && isAdminUser;
+
     // 4.PAIEMENT SUR FLEXPAIE MOBILE
     const totalAmount = deliveryPrice + amount;
-    // FONCTION FLEXPAIE
-    // proceed to create order
     const transaction_id = v4().toString().replace(/-/g, "");
-    const flexpaieApiToken = FLEXPAIE_TOKEN;
-    const flexpaieApiUrl = FLEXPAIE_URL_API;
 
-    // URL to notify
-    const baseUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://otekis.com"
-        : "http://localhost:3000";
+    if (!skipPayment) {
+      const flexpaieApiToken = FLEXPAIE_TOKEN;
+      const flexpaieApiUrl = FLEXPAIE_URL_API;
 
-    const notify_url = `${baseUrl}/panier`;
+      // URL to notify
+      const baseUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://otekis.com"
+          : "http://localhost:3000";
 
-    // AMOUNT BASED ON DELIVERY METHOD
-    const amountFlexpaie =
-      deliveryInfos.paymentMethod === "mobile_money" ? totalAmount : amount;
+      const notify_url = `${baseUrl}/panier`;
 
-    // FLEXPAIE PAYMENT DATA
-    const flexpaieData: PaymentFlexpaieDataType = {
-      merchant: FLEXPAIE_MERCHANT_CODE,
-      type: "1",
-      phone: paymentNumber.length === 9 ? "243" + paymentNumber : paymentNumber,
-      reference: transaction_id,
-      amount: amountFlexpaie.toString(),
-      currency: currency,
-      callbackUrl: notify_url,
-    };
+      const amountFlexpaie =
+        deliveryInfos.paymentMethod === "mobile_money" ? totalAmount : amount;
 
-    // call flexpaie api to init payment
-    const response = await fetch(flexpaieApiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${flexpaieApiToken}`,
-      },
-      body: JSON.stringify(flexpaieData),
-    });
-
-    // console.log("Flexpaie response:", response);
-
-    if (!response.ok) {
-      throw new Error("Erreur lors de l'initialisation du paiement");
-    }
-
-    //   GET RESPONSE
-    const dataResponse = (await response.json()) as PaymentFlexpaieResponseType;
-
-    // console.log("Flexpaie data:", data);
-
-    // Paiement accepté, préparer les données de commande
-    const paymentCode = dataResponse.code;
-
-    if (paymentCode !== "0") {
-      return {
-        error: true,
-        message: `Le paiement a échoué: ${dataResponse.message}`,
-        data: null,
+      // FLEXPAIE PAYMENT DATA
+      const flexpaieData: PaymentFlexpaieDataType = {
+        merchant: FLEXPAIE_MERCHANT_CODE,
+        type: "1",
+        phone:
+          paymentNumber.length === 9 ? "243" + paymentNumber : paymentNumber,
+        reference: transaction_id,
+        amount: amountFlexpaie.toString(),
+        currency: currency,
+        callbackUrl: notify_url,
       };
-    }
 
-    const paymentRef = dataResponse.orderNumber;
+      // call flexpaie api to init payment
+      const response = await fetch(flexpaieApiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${flexpaieApiToken}`,
+        },
+        body: JSON.stringify(flexpaieData),
+      });
 
-    // WAIT 30 SECONDS BEFORE CALLING THE NEW ORDER ACTION TO ENSURE PAYMENT IS PROCESSED
-    const isPaymentSuccessful = await checkFlexpaiePaymentAfterDelais(
-      paymentRef,
-      35,
-    );
-    if (!isPaymentSuccessful) {
-      return {
-        error: true,
-        message: "Le paiement n'a pas été confirmé. Veuillez réessayer.",
-        data: null,
-      };
+      // console.log("Flexpaie response:", response);
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'initialisation du paiement");
+      }
+
+      const dataResponse =
+        (await response.json()) as PaymentFlexpaieResponseType;
+      const paymentCode = dataResponse.code;
+
+      if (paymentCode !== "0") {
+        return {
+          error: true,
+          message: `Le paiement a échoué: ${dataResponse.message}`,
+          data: null,
+        };
+      }
+
+      const paymentRef = dataResponse.orderNumber;
+
+      const isPaymentSuccessful = await checkFlexpaiePaymentAfterDelais(
+        paymentRef,
+        35,
+      );
+      if (!isPaymentSuccessful) {
+        return {
+          error: true,
+          message: "Le paiement n'a pas été confirmé. Veuillez réessayer.",
+          data: null,
+        };
+      }
     }
 
     // SHARES MONEY

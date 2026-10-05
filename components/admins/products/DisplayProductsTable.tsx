@@ -76,7 +76,7 @@ const ActionsCell = ({ product }: { product: ProductWithArticle }) => {
     const printInfo = `ID: ${product.id}\nUID: ${
       product.uid
     }\nNom: ${capitalizeText(product.name)}\nCatégorie: ${capitalizeText(
-      returnDataValue(product.category, CategoriesData)
+      returnDataValue(product.category, CategoriesData),
     )}\n`;
 
     // Ouvrir une nouvelle fenêtre
@@ -163,7 +163,7 @@ const ActionsCell = ({ product }: { product: ProductWithArticle }) => {
 // Delete product component
 const ProductToDelete = ({ product }: { product: ProductWithArticle }) => {
   const [description, setDescription] = useState(
-    "Le stock du produit etait inferieur à 1."
+    "Le stock du produit etait inferieur à 1.",
   );
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -175,12 +175,20 @@ const ProductToDelete = ({ product }: { product: ProductWithArticle }) => {
       // delete images
       const images = [product.image, ...product.images];
       images.forEach(
-        async (image) => image && (await deleteObject(ref(storage, image)))
+        async (image) => image && (await deleteObject(ref(storage, image))),
       );
       const formData = {
         id: product.id,
         description,
       };
+
+      if (product.category === "digital") {
+        // delete digital files
+        const digitalFiles = product.Article.map((article) => article.file);
+        digitalFiles.forEach(
+          async (file) => file && (await deleteObject(ref(storage, file))),
+        );
+      }
 
       // send to backend
       const response = await fetch("/api/admins/products/delete", {
@@ -280,11 +288,11 @@ function ProductNameCell({ name }: { name: string }) {
       className="
         capitalize 
         whitespace-normal 
-        break-words 
+        wrap-break-word 
         overflow-hidden 
 
         max-w-[100px]       // mobile
-        sm:max-w-[160px]    // sm
+        sm:max-w-40    // sm
         md:max-w-[200px]    // desktop  
         lg:md:max-w-[260px] // larger
         line-clamp-2        
@@ -298,7 +306,7 @@ function ProductNameCell({ name }: { name: string }) {
 
 // Columns data
 export const Productscolumns = (
-  currencySymbol: string
+  currencySymbol: string,
 ): ColumnDef<ProductWithArticle>[] => [
   {
     accessorKey: "uid",
@@ -410,7 +418,7 @@ export function ProductDataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -444,7 +452,7 @@ export function ProductDataTable<TData, TValue>({
   const products = data as ProductWithArticle[];
 
   const uniqueCategories = Array.from(
-    new Set(products.map((dt) => dt.category))
+    new Set(products.map((dt) => dt.category)),
   );
 
   return (
@@ -525,7 +533,7 @@ export function ProductDataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 );

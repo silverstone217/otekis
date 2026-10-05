@@ -20,6 +20,9 @@ export async function GET() {
     include: {
       supplierEarning: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return NextResponse.json(orders || []);
 }
