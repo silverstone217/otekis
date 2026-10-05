@@ -64,19 +64,47 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(0)} Mo`;
 };
 
-const NewProductForm = () => {
+type NewProductFormProps = {
+  shopId?: string;
+  shopSlug?: string;
+};
+
+const SpecialAddressInfo = {
+  commune: "bandalungwa",
+  quartier: "makelele",
+  avenue: "Tshanga, 6529",
+};
+
+const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const [category, setCategory] = useState("");
+  const cannotModifySpecialInfo = useMemo(() => {
+    if (!shopId || !shopSlug) return false;
+    return true;
+  }, [shopId, shopSlug]);
+
+  const [category, setCategory] = useState(
+    cannotModifySpecialInfo ? "digital" : "",
+  );
   const isFileProduct = useMemo(() => category === "digital", [category]);
 
   // 🔹 Steps dynamiques selon le type de produit
   const steps = useMemo(() => {
-    const base = ["Produit", "Classification"];
-    if (isFileProduct) base.push("Fichier");
-    return [...base, "Variantes", "Localisation & Contacts", "Disponibilité"];
-  }, [isFileProduct]);
+    const list = ["Produit", "Classification"];
+    if (isFileProduct) list.push("Fichier");
+
+    // Variantes : inutile pour un produit numérique d'une boutique spéciale
+    // (l'article est déjà forcé à other / 0 / 1 par le useEffect)
+    if (!(isFileProduct && cannotModifySpecialInfo)) list.push("Variantes");
+
+    list.push("Localisation & Contacts");
+
+    // Disponibilité : déjà fixée à "specific_sellers" avec [shopId]
+    if (!cannotModifySpecialInfo) list.push("Disponibilité");
+
+    return list;
+  }, [isFileProduct, cannotModifySpecialInfo]);
 
   const [step, setStep] = useState(0);
 
@@ -99,8 +127,12 @@ const NewProductForm = () => {
   const [brand, setBrand] = useState("");
   const [target, setTarget] = useState("");
 
-  const [isAvailable, setIsAvailable] = useState<IsAvailableType>("for_all");
-  const [permittedSellers, setPermittedSellers] = useState<string[]>([]);
+  const [isAvailable, setIsAvailable] = useState<IsAvailableType>(
+    cannotModifySpecialInfo ? "specific_sellers" : "for_all",
+  );
+  const [permittedSellers, setPermittedSellers] = useState<string[]>(
+    cannotModifySpecialInfo && shopId ? [shopId] : [],
+  );
   const [shops, setShops] = useState<any[]>([]);
 
   const [articles, setArticles] = useState([
@@ -110,9 +142,15 @@ const NewProductForm = () => {
   const [image, setImage] = useState<File | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
-  const [commune, setCommune] = useState("");
-  const [quartier, setQuartier] = useState("");
-  const [avenue, setAvenue] = useState("");
+  const [commune, setCommune] = useState(
+    cannotModifySpecialInfo ? SpecialAddressInfo.commune : "",
+  );
+  const [quartier, setQuartier] = useState(
+    cannotModifySpecialInfo ? SpecialAddressInfo.quartier : "",
+  );
+  const [avenue, setAvenue] = useState(
+    cannotModifySpecialInfo ? SpecialAddressInfo.avenue : "",
+  );
   const [isDelivering, setIsDelivering] = useState(false);
   const [deliveryPrice, setDeliveryPrice] = useState("");
 
@@ -368,6 +406,11 @@ const NewProductForm = () => {
       }
 
       toast.success(`${newProduct.message}`);
+
+      setTimeout(() => {
+        router.push(`/${shopSlug}/`);
+      }, 2000);
+
       router.refresh();
 
       // Reset Form
@@ -581,7 +624,7 @@ const NewProductForm = () => {
                     setCategory(cat);
                     setType("");
                   }}
-                  disabled={loading}
+                  disabled={loading || cannotModifySpecialInfo}
                 />
               </div>
 
@@ -707,7 +750,7 @@ const NewProductForm = () => {
                   }}
                   value={commune}
                   placeholder="Sélectionnez la commune"
-                  disabled={loading}
+                  disabled={loading || cannotModifySpecialInfo}
                 />
               </div>
 
@@ -723,7 +766,7 @@ const NewProductForm = () => {
                   onChange={setQuartier}
                   value={quartier}
                   placeholder="Sélectionnez le quartier"
-                  disabled={!commune || loading}
+                  disabled={!commune || loading || cannotModifySpecialInfo}
                 />
               </div>
             </div>
@@ -737,7 +780,7 @@ const NewProductForm = () => {
                 placeholder="Ex: Samba, 12"
                 value={avenue}
                 onChange={(e) => setAvenue(e.target.value)}
-                disabled={loading}
+                disabled={loading || cannotModifySpecialInfo}
               />
               <p className="text-xs text-muted-foreground">
                 Format : Nom de l’avenue, numéro (ex: Samba, 12)
@@ -760,7 +803,7 @@ const NewProductForm = () => {
                   }}
                   value={isDelivering ? "yes" : "no"}
                   placeholder="Sélectionnez une option"
-                  disabled={loading}
+                  disabled={loading || cannotModifySpecialInfo}
                 />
               </div>
 
@@ -780,7 +823,7 @@ const NewProductForm = () => {
                     step="0.1"
                     value={deliveryPrice}
                     onChange={(e) => setDeliveryPrice(e.target.value)}
-                    disabled={loading}
+                    disabled={loading || cannotModifySpecialInfo}
                   />
                 </div>
               )}
@@ -851,7 +894,7 @@ const NewProductForm = () => {
                 }}
                 value={isAvailable}
                 placeholder="Sélectionnez une option de disponibilité"
-                disabled={loading}
+                disabled={loading || cannotModifySpecialInfo}
               />
             </div>
 

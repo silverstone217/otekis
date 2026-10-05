@@ -17,6 +17,7 @@ import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Separator } from "@/components/ui/separator";
 import { capitalizeText } from "@/utils/shopFunctions";
+import NBGButton from "../../special-templates/NBGButton";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -76,12 +77,12 @@ const ShopHeader = ({
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference?.cartIcon]
+    [preference?.cartIcon],
   );
 
   const IconMenu = useMemo(
     () => MenuIcons[preference?.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference?.menuIcon]
+    [preference?.menuIcon],
   );
 
   const LinksData =
@@ -204,6 +205,17 @@ const ShopHeader = ({
                 ))}
               </div>
             </div>
+
+            {/* AJOUT de boutique */}
+            <div className="mt-8 w-full">
+              <NBGButton
+                preferences={preference}
+                shop={shop}
+                className=" font-medium text-sm w-full text-center"
+              />
+            </div>
+
+            {/* Section Utilisateur et Footer */}
 
             <div className="mt-auto space-y-8">
               <Separator className="opacity-10" />
