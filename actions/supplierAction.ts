@@ -789,13 +789,9 @@ export const deleteProductById = async ({
       Article: true,
       supplierProductShops: {
         select: {
-          shop: {
+          supplierOrders: {
             select: {
-              orders: {
-                select: {
-                  id: true,
-                },
-              },
+              id: true,
             },
           },
         },
@@ -817,18 +813,9 @@ export const deleteProductById = async ({
     };
   }
 
-  // Delete articles with files
-  if (product.Article?.length) {
-    await Promise.all(
-      product.Article.filter((a) => a.file).map(
-        (a) => a.file && deleteArticleFile(a.file),
-      ),
-    );
-  }
-
   // Check if product has any orders in progress
   const hasOrdersInProgress = product.supplierProductShops.some((shop) =>
-    shop.shop.orders.some((order) => order.id),
+    shop.supplierOrders.some((order) => order.id),
   );
 
   if (hasOrdersInProgress) {
@@ -865,6 +852,15 @@ export const deleteProductById = async ({
   // images secondaires
   if (product.images?.length) {
     await Promise.all(product.images.map((img) => deleteImage(img)));
+  }
+
+  // Delete articles with files
+  if (product.Article?.length) {
+    await Promise.all(
+      product.Article.filter((a) => a.file).map(
+        (a) => a.file && deleteArticleFile(a.file),
+      ),
+    );
   }
 
   revalidatePath("/fournisseurs");
