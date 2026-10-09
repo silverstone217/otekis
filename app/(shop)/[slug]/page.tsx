@@ -249,6 +249,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
   return (
     <div className="w-full flex flex-col pb-10">
+      <div className={`${Number(Header) === 5 ? "pt-20" : "pt-0"}`} />
       <CurrentHero
         shop={shop}
         preferences={preferences}

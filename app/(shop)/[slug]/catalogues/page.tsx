@@ -190,8 +190,14 @@ const CatalogPage = async (props: { params: Promise<{ slug: string }> }) => {
   const currency = await getCurrencySymbol();
   const exchange = await exChangeRate();
 
+  const Header = preferences?.Header ?? "0";
+
   return (
-    <div>
+    <div
+      className={`p-4 transition-all duration-500 ease-in-out
+      ${Number(Header) === 5 ? "pt-20" : "pt-0"}
+    `}
+    >
       <MainCatalogueComponent
         shop={shop}
         preferences={preferences}

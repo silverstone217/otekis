@@ -304,8 +304,20 @@ async function CommandesPage(props: { params: Promise<{ slug: string }> }) {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
+  const Header = preferences?.Header ?? "0";
   return (
-    <MainOrdersList shop={shop} orders={allOrders} preferences={preferences} />
+    <div
+      className={`p-4 transition-all duration-500 ease-in-out
+      ${Number(Header) === 5 ? "pt-24" : "pt-0"}
+    `}
+    >
+      {/* CONTAINER */}
+      <MainOrdersList
+        shop={shop}
+        orders={allOrders}
+        preferences={preferences}
+      />
+    </div>
   );
 }
 

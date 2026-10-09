@@ -319,6 +319,7 @@ const MainCatalogueComponent = ({
           setMaterial={setMaterial}
           setCategory={setCategory}
           shop={shop}
+          className={`${Number(Header) === 5 ? "pt-20" : "pt-0"}`}
         />
       </div>
 
@@ -390,6 +391,7 @@ type FilterTopTypes = {
   setMaterial: React.Dispatch<React.SetStateAction<string>>;
   setCategory: React.Dispatch<React.SetStateAction<ShopCategorySellerType>>;
   shop: Shop;
+  className?: string;
 };
 const TopFilterProductShop = ({
   target,
@@ -411,6 +413,7 @@ const TopFilterProductShop = ({
   material,
   setMaterial,
   setCategory,
+  className,
 }: FilterTopTypes) => {
   const router = useRouter();
 
@@ -418,8 +421,10 @@ const TopFilterProductShop = ({
     <Sheet>
       <SheetTrigger asChild>
         <div
-          className="flex item-center justify-center gap-2 hover:cursor-pointer hover:gap-4
+          className="flex item-center justify-center gap-2 hover:cursor-pointer 
+          hover:gap-4
         transition-all ease-in-out duration-500 hover:opacity-75
+        z-50
         "
         >
           <span>Filtres</span>
@@ -432,7 +437,8 @@ const TopFilterProductShop = ({
           color: preferences.textColor,
           borderColor: preferences.background,
         }}
-        className="bg-white text-black h-[99dvh] overflow-x-hidden overflow-y-auto w-full"
+        className={`bg-white text-black h-[99dvh] 
+        overflow-x-hidden overflow-y-auto w-full z-50 ${className || ""}`}
       >
         <SheetHeader>
           <SheetTitle style={{ color: preferences.textColor }}>
