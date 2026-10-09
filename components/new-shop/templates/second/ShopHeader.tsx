@@ -22,6 +22,7 @@ import { Preferences, Shop } from "@/lib/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { ShopHeaderType } from "../first/ShopHeader";
 import { LogOut, User } from "lucide-react";
+import NBGButton from "../../special-templates/NBGButton";
 
 const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
   const [isClient, setIsClient] = useState(false);
@@ -74,7 +75,7 @@ const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
 
   const IconCart = useMemo(
     () => CartIcons[preference.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference.cartIcon]
+    [preference.cartIcon],
   );
 
   const LinksData =
@@ -94,7 +95,7 @@ const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
         "w-full h-16 fixed top-0 left-0 z-50 transition-all duration-300 px-4 md:px-8 flex items-center justify-between",
         scrolled
           ? "shadow-lg h-14 backdrop-blur-md bg-opacity-90"
-          : "shadow-none"
+          : "shadow-none",
       )}
     >
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between h-full gap-4">
@@ -214,7 +215,7 @@ const SmallDevicesLinksPart = ({
   const user = useCurrentUser();
   const IconMenu = useMemo(
     () => MenuIcons[parseInt(preferences.menuIcon)],
-    [preferences.menuIcon]
+    [preferences.menuIcon],
   );
 
   const LinksData =
@@ -280,6 +281,15 @@ const SmallDevicesLinksPart = ({
               </Link>
             </SheetClose>
           ))}
+
+          {/* AJOUT de boutique */}
+          <div className="mt-8 w-full">
+            <NBGButton
+              preferences={preferences}
+              shop={shop}
+              className=" font-medium text-sm w-full text-center"
+            />
+          </div>
         </div>
 
         {/* User Footer Drawer */}

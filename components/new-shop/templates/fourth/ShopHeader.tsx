@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sheet";
 import { IconLikeComponent } from "@/types/data";
 import { cn } from "@/lib/utils";
+import NBGButton from "../../special-templates/NBGButton";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -84,12 +85,12 @@ const ShopHeader = ({
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference?.cartIcon]
+    [preference?.cartIcon],
   );
 
   const IconMenu = useMemo(
     () => MenuIcons[preference?.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference?.menuIcon]
+    [preference?.menuIcon],
   );
 
   if (!isClient) return null;
@@ -98,14 +99,14 @@ const ShopHeader = ({
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-100 transition-all duration-500 h-24 flex items-center justify-center pointer-events-none",
-        getMyFont?.className
+        getMyFont?.className,
       )}
     >
       {/* Barre flottante (Floating Pill) */}
       <div
         className={cn(
           "flex items-center justify-between w-[92%] max-w-lg h-14 px-5 transition-all duration-500 border pointer-events-auto",
-          scrolled ? "-translate-y-2.5 scale-95 shadow-2xl" : "shadow-xl"
+          scrolled ? "-translate-y-2.5 scale-95 shadow-2xl" : "shadow-xl",
         )}
         style={{
           borderRadius: preference.buttonRadius,
@@ -267,6 +268,15 @@ const SheetMenuNav = ({
                   <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </Link>
               ))}
+
+              {/* AJOUT de boutique */}
+              <div className="mt-8 w-full">
+                <NBGButton
+                  preferences={preferences}
+                  shop={shop}
+                  className=" font-medium text-sm w-full text-center"
+                />
+              </div>
             </div>
 
             {/* Section Utilisateur */}

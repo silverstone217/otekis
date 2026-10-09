@@ -16,6 +16,7 @@ import { capitalizeText, luminanceColor } from "@/utils/shopFunctions";
 import { ShopAllDataLinks } from "@/utils/shopData";
 import { ShopHeaderType } from "../first/ShopHeader";
 import { cn } from "@/lib/utils";
+import NBGButton from "../../special-templates/NBGButton";
 
 const ShopHeader = ({
   shop,
@@ -66,17 +67,17 @@ const ShopHeader = ({
 
   const IconCart = useMemo(
     () => CartIcons[preference.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference.cartIcon]
+    [preference.cartIcon],
   );
 
   const IconMenu = useMemo(
     () => MenuIcons[preference.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference.menuIcon]
+    [preference.menuIcon],
   );
 
   const bgIsLightOrDark = useMemo(
     () => luminanceColor(preference.background),
-    [preference.background]
+    [preference.background],
   );
 
   // Amélioration du Glassmorphism pour le menu
@@ -186,7 +187,7 @@ const ShopHeader = ({
           className={cn(
             "fixed inset-0 z-100 transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)]",
             isOpen ? "translate-y-0" : "-translate-y-full",
-            bgGlass
+            bgGlass,
           )}
         >
           <MenuNavHeader
@@ -244,7 +245,7 @@ const MenuNavHeader = ({
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   "text-4xl md:text-6xl font-bold tracking-tighter transition-all duration-300 hover:pl-4 flex items-center group",
-                  contrastColor
+                  contrastColor,
                 )}
               >
                 {lk.label}
@@ -252,6 +253,15 @@ const MenuNavHeader = ({
               </Link>
             ))}
           </nav>
+
+          {/* AJOUT de boutique */}
+          <div className="mt-8 w-full">
+            <NBGButton
+              preferences={preference}
+              shop={shop}
+              className=" font-medium text-sm w-full text-center"
+            />
+          </div>
         </div>
 
         {/* Info & Profile Section */}

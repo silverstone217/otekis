@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import NBGButton from "../../special-templates/NBGButton";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -77,12 +78,12 @@ const ShopHeader = ({
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference?.cartIcon]
+    [preference?.cartIcon],
   );
 
   const IconMenu = useMemo(
     () => MenuIcons[preference?.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference?.menuIcon]
+    [preference?.menuIcon],
   );
 
   if (!isClient) return null;
@@ -91,7 +92,7 @@ const ShopHeader = ({
     <header
       className={cn(
         "z-100 w-full transition-all duration-300 h-16 flex items-center border-b border-black/5",
-        getMyFont?.className
+        getMyFont?.className,
       )}
       style={{
         backgroundColor: preference?.background || "#ffffff",
@@ -236,6 +237,15 @@ const SheetMenuNav = ({
               </Link>
             ))}
           </nav>
+
+          {/* AJOUT de boutique */}
+          <div className="mt-8 w-full">
+            <NBGButton
+              preferences={preferences}
+              shop={shop}
+              className=" font-medium text-sm w-full text-center"
+            />
+          </div>
         </div>
 
         {/* USER / AUTH SECTION */}

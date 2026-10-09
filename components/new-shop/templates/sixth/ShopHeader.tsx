@@ -12,6 +12,7 @@ import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { cn } from "@/lib/utils";
 import { Plus, Minus } from "lucide-react";
+import NBGButton from "../../special-templates/NBGButton";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -69,12 +70,12 @@ const ShopHeader = ({
 
   const IconCart = useMemo(
     () => CartIcons[preference?.cartIcon ? parseInt(preference.cartIcon) : 0],
-    [preference?.cartIcon]
+    [preference?.cartIcon],
   );
 
   const IconMenu = useMemo(
     () => MenuIcons[preference?.menuIcon ? parseInt(preference.menuIcon) : 0],
-    [preference?.menuIcon]
+    [preference?.menuIcon],
   );
 
   if (!isClient) return null;
@@ -88,7 +89,7 @@ const ShopHeader = ({
     <header
       className={cn(
         "fixed top-0 left-0 w-full z-100 p-4 md:p-6 transition-all duration-500",
-        getMyFont?.className
+        getMyFont?.className,
       )}
     >
       <div className="max-w-7xl mx-auto flex flex-col items-center">
@@ -167,7 +168,7 @@ const ShopHeader = ({
             "w-[98%] max-w-4xl fixed top-24 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] z-[90]",
             isOpen
               ? "translate-y-0 opacity-100 pointer-events-auto"
-              : "-translate-y-4 opacity-0 pointer-events-none"
+              : "-translate-y-4 opacity-0 pointer-events-none",
           )}
         >
           <div
@@ -199,6 +200,15 @@ const ShopHeader = ({
                       {lk.label}
                     </Link>
                   ))}
+
+                  {/* AJOUT de boutique */}
+                  <div className="mt-8 w-full">
+                    <NBGButton
+                      preferences={preference}
+                      shop={shop}
+                      className=" font-medium text-sm w-full text-center"
+                    />
+                  </div>
                 </nav>
 
                 {/* Infos / Auth */}

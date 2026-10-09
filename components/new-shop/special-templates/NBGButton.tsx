@@ -22,6 +22,8 @@ const NBGButton = ({ preferences, shop, className }: NBGButtonProps) => {
   return (
     <Link
       href={url}
+      target="_blank"
+      rel="noopener noreferrer"
       className={className}
       style={{
         display: "inline-block",
