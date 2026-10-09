@@ -196,11 +196,11 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
         return false;
       }
 
-      const errBrand = validateRequired(brand, "Marque");
-      if (errBrand) {
-        toast.error(errBrand);
-        return false;
-      }
+      // const errBrand = validateRequired(brand, "Marque");
+      // if (errBrand) {
+      //   toast.error(errBrand);
+      //   return false;
+      // }
 
       const errDesc = validateDescription(description);
       if (errDesc) {
@@ -407,9 +407,11 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
 
       toast.success(`${newProduct.message}`);
 
-      setTimeout(() => {
-        router.push(`/${shopSlug}/`);
-      }, 2000);
+      if (shopSlug && newProduct.productId && shopId) {
+        setTimeout(() => {
+          router.push(`/${shopSlug}/`);
+        }, 2000);
+      }
 
       router.refresh();
 
@@ -566,7 +568,7 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
 
             <div className="grid w-full items-center gap-2">
               <label htmlFor="brand" className="text-sm font-medium">
-                Marque du produit *
+                Marque du produit
               </label>
               <Input
                 id="brand"
