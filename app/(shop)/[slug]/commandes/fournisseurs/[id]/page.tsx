@@ -116,15 +116,19 @@ async function FournissuerProductOrderId(props: {
   const { article, deliveryCompany } = order;
   const product = article.Product;
 
+  const HEADER_NUMBER = preferences?.Header || 0;
+
   return (
-    <MainSupplierOrderView
-      order={order}
-      product={product}
-      article={article}
-      shop={shop}
-      preferences={preferences}
-      deliveryCompany={deliveryCompany}
-    />
+    <div className={`${HEADER_NUMBER === "5" ? "pt-20" : "pt-0"}`}>
+      <MainSupplierOrderView
+        order={order}
+        product={product}
+        article={article}
+        shop={shop}
+        preferences={preferences}
+        deliveryCompany={deliveryCompany}
+      />
+    </div>
   );
 }
 

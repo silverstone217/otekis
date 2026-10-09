@@ -83,18 +83,31 @@ export const canThisOrderBeProccessed = async ({
     }
 
     // 5. STOCK CHECK
-    if (article.stock < quantity) {
-      return {
-        error: true,
-        message: `Stock insuffisant. Disponible: ${article.stock}`,
-      };
-    }
+    // Produit numérique : pas de gestion de stock (le fichier se télécharge,
+    // il ne s'épuise pas). On impose seulement une quantité de 1.
+    const isDigitalProduct = productShop.Product.category === "digital";
 
-    if (article.stock <= 0) {
-      return {
-        error: true,
-        message: "Produit temporairement indisponible.",
-      };
+    if (isDigitalProduct) {
+      if (quantity !== 1) {
+        return {
+          error: true,
+          message: "Un produit numérique se commande à l'unité.",
+        };
+      }
+    } else {
+      if (article.stock < quantity) {
+        return {
+          error: true,
+          message: `Stock insuffisant. Disponible: ${article.stock}`,
+        };
+      }
+
+      if (article.stock <= 0) {
+        return {
+          error: true,
+          message: "Produit temporairement indisponible.",
+        };
+      }
     }
 
     const exchange = await exChangeRate();
@@ -114,13 +127,6 @@ export const canThisOrderBeProccessed = async ({
         message: "Le montant est incorrect. Rechargez la page et réessayez.",
       };
     }
-
-    // console.log({
-    //   amount,
-    //   expectedPrice,
-    //   min,
-    //   max,
-    // });
 
     // 7. OK
     return {
@@ -357,8 +363,6 @@ export const createSupplierOrder = async ({
         body: JSON.stringify(flexpaieData),
       });
 
-      // console.log("Flexpaie response:", response);
-
       if (!response.ok) {
         throw new Error("Erreur lors de l'initialisation du paiement");
       }
@@ -457,12 +461,9 @@ export const createSupplierOrder = async ({
       });
     }
 
-    // if(!order){}
-
     // 6. CREATE INVOICES AFTER PAYMENT
     const invArticle = `${productShop.Product.type} - ${article.color} - ${article.size}`;
 
-    //   const invoices =
     await prisma.supplierInvoice.create({
       data: {
         clientEmail: user.email!,
@@ -494,35 +495,41 @@ export const createSupplierOrder = async ({
       },
     });
 
-    // 7. reduce ARticle stock
-    await prisma.$transaction(async (tx) => {
-      const article = await tx.supplierArticle.findUnique({
-        where: { id: articleId },
-        select: { stock: true, productId: true },
-      });
+    // 7. REDUCE ARTICLE STOCK
+    // Produit numérique : le stock ne diminue jamais (le client télécharge
+    // le fichier, il ne s'épuise pas).
+    const isDigitalProduct = productShop.Product.category === "digital";
 
-      if (article && article.stock >= quantity) {
-        // 1. Update article stock (sécurisé)
-        await tx.supplierArticle.update({
+    if (!isDigitalProduct) {
+      await prisma.$transaction(async (tx) => {
+        const currentArticle = await tx.supplierArticle.findUnique({
           where: { id: articleId },
-          data: {
-            stock: {
-              decrement: quantity,
-            },
-          },
+          select: { stock: true, productId: true },
         });
 
-        // 2. Update product stock (global)
-        await tx.supplierProduct.update({
-          where: { id: article.productId },
-          data: {
-            stock: {
-              decrement: quantity,
+        if (currentArticle && currentArticle.stock >= quantity) {
+          // 1. Update article stock (sécurisé)
+          await tx.supplierArticle.update({
+            where: { id: articleId },
+            data: {
+              stock: {
+                decrement: quantity,
+              },
             },
-          },
-        });
-      }
-    });
+          });
+
+          // 2. Update product stock (global)
+          await tx.supplierProduct.update({
+            where: { id: currentArticle.productId },
+            data: {
+              stock: {
+                decrement: quantity,
+              },
+            },
+          });
+        }
+      });
+    }
 
     // 8. Add notifications for client. shop, suppliers et admins
 

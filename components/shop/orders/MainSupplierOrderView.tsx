@@ -58,6 +58,7 @@ import {
   DeliveryInvoice,
   ProductInvoice,
 } from "@/components/admins/orders/supplier/InvoiceTemplates";
+import DigitalDownloadCard from "./Digitaldownloadcard";
 
 // Sous-composant pour l'ID copiable
 const CopyableOrderId = ({ orderId }: { orderId: string }) => (
@@ -298,7 +299,18 @@ const MainSupplierOrderView = ({
         </Card>
       </section>
 
-      {/* SECTION 4.1: INFO LIVREUR SI DISPONIBLE */}
+      {/* SECTION 4.1: TÉLÉCHARGEMENT DIGITAL */}
+      {product.category === "digital" && (
+        <DigitalDownloadCard
+          product={product}
+          article={article}
+          orderId={order.id}
+          orderStatus={order.status}
+          preferences={preferences}
+        />
+      )}
+
+      {/* SECTION 5.1: INFO LIVREUR SI DISPONIBLE */}
       {deliveryCompany && !product.isDelivering && (
         <section>
           <Card
@@ -330,7 +342,7 @@ const MainSupplierOrderView = ({
         </section>
       )}
 
-      {/* SECTION 4.1: INFO FOURNISSEUR - LIVREUR SI DISPONIBLE */}
+      {/* SECTION 5.1: INFO FOURNISSEUR - LIVREUR SI DISPONIBLE */}
       {product.isDelivering && (
         <section>
           <Card
@@ -366,7 +378,7 @@ const MainSupplierOrderView = ({
         </section>
       )}
 
-      {/* SECTION 5: INFOS ADDITIONNELLES (Statique comme ton exemple) */}
+      {/* SECTION 6: INFOS ADDITIONNELLES (Statique comme ton exemple) */}
       <section className="pt-6 border-t">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-muted-foreground leading-relaxed">
           <div className="flex gap-3">
@@ -386,7 +398,7 @@ const MainSupplierOrderView = ({
         </div>
       </section>
 
-      {/* SECTION 6: FACTURES SI DISPONIBLE */}
+      {/* SECTION 7: FACTURES SI DISPONIBLE */}
       <section className="pt-10 border-t">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <CreditCard className="w-5 h-5 text-primary" />
