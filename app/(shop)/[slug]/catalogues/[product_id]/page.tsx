@@ -279,7 +279,7 @@ const page = async (props: Props) => {
   return (
     <div
       className={`p-4 transition-all duration-500 ease-in-out lg:space-y-16 space-y-20
-      ${Number(Header) === 3 ? "pt-24" : "pt-4"}
+      ${Number(Header) === 3 ? "pt-24" : Number(Header) === 5 ? "pt-16" : "pt-0"}
     `}
     >
       <div

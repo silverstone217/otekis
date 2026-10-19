@@ -39,6 +39,7 @@ interface DeliveryChoiceProps {
   exchangeValue: number;
   cinetPayPercentage: number;
   isBuying: boolean;
+  isDigitalProduct?: boolean;
 }
 
 // ORIGIN ADDRESS
@@ -90,6 +91,7 @@ const ChoiceDeliveryService = ({
   cinetPayPercentage,
   deliveryPaymentMethode,
   isBuying,
+  isDigitalProduct,
 }: DeliveryChoiceProps) => {
   const [companies, setCompanies] = useState<DeliveryService[]>([]);
   const [loading, setLoading] = useState(false);
@@ -167,9 +169,10 @@ const ChoiceDeliveryService = ({
     }
 
     // Recherche le service correspondant dans la liste des compagnies
-    const selectedService = companies.find(
-      (service) =>
-        service.company.name.toLowerCase() === deliveryChoice.toLowerCase(),
+    const selectedService = companies.find((service) =>
+      isDigitalProduct
+        ? service.company.name.toLowerCase().includes("otekis")
+        : service.company.name.toLowerCase() === deliveryChoice.toLowerCase(),
     );
 
     if (selectedService) {
@@ -182,11 +185,13 @@ const ChoiceDeliveryService = ({
 
       // PRICE DELIVERY
       setDeliveryPrice(
-        deliveryPaymentMethode !== "cash"
-          ? toUpperInteger(
-              returnRealValueWithPercentage(newDelPrice, cinetPayPercentage),
-            )
-          : newDelPrice,
+        isDigitalProduct
+          ? 0
+          : deliveryPaymentMethode !== "cash"
+            ? toUpperInteger(
+                returnRealValueWithPercentage(newDelPrice, cinetPayPercentage),
+              )
+            : newDelPrice,
       );
 
       // PAYMENT METHOD
@@ -205,6 +210,7 @@ const ChoiceDeliveryService = ({
     exchangeValue,
     cinetPayPercentage,
     deliveryPaymentMethode,
+    isDigitalProduct,
   ]);
 
   return (

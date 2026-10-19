@@ -42,6 +42,7 @@ import {
 import { SuccessOrderModal } from "./SuccessOrderModal";
 import { useCurrentUser } from "@/hooks/UserAuth";
 import ChoiceDeliveryService from "../cart/ChoiceDeliveryService";
+import { DIGITAL_ADDRESS } from "@/utils/delivery";
 
 type Props = {
   shop: Shop;
@@ -56,6 +57,7 @@ type Props = {
   };
   supplierProductShops: SupplierProductShop;
   deliveryService: DeliveryCompany[];
+  isDigitalProduct: boolean;
 };
 
 const MainComponent = ({
@@ -65,6 +67,7 @@ const MainComponent = ({
   shop,
   deliveryService,
   supplierProductShops: productShop,
+  isDigitalProduct,
 }: Props) => {
   const router = useRouter();
 
@@ -85,9 +88,9 @@ const MainComponent = ({
   const [receiverName, setReceiverName] = useState("");
   const [receiverTel, setReceiverTel] = useState("");
   const [paymentNumber, setPaymentNumber] = useState("");
-  const [commune, setCommune] = useState("");
-  const [quartier, setQuartier] = useState("");
-  const [avenue, setAvenue] = useState("");
+  const [commune, setCommune] = useState(isDigitalProduct ? "bandalungwa" : "");
+  const [quartier, setQuartier] = useState(isDigitalProduct ? "makelele" : "");
+  const [avenue, setAvenue] = useState(isDigitalProduct ? "Tshanga, 6529" : "");
 
   // SUCCESS
   const [showSuccess, setShowSuccess] = useState(false);
@@ -109,7 +112,9 @@ const MainComponent = ({
   );
 
   const deliveryPrice = product.deliveryPrice ?? 0;
-  const isSupplierDelivering = product.isDelivering ?? false;
+  const isSupplierDelivering = isDigitalProduct
+    ? false
+    : (product.isDelivering ?? false);
   const exchange = companyPrefs.exchange;
   const currency = companyPrefs.currency;
 
@@ -128,15 +133,17 @@ const MainComponent = ({
 
   const changedDeliveryPrice = useMemo(
     () =>
-      isSupplierDelivering && currency === "CDF"
-        ? deliveryPrice * exchange
-        : isSupplierDelivering && currency === "USD"
-          ? deliveryPrice
-          : typeof deliveryPriceFinal === "number"
-            ? currency === "CDF"
-              ? deliveryPriceFinal
-              : deliveryPriceFinal / exchange
-            : 0,
+      isDigitalProduct
+        ? 0
+        : isSupplierDelivering && currency === "CDF"
+          ? deliveryPrice * exchange
+          : isSupplierDelivering && currency === "USD"
+            ? deliveryPrice
+            : typeof deliveryPriceFinal === "number"
+              ? currency === "CDF"
+                ? deliveryPriceFinal
+                : deliveryPriceFinal / exchange
+              : 0,
     [
       deliveryPrice,
       exchange,
@@ -149,7 +156,11 @@ const MainComponent = ({
   const deliveryChoiceSysteme = useMemo(
     () =>
       deliveryService.find((d) =>
-        d.name.toLocaleLowerCase().includes(deliveryChoice.toLocaleLowerCase()),
+        isDigitalProduct
+          ? d.name.toLowerCase().includes("otekis")
+          : d.name
+              .toLocaleLowerCase()
+              .includes(deliveryChoice.toLocaleLowerCase()),
       ),
     [deliveryChoice, deliveryService],
   );
@@ -230,6 +241,13 @@ const MainComponent = ({
       return;
     }
 
+    if (isDigitalProduct && !deliveryChoiceSysteme) {
+      toast.error(
+        "Le service de livraison Otekis est indisponible pour le moment.",
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -274,9 +292,9 @@ const MainComponent = ({
 
       // RESET FORM
       setPaymentNumber("");
-      setAvenue("");
-      setCommune("");
-      setQuartier("");
+      setAvenue(isDigitalProduct ? DIGITAL_ADDRESS.avenue : "");
+      setCommune(isDigitalProduct ? DIGITAL_ADDRESS.commune : "");
+      setQuartier(isDigitalProduct ? DIGITAL_ADDRESS.quartier : "");
       setReceiverName("");
       setReceiverTel("");
       setSelectedArticleId(product.Article[0]?.id ?? "");
@@ -509,53 +527,65 @@ const MainComponent = ({
       </div>
 
       {/* 4. ADRESSE */}
-      <div className="space-y-4">
-        <h3 className="flex items-center gap-2 text-sm font-medium">
-          <MapPin className="w-4 h-4" />
-          4. Adresse
-        </h3>
+      {!isDigitalProduct && (
+        <div className="space-y-4">
+          <h3 className="flex items-center gap-2 text-sm font-medium">
+            <MapPin className="w-4 h-4" />
+            4. Adresse
+          </h3>
 
-        <div className="grid grid-cols-2 gap-4">
-          <SelectorProducts
-            data={communesKinshasa.map((c) => ({
-              label: c,
-              value: c.toLowerCase(),
-            }))}
-            onChange={(val) => {
-              setCommune(val as string);
-              setQuartier("");
-            }}
-            value={commune}
-            placeholder="Commune"
-          />
-
-          <SelectorProducts
-            data={communesQuartiers
-              .filter((cq) => cq.name.toLowerCase() === commune.toLowerCase())
-              .flatMap((cq) => cq.quartiers)
-              .map((q) => ({
-                label: q,
-                value: q.toLowerCase(),
+          <div className="grid grid-cols-2 gap-4">
+            <SelectorProducts
+              data={communesKinshasa.map((c) => ({
+                label: c,
+                value: c.toLowerCase(),
               }))}
-            onChange={setQuartier}
-            value={quartier}
-            placeholder="Quartier"
-            disabled={!commune || loading}
-          />
-        </div>
+              onChange={(val) => {
+                setCommune(val as string);
+                setQuartier("");
+              }}
+              value={commune}
+              placeholder="Commune"
+            />
 
-        <Input
-          placeholder="Avenue, numéro"
-          value={avenue}
-          onChange={(e) => setAvenue(e.target.value)}
-          disabled={loading}
-        />
-        <p className="text-xs text-muted-foreground">
-          Avenue, numero ex: Busu-melo, 14
-        </p>
-      </div>
+            <SelectorProducts
+              data={communesQuartiers
+                .filter((cq) => cq.name.toLowerCase() === commune.toLowerCase())
+                .flatMap((cq) => cq.quartiers)
+                .map((q) => ({
+                  label: q,
+                  value: q.toLowerCase(),
+                }))}
+              onChange={setQuartier}
+              value={quartier}
+              placeholder="Quartier"
+              disabled={!commune || loading}
+            />
+          </div>
+
+          <Input
+            placeholder="Avenue, numéro"
+            value={avenue}
+            onChange={(e) => setAvenue(e.target.value)}
+            disabled={loading}
+          />
+          <p className="text-xs text-muted-foreground">
+            Avenue, numero ex: Busu-melo, 14
+          </p>
+        </div>
+      )}
 
       {/* 5. LIVRAISON */}
+      {isDigitalProduct && (
+        <div
+          className="text-xs text-blue-500 bg-blue-500/10 
+        border border-blue-500/20 rounded-lg p-3 flex items-center gap-2"
+        >
+          <MapPin className="w-4 h-4 shrink-0" />
+          Produit numérique : livraison par Otekis Delivery, frais de livraison
+          0 {currency}. Le fichier se télécharge depuis votre commande.
+        </div>
+      )}
       {/* 5.1 SUPPLIER DELIVERY */}
       {isSupplierDelivering && (
         <div
@@ -571,7 +601,7 @@ const MainComponent = ({
       )}
 
       {/* 5.2 DELIVERY COMPANY */}
-      {!isSupplierDelivering && (
+      {!isSupplierDelivering && !isDigitalProduct && (
         <div>
           <ChoiceDeliveryService
             deliveryChoice={deliveryChoice}
@@ -589,6 +619,7 @@ const MainComponent = ({
             cinetPayPercentage={0}
             deliveryPaymentMethode={deliveryPaymentMethode}
             isBuying={loading}
+            isDigitalProduct={isDigitalProduct}
           />
           <div
             className="mt-2 p-3 text-sm rounded-lg border bg-yellow-500/10 
@@ -650,7 +681,7 @@ const MainComponent = ({
         }}
       >
         {loading && <Loader2 className="animate-spin w-4 h-4" />}
-        {`Payer ${(total + (isSupplierDelivering ? 0 : typeof deliveryPriceFinal === "number" ? deliveryPriceFinal : 0)).toLocaleString()} ${companyPrefs.currency}`}
+        {`Payer ${(total + (isDigitalProduct || isSupplierDelivering ? 0 : typeof deliveryPriceFinal === "number" ? deliveryPriceFinal : 0)).toLocaleString()} ${companyPrefs.currency}`}
       </Button>
 
       {/* SUCCESS MODAL */}

@@ -91,6 +91,7 @@ async function FournissuerProductOrderId(props: {
   if (!shop) return <div>Shop not found</div>;
 
   const preferences = shop.Preferences ?? (preferenceDefaults as Preferences);
+  const HEADER_NUMBER = preferences?.Header || 0;
 
   if (!user) {
     return (
@@ -115,8 +116,7 @@ async function FournissuerProductOrderId(props: {
 
   const { article, deliveryCompany } = order;
   const product = article.Product;
-
-  const HEADER_NUMBER = preferences?.Header || 0;
+  const isDigitalProduct = product.category === "digital";
 
   return (
     <div className={`${HEADER_NUMBER === "5" ? "pt-20" : "pt-0"}`}>
@@ -127,6 +127,7 @@ async function FournissuerProductOrderId(props: {
         shop={shop}
         preferences={preferences}
         deliveryCompany={deliveryCompany}
+        isDigitalProduct={isDigitalProduct}
       />
     </div>
   );

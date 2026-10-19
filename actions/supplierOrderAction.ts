@@ -398,6 +398,8 @@ export const createSupplierOrder = async ({
     const supplierAmount = productShop.Product.price * quantity * exchange;
     const shopProfit = amount - supplierAmount;
 
+    const isDigitalProduct = productShop.Product.category === "digital";
+
     // 5. CREATE SUPPLIER ORDER
     const order = await prisma.supplierOrder.create({
       data: {
@@ -423,7 +425,7 @@ export const createSupplierOrder = async ({
         deliverName: supplierName ?? deliveryInfos?.name,
         deliverPhone: supplierTel ?? deliveryInfos?.phone,
 
-        status: "en cours de traitement",
+        status: isDigitalProduct ? "livrée" : "en cours de traitement",
         paymentStatus: "payé",
 
         // EARNINGS
@@ -498,7 +500,6 @@ export const createSupplierOrder = async ({
     // 7. REDUCE ARTICLE STOCK
     // Produit numérique : le stock ne diminue jamais (le client télécharge
     // le fichier, il ne s'épuise pas).
-    const isDigitalProduct = productShop.Product.category === "digital";
 
     if (!isDigitalProduct) {
       await prisma.$transaction(async (tx) => {

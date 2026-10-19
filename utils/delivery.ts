@@ -1,5 +1,5 @@
 export function verifyAddressFormat(
-  address: string
+  address: string,
 ): true | "format incorrect" {
   if (!address || typeof address !== "string") {
     return "format incorrect";
@@ -117,7 +117,7 @@ export function deliveryPriceByDeliveryChoice({
 
     // Recherche dans les zones
     const zoneFound = ExpressKinZones.find((zone) =>
-      zone.communes.includes(commune)
+      zone.communes.includes(commune),
     );
 
     if (zoneFound) {
@@ -131,3 +131,11 @@ export function deliveryPriceByDeliveryChoice({
   // Cas non prévu => return par défaut
   return "non-specifié";
 }
+
+export const DIGITAL_ADDRESS = {
+  commune: "bandalungwa",
+  quartier: "makelele",
+  avenue: "Tshanga, 6529",
+};
+
+export const DIGITAL_ADDRESS_TEXT = `${DIGITAL_ADDRESS.commune}, ${DIGITAL_ADDRESS.quartier}, ${DIGITAL_ADDRESS.avenue}`;

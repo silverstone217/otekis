@@ -228,10 +228,12 @@ async function page({ params }: Props) {
     );
   }
 
+  const isDigitalProduct = product.category === "digital";
+
   return (
     <div
       className={`p-4 transition-all duration-500 ease-in-out
-      ${Number(Header) === 3 ? "pt-24" : "pt-4"}
+      ${Number(Header) === 3 ? "pt-24" : Number(Header) === 5 ? "pt-16" : "pt-6"}
     `}
     >
       {/* CONTAINER */}
@@ -242,6 +244,7 @@ async function page({ params }: Props) {
         shop={shop}
         supplierProductShops={supplierProductShops}
         deliveryService={deliveryService}
+        isDigitalProduct={isDigitalProduct}
       />
     </div>
   );

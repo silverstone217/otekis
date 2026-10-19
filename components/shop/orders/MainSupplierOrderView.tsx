@@ -18,6 +18,7 @@ import {
   Calendar,
   Download,
   FileText,
+  FileArchive,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,11 +26,9 @@ import { Separator } from "@/components/ui/separator";
 import { returnFormatedMoney } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { cn } from "@/lib/utils";
-import { UnifiedOrder } from "@/app/(shop)/[slug]/commandes/page";
 import {
   DeliveryCompany,
   Preferences,
-  ProductOrigin,
   Shop,
   SupplierArticle,
   SupplierEarning,
@@ -74,6 +73,7 @@ type Props = {
   preferences: Preferences;
   deliveryCompany: DeliveryCompany | null;
   product: SupplierProduct;
+  isDigitalProduct: boolean;
 };
 
 const MainSupplierOrderView = ({
@@ -83,6 +83,7 @@ const MainSupplierOrderView = ({
   shop,
   preferences,
   deliveryCompany,
+  isDigitalProduct,
 }: Props) => {
   const { buttonColor: borderColor, buttonRadius: borderRadius } = preferences;
 
@@ -153,26 +154,51 @@ const MainSupplierOrderView = ({
         </div>
       </div>
 
-      {/* SECTION 2: INFOS CLIENT & LIVRAISON */}
+      {/* SECTION 2: INFOS CLIENT & LIVRAISON / TÉLÉCHARGEMENT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card
           style={{ borderColor, borderRadius }}
           className="shadow-sm border"
         >
           <CardContent className="p-6 space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-primary/5 rounded-lg">
-                <House className="w-5 h-5 text-primary" />
+            {isDigitalProduct ? (
+              // PRODUIT NUMÉRIQUE : mode de réception
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-primary/5 rounded-lg">
+                  <FileArchive className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
+                    Mode de réception
+                  </p>
+                  <p className="text-sm font-medium mt-1 leading-relaxed">
+                    Téléchargement numérique (fichier ZIP)
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    {order.status === "en cours de traitement"
+                      ? "Le téléchargement sera disponible dès que le fournisseur aura validé votre commande."
+                      : order.status === "annulée" || order.status === "annulé"
+                        ? "Cette commande a été annulée, le téléchargement n'est plus possible."
+                        : "Votre fichier est prêt, vous pouvez le télécharger depuis cette page."}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
-                  Adresse de livraison
-                </p>
-                <p className="text-sm font-medium mt-1 leading-relaxed">
-                  {order.receiverAddress}
-                </p>
+            ) : (
+              // PRODUIT PHYSIQUE : adresse de livraison
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-primary/5 rounded-lg">
+                  <House className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
+                    Adresse de livraison
+                  </p>
+                  <p className="text-sm font-medium mt-1 leading-relaxed">
+                    {order.receiverAddress}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex items-start gap-4">
               <div className="p-2 bg-primary/5 rounded-lg">
@@ -180,7 +206,7 @@ const MainSupplierOrderView = ({
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
-                  Destinataire
+                  {isDigitalProduct ? "Acheteur" : "Destinataire"}
                 </p>
                 <p className="text-sm font-bold mt-1">
                   {capitalizeText(order.receiverName)}
@@ -223,23 +249,29 @@ const MainSupplierOrderView = ({
                   {returnFormatedMoney(order.totalAmount)} {order.currency}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Frais de livraison
-                </span>
-                <span>
-                  {order.deliveryPrice > 0
-                    ? `${returnFormatedMoney(order.deliveryPrice)} ${order.currency}`
-                    : "Gratuit"}
-                </span>
-              </div>
+
+              {/* Frais de livraison : seulement pour les produits physiques */}
+              {!isDigitalProduct && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    Frais de livraison
+                  </span>
+                  <span>
+                    {order.deliveryPrice > 0
+                      ? `${returnFormatedMoney(order.deliveryPrice)} ${order.currency}`
+                      : "Gratuit"}
+                  </span>
+                </div>
+              )}
+
               <Separator className="my-2" />
               <div className="flex justify-between items-end">
                 <span className="font-bold">Total payé</span>
                 <div className="text-right">
                   <span className="text-2xl font-black text-primary">
                     {returnFormatedMoney(
-                      order.totalAmount + order.deliveryPrice,
+                      order.totalAmount +
+                        (isDigitalProduct ? 0 : order.deliveryPrice),
                     )}
                   </span>
                   <span className="text-xs ml-1 font-bold">
@@ -277,13 +309,17 @@ const MainSupplierOrderView = ({
             <div className="flex-1 text-center sm:text-left space-y-2 capitalize">
               <h4 className="text-xl font-bold">{product.name}</h4>
               <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                {article.color && (
+                {!isDigitalProduct && article.color && (
                   <Badge variant="secondary">Couleur: {article.color}</Badge>
                 )}
-                {article.size && (
+                {!isDigitalProduct && article.size && (
                   <Badge variant="secondary">Taille: {article.size}</Badge>
                 )}
-                <Badge variant="outline">Qté: {order.quantity}</Badge>
+                {isDigitalProduct ? (
+                  <Badge variant="outline">Produit numérique</Badge>
+                ) : (
+                  <Badge variant="outline">Qté: {order.quantity}</Badge>
+                )}
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2 italic">
                 {product.description}
@@ -300,7 +336,7 @@ const MainSupplierOrderView = ({
       </section>
 
       {/* SECTION 4.1: TÉLÉCHARGEMENT DIGITAL */}
-      {product.category === "digital" && (
+      {isDigitalProduct && (
         <DigitalDownloadCard
           product={product}
           article={article}
@@ -389,10 +425,11 @@ const MainSupplierOrderView = ({
             </p>
           </div>
           <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 text-amber-500" />
+            <Clock className="w-5 h-5 shrink-0 text-primary" />
             <p>
-              Une fois validée, la commande ne peut plus être modifiée. Veuillez
-              contacter le support en cas d'erreur.
+              {isDigitalProduct
+                ? "Votre fichier est disponible en téléchargement dès que le fournisseur a validé votre commande, généralement sous 24h à 48h."
+                : "Le délai de traitement est généralement de 24h à 48h selon la disponibilité du fournisseur."}
             </p>
           </div>
         </div>
@@ -403,8 +440,9 @@ const MainSupplierOrderView = ({
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <CreditCard className="w-5 h-5 text-primary" />
           <p>
-            Les factures sont générées une fois la commande expédiée ou annulée
-            et sont disponibles ici.
+            {isDigitalProduct
+              ? "Votre facture est disponible ici une fois la commande validée ou annulée."
+              : "Les factures sont générées une fois la commande expédiée ou annulée et sont disponibles ici."}
           </p>
         </div>
 
