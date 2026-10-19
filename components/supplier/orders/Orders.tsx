@@ -37,6 +37,29 @@ type OrdersWIthSupplierEarning = SupplierOrder & {
   supplierEarning: SupplierEarning;
 };
 
+const STATUS_DATA = [
+  {
+    label: "Toutes",
+    value: "all",
+  },
+  {
+    label: "En cours",
+    value: "en cours de traitement",
+  },
+  {
+    label: "Confirmée",
+    value: "en attente de livraison",
+  },
+  {
+    label: "Annulée",
+    value: "annulée",
+  },
+  {
+    label: "Livrée",
+    value: "livrée",
+  },
+];
+
 const statusConfig: Record<
   string,
   { label: string; color: string; icon: any }
@@ -56,40 +79,28 @@ const statusConfig: Record<
     color: "bg-emerald-700/10 text-emerald-800 border-emerald-400/50",
     icon: Truck,
   },
-  livré: {
+  livrée: {
     label: "Livrée",
-    color: "bg-indingo-400/10 text-indingo-500 border-indingo-200/50",
+    color: "bg-indigo-400/10 text-indigo-500 border-indigo-200/50",
     icon: CheckCircle2,
   },
-  annulé: {
+  annulée: {
     label: "Annulée",
     color: "bg-rose-500/10 text-rose-600 border-rose-200/50",
     icon: XCircle,
   },
 };
 
-const STATUS_DATA = [
-  {
-    label: "Toutes",
-    value: "all",
-  },
-  {
-    label: "En cours",
-    value: "en cours de traitement",
-  },
-  {
-    label: "Confirmée",
-    value: "en attente de livraison",
-  },
-  {
-    label: "Annulée",
-    value: "annulé",
-  },
-  {
-    label: "Livrée",
-    value: "livré",
-  },
-];
+// Ramène toutes les variantes vers la forme canonique
+const STATUS_ALIASES: Record<string, string> = {
+  livré: "livrée",
+  annulé: "annulée",
+};
+
+const normalizeStatus = (status: string) => {
+  const clean = status.trim().toLowerCase();
+  return STATUS_ALIASES[clean] ?? clean;
+};
 
 const Orders = () => {
   const [loading, setLoading] = useState(false);
@@ -113,11 +124,16 @@ const Orders = () => {
   const filteredOrders = useMemo(
     () =>
       orders.filter((o) => {
-        if (status === "all") {
-          return true;
-        }
+        if (status === "all") return true;
 
-        return o.status.includes(status);
+        const current = normalizeStatus(o.status);
+        if (status === "en attente de livraison") {
+          return (
+            current === "en attente de livraison" ||
+            current === "en cours de livraison"
+          );
+        }
+        return current === status;
       }),
     [status, orders],
   );
