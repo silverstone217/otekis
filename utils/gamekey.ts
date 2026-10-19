@@ -43,8 +43,8 @@ const pcTag = (hwid: string, salt: string) =>
     createHash("sha256")
       .update(`${salt}|${normalizeHwid(hwid)}`)
       .digest()
-      .subarray(0, 5),
-  );
+      .subarray(0, 4),
+  ).slice(0, 6);
 
 /** Signature : 10 octets -> 16 caractères */
 const signature = (tag: string, random: string, hwid: string, secret: string) =>
@@ -52,8 +52,8 @@ const signature = (tag: string, random: string, hwid: string, secret: string) =>
     createHmac("sha256", secret)
       .update(`${GAME_KEY_PREFIX}|${tag}|${random}|${normalizeHwid(hwid)}`)
       .digest()
-      .subarray(0, 10),
-  );
+      .subarray(0, 9),
+  ).slice(0, 14);
 
 /**
  * Génère une clé liée au HWID.
@@ -64,11 +64,12 @@ export const generateGameKey = (hwid: string) => {
   const { secret, salt } = getSecrets();
 
   const tag = pcTag(hwid, salt);
-  const random = toBase32(randomBytes(5)); // 8 caractères
+  const random = toBase32(randomBytes(3)).slice(0, 4);
   const sig = signature(tag, random, hwid, secret);
 
-  const raw = `${tag}${random}${sig}`; // 32 caractères
+  const raw = `${tag}${random}${sig}`;
   const groups = raw.match(/.{1,4}/g)!.join("-");
+
   return `${GAME_KEY_PREFIX}-${groups}`;
 };
 
@@ -82,20 +83,30 @@ export const verifyGameKey = (key: string, hwid: string) => {
       .toUpperCase()
       .replace(new RegExp(`^${GAME_KEY_PREFIX}-?`), "")
       .replace(/[-\s]/g, "");
-    if (raw.length !== 32) return false;
+    if (raw.length !== 24) return false;
 
-    const tag = raw.slice(0, 8);
-    const random = raw.slice(8, 16);
-    const sig = raw.slice(16);
+    const tag = raw.slice(0, 6);
+    const random = raw.slice(6, 10);
+    const sig = raw.slice(10);
 
     if (tag !== pcTag(hwid, salt)) return false;
 
     const expected = Buffer.from(signature(tag, random, hwid, secret));
     const received = Buffer.from(sig);
+
     return (
       expected.length === received.length && timingSafeEqual(expected, received)
     );
   } catch {
     return false;
   }
+};
+
+/**
+ * Retourne l'empreinte du HWID, utilisée pour comparer
+ * un ordinateur avec les clés déjà générées.
+ */
+export const getPcTagForHwid = (hwid: string) => {
+  const { salt } = getSecrets();
+  return pcTag(normalizeHwid(hwid), salt);
 };

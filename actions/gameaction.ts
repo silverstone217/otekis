@@ -14,11 +14,13 @@ import {
   PaymentFlexpaieDataType,
   PaymentFlexpaieResponseType,
 } from "./OrderPaymentAction";
-import { generateGameKey } from "@/utils/gamekey";
+import { generateGameKey, getPcTagForHwid } from "@/utils/gamekey";
 import {
   RANDO_ALLOWED_SHOP_SLUG,
   RANDO_GAME_PRICE_USD,
   RANDO_PRODUCT_NAME,
+  allowedShopGame,
+  getKeyPcTag,
   normalizeHwid,
   validateHwid,
   validatePaymentNumber,
@@ -38,6 +40,86 @@ type BuyGameKeyInput = {
   hwid: string;
   paymentNumber: string;
   shopSlug: string;
+};
+
+export const checkRandoHwidAvailability = async (
+  rawHwid: string,
+): Promise<{ error: boolean; message: string }> => {
+  try {
+    const user = await getUser();
+
+    if (!user || user.isBanned) {
+      return {
+        error: true,
+        message: "Vous devez être connecté pour continuer.",
+      };
+    }
+
+    const hwid = normalizeHwid(rawHwid);
+    const hwidError = validateHwid(hwid);
+
+    if (hwidError) {
+      return { error: true, message: hwidError };
+    }
+
+    if (
+      RANDO_ALLOWED_SHOP_SLUG &&
+      !allowedShopGame.includes(RANDO_ALLOWED_SHOP_SLUG)
+    ) {
+      return {
+        error: true,
+        message: "Configuration de boutique invalide.",
+      };
+    }
+
+    const product = await prisma.supplierProduct.findFirst({
+      where: {
+        name: {
+          contains: RANDO_PRODUCT_NAME,
+          mode: "insensitive",
+        },
+      },
+      select: { id: true },
+    });
+
+    if (!product) {
+      return {
+        error: true,
+        message: "Le jeu n'est pas disponible pour le moment.",
+      };
+    }
+
+    const existingKeys = await prisma.gameAcccesKey.findMany({
+      where: { productId: product.id },
+      select: { key: true },
+    });
+
+    const requestedTag = getPcTagForHwid(hwid);
+
+    const alreadyRegistered = existingKeys.some((item) => {
+      const existingTag = getKeyPcTag(item.key).replace(/-/g, "");
+      return existingTag === requestedTag;
+    });
+
+    if (alreadyRegistered) {
+      return {
+        error: true,
+        message: "Une clé d'activation existe déjà pour cet ordinateur.",
+      };
+    }
+
+    return {
+      error: false,
+      message: "HWID disponible.",
+    };
+  } catch (error) {
+    console.error("Erreur de vérification du HWID", error);
+
+    return {
+      error: true,
+      message: "Impossible de vérifier ce HWID. Réessayez plus tard.",
+    };
+  }
 };
 
 // Flexpaie annule tout processus de plus de 35 secondes.
@@ -140,10 +222,29 @@ export const buyRandoNaRandoKey = async ({
       };
     }
 
+    const existingKeys = await prisma.gameAcccesKey.findMany({
+      where: { productId: product.id },
+      select: { key: true },
+    });
+
+    const requestedTag = getPcTagForHwid(hwid);
+
+    const alreadyRegistered = existingKeys.some((item) => {
+      const existingTag = getKeyPcTag(item.key);
+      return existingTag !== "" && existingTag === requestedTag;
+    });
+
+    if (alreadyRegistered) {
+      return {
+        error: true,
+        message: "Une clé d'activation existe déjà pour cet ordinateur.",
+      };
+    }
+
     // 6. INITIALISATION DU PAIEMENT UNIQUEMENT SI LE JEU EST PAYANT
     transaction_id = v4().replace(/-/g, "");
 
-    if (!isFree) {
+    if (!isFree && RANDO_GAME_PRICE_USD > 1) {
       const currency = (await getCurrencySymbol()) === "$" ? "USD" : "CDF";
 
       const exchange = await exChangeRate();

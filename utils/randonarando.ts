@@ -47,10 +47,22 @@ export const validatePaymentNumber = (value: string): string | null => {
 /** "RNR-ABCD-EFGH-..." -> "ABCD-EFGH" (repère du PC, contenu dans la clé) */
 export const getKeyPcTag = (key: string) => {
   const raw = key
-    .replace(new RegExp(`^${GAME_KEY_PREFIX}-`), "")
-    .replace(/-/g, "");
-  const tag = raw.slice(0, 8);
-  return tag.length === 8 ? `${tag.slice(0, 4)}-${tag.slice(4)}` : "";
+    .trim()
+    .toUpperCase()
+    .replace(new RegExp(`^${GAME_KEY_PREFIX}-?`), "")
+    .replace(/[-\s]/g, "");
+
+  // Format compact actuel : 24 caractères, empreinte de 6 caractères
+  if (raw.length === 24) {
+    return raw.slice(0, 6);
+  }
+
+  // Ancien format : 32 caractères, empreinte de 8 caractères
+  if (raw.length === 32) {
+    return raw.slice(0, 8);
+  }
+
+  return "";
 };
 
 // ---------- STYLE ----------

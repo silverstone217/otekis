@@ -7,7 +7,10 @@ import { Loader2, Monitor, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Preferences } from "@/lib/generated/prisma/client";
-import { buyRandoNaRandoKey } from "@/actions/gameaction";
+import {
+  buyRandoNaRandoKey,
+  checkRandoHwidAvailability,
+} from "@/actions/gameaction";
 import {
   normalizeHwid,
   validateHwid,
@@ -72,10 +75,20 @@ const RandoPaymentForm = ({
     setGenerated(null);
 
     try {
+      // 1. Vérifier le HWID avant de lancer le paiement
+      const hwidCheck = await checkRandoHwidAvailability(normalizeHwid(hwid));
+
+      if (hwidCheck.error) {
+        toast.error(hwidCheck.message);
+        return;
+      }
+
+      // 2. Le HWID est disponible : informer le client
       toast.info(
         "Vous avez 30 secondes pour valider le paiement sur votre mobile.",
       );
 
+      // 3. Lancer l'achat et le paiement
       const result = await buyRandoNaRandoKey({
         hwid: normalizeHwid(hwid),
         paymentNumber,
@@ -88,9 +101,14 @@ const RandoPaymentForm = ({
       }
 
       toast.success(result.message);
-      setGenerated({ key: result.key.key, hwid: normalizeHwid(hwid) });
+
+      setGenerated({
+        key: result.key.key,
+        hwid: normalizeHwid(hwid),
+      });
+
       setPaymentNumber("");
-      router.refresh(); // met à jour la liste des clés
+      router.refresh();
     } catch {
       toast.error("Erreur lors du paiement, réessayez.");
     } finally {
