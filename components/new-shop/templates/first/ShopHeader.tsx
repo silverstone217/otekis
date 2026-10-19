@@ -18,6 +18,7 @@ import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Separator } from "@/components/ui/separator";
 import { capitalizeText } from "@/utils/shopFunctions";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -203,6 +204,17 @@ const ShopHeader = ({
                     {lk.label}
                   </Link>
                 ))}
+
+                {allowedShopGame.includes(shop.slug) && (
+                  <Link
+                    href={`/${shop.slug}/cles-d-activation`}
+                    onClick={() => setIsOpen(false)}
+                    className="text-3xl font-light hover:translate-x-2 
+                    transition-transform duration-300 block"
+                  >
+                    Mes cles
+                  </Link>
+                )}
               </div>
             </div>
 

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -236,6 +237,21 @@ const SheetMenuNav = ({
                 />
               </Link>
             ))}
+
+            {allowedShopGame.includes(shop.slug) && (
+              <Link
+                href={`/${shop.slug}/cles-d-activation`}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-black/5 transition-all group"
+              >
+                {" "}
+                <span className="text-sm font-semibold"> Mes cles</span>
+                <ChevronRight
+                  size={14}
+                  className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
+                />
+              </Link>
+            )}
           </nav>
 
           {/* AJOUT de boutique */}

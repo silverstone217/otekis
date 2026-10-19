@@ -17,6 +17,7 @@ import { ShopAllDataLinks } from "@/utils/shopData";
 import { ShopHeaderType } from "../first/ShopHeader";
 import { cn } from "@/lib/utils";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 const ShopHeader = ({
   shop,
@@ -252,6 +253,20 @@ const MenuNavHeader = ({
                 <ArrowRight className="ml-4 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all w-8 h-8 md:w-12 md:h-12" />
               </Link>
             ))}
+
+            {allowedShopGame.includes(shop.slug) && (
+              <Link
+                href={`/${shop.slug}/cles-d-activation`}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "text-4xl md:text-6xl font-bold tracking-tighter transition-all duration-300 hover:pl-4 flex items-center group",
+                  contrastColor,
+                )}
+              >
+                Mes cles
+                <ArrowRight className="ml-4 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all w-8 h-8 md:w-12 md:h-12" />
+              </Link>
+            )}
           </nav>
 
           {/* AJOUT de boutique */}

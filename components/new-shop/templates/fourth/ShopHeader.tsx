@@ -23,6 +23,7 @@ import {
 import { IconLikeComponent } from "@/types/data";
 import { cn } from "@/lib/utils";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -268,6 +269,18 @@ const SheetMenuNav = ({
                   <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </Link>
               ))}
+
+              {allowedShopGame.includes(shop.slug) && (
+                <Link
+                  href={`/${shop.slug}/cles-d-activation`}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-current/3 hover:bg-current/[0.07] transition-all group"
+                >
+                  <span className="font-semibold text-lg">Mes cles</span>
+
+                  <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </Link>
+              )}
 
               {/* AJOUT de boutique */}
               <div className="mt-8 w-full">

@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { ShopHeaderType } from "../first/ShopHeader";
 import { LogOut, User } from "lucide-react";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 const ShopHeader = ({ shop, preferences: preference }: ShopHeaderType) => {
   const [isClient, setIsClient] = useState(false);
@@ -275,12 +276,26 @@ const SmallDevicesLinksPart = ({
             <SheetClose asChild key={idx}>
               <Link
                 href={`/${shop.slug}${lk.value}`}
-                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-black/5 transition-colors font-medium"
+                className="flex items-center justify-between px-4 py-3 rounded-xl 
+                hover:bg-black/5 transition-colors font-medium"
               >
                 {lk.label}
               </Link>
             </SheetClose>
           ))}
+
+          {allowedShopGame.includes(shop.slug) && (
+            <SheetClose asChild>
+              <Link
+                href={`/${shop.slug}/cles-d-activation`}
+                className="flex items-center justify-between px-4 py-3 rounded-xl 
+               hover:bg-black/5
+                transition-colors font-medium"
+              >
+                Mes cles
+              </Link>
+            </SheetClose>
+          )}
 
           {/* AJOUT de boutique */}
           <div className="mt-8 w-full">

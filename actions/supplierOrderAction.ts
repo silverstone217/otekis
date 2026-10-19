@@ -326,7 +326,7 @@ export const createSupplierOrder = async ({
     const totalAmount = deliveryPrice + amount;
     const transaction_id = v4().toString().replace(/-/g, "");
 
-    if (!skipPayment) {
+    if (!skipPayment && totalAmount > 0) {
       const flexpaieApiToken = FLEXPAIE_TOKEN;
       const flexpaieApiUrl = FLEXPAIE_URL_API;
 

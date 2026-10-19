@@ -11,6 +11,7 @@ import React from "react";
 import { exChangeRate, getCurrencySymbol } from "@/actions/companyAction";
 import { ProductsTypeWithArticles } from "@/types/shop";
 import { ProductWithArticle } from "@/types/data";
+import { allowedShopGame } from "@/utils/randonarando";
 
 // HEROS
 import ShopHeroOne from "@/components/new-shop/templates/first/ShopHero";
@@ -29,6 +30,14 @@ import ShopHeroSixth from "@/components/new-shop/templates/sixth/ShopHero";
 
 import { HEADERS_DATA } from "./layout";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Gamepad2,
+  KeyRound,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 // HEROS DATA
 const HEROS_DATA = [
@@ -249,7 +258,7 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 
   return (
     <div className="w-full flex flex-col pb-10">
-      <div className={`${Number(Header) === 5 ? "pt-20" : "pt-0"}`} />
+      <div className={`${Number(Header) === 5 ? "pt-20" : "pt-4"}`} />
       <CurrentHero
         shop={shop}
         preferences={preferences}
@@ -260,19 +269,129 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
         exchange={exchange}
       />
 
-      {/* <CurrentCategory
-        shop={shop}
-        preferences={preferences}
-        products={filteredProducts() as Product[]}
-        productsShop={productsShop}
-        getMyFont={getMyFont!}
-      /> */}
+      {/* LINK TO ACTIVATE GAME RANDO NA RANDO */}
+      {allowedShopGame.includes(slug) && (
+        <section
+          className={cn(
+            "w-full max-w-5xl mx-auto px-4 pt-12 pb-4 sm:px-6",
+            getMyFont?.className,
+          )}
+          style={{
+            backgroundColor: preferences.background,
+            color: preferences.textColor,
+          }}
+        >
+          <Link
+            href={`/${slug}/cles-d-activation`}
+            aria-label="Activer le jeu Rando na Rando"
+            className="group block focus-visible:outline-none 
+          focus-visible:ring-2 focus-visible:ring-offset-4"
+            style={{
+              borderRadius: preferences.buttonRadius,
+              color: preferences.textColor,
+            }}
+          >
+            <div
+              className="relative overflow-hidden border shadow-sm 
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              style={{
+                borderRadius: preferences.buttonRadius,
+                borderColor: `${preferences.textColor}20`,
+                backgroundColor: preferences.background,
+              }}
+            >
+              {/* Décoration subtile */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-12 -top-16 
+              h-48 w-48 rounded-full opacity-[0.07] blur-2xl transition-transform 
+              duration-500 group-hover:scale-125"
+                style={{ backgroundColor: preferences.buttonColor }}
+              />
 
-      {/* <HeroShopBottomSectionByCat
-        shop={shop}
-        preferences={preferences}
-        products={filteredProducts() as Product[]}
-      /> */}
+              <div
+                className="relative flex flex-col gap-6 p-5 sm:p-8 md:flex-row 
+            md:items-center md:justify-between"
+              >
+                {/* Présentation du jeu */}
+                <div className="flex min-w-0 flex-1 items-start gap-4">
+                  <div
+                    className="flex h-14 w-14 shrink-0 items-center justify-center 
+                  shadow-sm sm:h-16 sm:w-16"
+                    style={{
+                      backgroundColor: preferences.buttonColor,
+                      color: preferences.buttonTextColor,
+                      borderRadius: preferences.buttonRadius,
+                    }}
+                  >
+                    <Gamepad2 className="h-8 w-8" strokeWidth={1.8} />
+                  </div>
+
+                  <div className="min-w-0 space-y-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 
+                      py-1 text-xs font-bold uppercase tracking-wider"
+                        style={{
+                          backgroundColor: `${preferences.buttonColor}12`,
+                          color: preferences.buttonColor,
+                        }}
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Jeu vidéo
+                      </span>
+
+                      <span className="text-xs font-medium opacity-60">
+                        Rando na Rando
+                      </span>
+                    </div>
+
+                    <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+                      Ton aventure commence ici.
+                    </h2>
+
+                    <p className="max-w-xl text-sm leading-6 opacity-75 sm:text-base">
+                      Obtiens ta clé d’activation et prépare-toi à découvrir
+                      l’univers de Rando na Rando.
+                    </p>
+
+                    <div
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 
+                  text-xs opacity-70 sm:text-sm"
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <KeyRound className="h-4 w-4" />
+                        Clé d’activation
+                      </span>
+
+                      <span className="inline-flex items-center gap-1.5">
+                        <ShieldCheck className="h-4 w-4" />
+                        Activation en ligne
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bouton d'action */}
+                <div
+                  className="inline-flex min-h-12 shrink-0 items-center justify-center 
+                gap-2 px-5 py-3 text-sm font-semibold shadow-sm transition-all 
+                duration-300 group-hover:gap-3"
+                  style={{
+                    backgroundColor: preferences.buttonColor,
+                    color: preferences.buttonTextColor,
+                    borderRadius: preferences.buttonRadius,
+                  }}
+                >
+                  <span>Activer mon jeu</span>
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
+
       {/* desc shop */}
       <div className="py-8"></div>
       {preferences.showDescription && (
@@ -340,7 +459,3 @@ const MyShopPage = async (props: { params: Promise<{ slug: string }> }) => {
 };
 
 export default MyShopPage;
-
-// eau de parfum chanel saveur orange 300ml
-
-// seduiser tout le monde, ayez confiance en vos charmes avec le nouveau eau de parfum chanel , doux et agreable.

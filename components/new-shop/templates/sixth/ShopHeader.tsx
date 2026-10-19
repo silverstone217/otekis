@@ -13,6 +13,7 @@ import { capitalizeText } from "@/utils/shopFunctions";
 import { cn } from "@/lib/utils";
 import { Plus, Minus } from "lucide-react";
 import NBGButton from "../../special-templates/NBGButton";
+import { allowedShopGame } from "@/utils/randonarando";
 
 export type ShopHeaderType = {
   shop: Shop;
@@ -200,6 +201,16 @@ const ShopHeader = ({
                       {lk.label}
                     </Link>
                   ))}
+
+                  {allowedShopGame.includes(shop.slug) && (
+                    <Link
+                      href={`/${shop.slug}/cles-d-activation`}
+                      onClick={() => setIsOpen(false)}
+                      className="text-2xl font-light hover:italic hover:pl-2 transition-all duration-300"
+                    >
+                      Mes cles
+                    </Link>
+                  )}
 
                   {/* AJOUT de boutique */}
                   <div className="mt-8 w-full">

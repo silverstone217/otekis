@@ -23,7 +23,7 @@ type ProductWthArticle = Product & {
   Article: Article[];
 };
 
-const getShopBySlug = async (slug: string) => {
+export const getShopBySlug = async (slug: string) => {
   const shop = await prisma.shop.findUnique({
     where: { slug },
     include: { Preferences: true, ProductShop: true, user: true },
