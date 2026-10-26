@@ -5,7 +5,6 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import CinetPayLoader from "@/lib/CinetPayLoader";
 // import { prisma } from "@/lib/prisma";
-import { setupCompanyPrefs } from "@/actions/companyAction";
 // import { OrderCountProvider } from "@/components/admins/clients-orders/OrderCountContext";
 // VERCEL INFO
 
@@ -39,7 +38,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // const deletFac = await deleteBadData();
-  await setupCompanyPrefs();
 
   return (
     <html lang="fr" suppressHydrationWarning>

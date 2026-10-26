@@ -5,53 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { getUser } from "./actions";
 import { PERMITED_ROLES } from "@/utils/dataAdd";
 
-// set up company prefs
-export const setupCompanyPrefs = async () => {
-  try {
-    const companyPrefs = await prisma.otekisPreferences.findFirst();
-    if (!companyPrefs) {
-      await prisma.otekisPreferences.create({
-        data: {
-          cinetPayPercentage: "5",
-          socialEmail: "servigroup.social@gmail.com",
-          exchangeRate: 2100,
-          socialPhone: "813350706",
-        },
-      });
-    }
-    const otekisBenefitAmount = await prisma.otekisBenefitAmount.findFirst();
-    if (!otekisBenefitAmount) {
-      await prisma.otekisBenefitAmount.create({
-        data: {
-          amount: 0,
-          amountCDF: 0,
-          benefit: 0,
-          benefitCDF: 0,
-        },
-      });
-    }
-
-    // delivery for otekis delivery
-    const delivery = await prisma.deliveryCompany.findMany({});
-    const isOtekisDeliveryExist = delivery.find((delivery) =>
-      delivery.name.includes("otekis")
-    );
-
-    if (!isOtekisDeliveryExist) {
-      await prisma.deliveryCompany.create({
-        data: {
-          name: "otekis delivery",
-          phone: "813350706",
-          address: "6529, tshanga, bandalungwa, kinshasa, rdc",
-        },
-      });
-    }
-    // console.log("Company prefs setup perfectly");
-  } catch (error) {
-    console.error("Error setting up company prefs", error);
-  }
-};
-
 // get company preference
 export const getCompanyPreference = async () => {
   const prefs = await prisma.otekisPreferences.findFirst();
@@ -249,7 +202,7 @@ export const getAllProductSoldAmount = async () => {
   const amount = orders.reduce(
     (sum, order) =>
       sum + order.orderItems.reduce((acc, item) => acc + item.quantity, 0),
-    0
+    0,
   );
 
   return amount;
