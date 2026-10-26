@@ -8,8 +8,6 @@ import CinetPayLoader from "@/lib/CinetPayLoader";
 import { setupCompanyPrefs } from "@/actions/companyAction";
 // import { OrderCountProvider } from "@/components/admins/clients-orders/OrderCountContext";
 // VERCEL INFO
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.otekis.com"),
@@ -55,8 +53,6 @@ export default async function RootLayout({
           <main>{children}</main>
           <Toaster />
         </AuthProvider>
-        <SpeedInsights />
-        <Analytics />
       </body>
     </html>
   );
