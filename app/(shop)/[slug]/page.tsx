@@ -161,8 +161,13 @@ Promise<Metadata> {
       canonical: `https://www.otekis.com/${shop.slug}`,
     },
     robots: {
-      index: true,
-      follow: true,
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+      },
     },
   };
 }

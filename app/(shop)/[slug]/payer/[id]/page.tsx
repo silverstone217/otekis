@@ -87,6 +87,15 @@ Promise<Metadata> {
     icons: {
       icon: product?.image ?? shop.logo,
     },
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+      },
+    },
   };
 }
 

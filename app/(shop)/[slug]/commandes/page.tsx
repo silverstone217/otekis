@@ -73,6 +73,15 @@ Promise<Metadata> {
     alternates: {
       canonical: `https://www.otekis.com/${shop.slug}/commandes`,
     },
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+      },
+    },
   };
 }
 

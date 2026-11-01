@@ -54,6 +54,15 @@ Promise<Metadata> {
     alternates: {
       canonical: `https://www.otekis.com/${shop.slug}`,
     },
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+      },
+    },
   };
 }
 
