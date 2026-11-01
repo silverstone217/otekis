@@ -1,30 +1,39 @@
 // lib/prisma.ts
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "./generated/prisma/client";
 
-declare global {
-  var prisma: PrismaClient | undefined;
-}
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient;
+  pgPool?: Pool;
+};
 
-// 1. Initialisation du pool PG
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-});
+// Réutilisation du pool PostgreSQL
+const pool =
+  globalForPrisma.pgPool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
 
-// 2. Création de l'adaptateur
+    // Limite de connexions par instance
+    max: 3,
+
+    // Fermeture des connexions inutilisées
+    idleTimeoutMillis: 10000,
+
+    connectionTimeoutMillis: 10000,
+  });
+
+// Création de l'adaptateur Prisma 7
 const adapter = new PrismaPg(pool);
 
-// 3. Instanciation du client Prisma 7
+// Réutilisation du client Prisma
 export const prisma =
-  global.prisma ||
+  globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
   });
 
-if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
-}
+// Conservation des instances
+globalForPrisma.pgPool = pool;
+globalForPrisma.prisma = prisma;
