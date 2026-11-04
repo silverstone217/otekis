@@ -7,6 +7,13 @@ import { siteName } from "@/utils/data";
 import { shuffleArray } from "@/utils/functions";
 import { capitalizeText } from "@/utils/shopFunctions";
 import { Metadata } from "next";
+import { unstable_cache } from "next/cache";
+
+const getCachedProducts = unstable_cache(
+  async () => getProductsWithArticles(),
+  ["home-products"],
+  { revalidate: 3600, tags: ["home-products"] },
+);
 
 const siteCapName = siteName && capitalizeText(siteName);
 
@@ -45,7 +52,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   // const user = await getUser();
 
-  const products = await getProductsWithArticles();
+  const products = await getCachedProducts();
   const filterdeProducts = !products
     ? []
     : shuffleArray(products).filter(

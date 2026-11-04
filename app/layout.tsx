@@ -4,9 +4,6 @@ import "./globals.css";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import CinetPayLoader from "@/lib/CinetPayLoader";
-// import { prisma } from "@/lib/prisma";
-// import { OrderCountProvider } from "@/components/admins/clients-orders/OrderCountContext";
-// VERCEL INFO
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.otekis.com"),
@@ -23,22 +20,11 @@ const lato = Lato({
   display: "swap",
 });
 
-// const deleteBadData = async () => {
-//   try {
-//     const factures = await prisma.facture.deleteMany();
-//     console.log("Donnes supprimées");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const deletFac = await deleteBadData();
-
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
