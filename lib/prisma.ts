@@ -14,15 +14,17 @@ const pool =
   globalForPrisma.pgPool ??
   new Pool({
     connectionString: process.env.DATABASE_URL,
-
-    // Limite de connexions par instance
     max: 3,
-
-    // Fermeture des connexions inutilisées
-    idleTimeoutMillis: 10000,
-
-    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 5000, // ferme plus vite les connexions inactives
+    connectionTimeoutMillis: 15000,
   });
+
+pool.on("error", (err) => {
+  console.error(
+    "Erreur du pool PostgreSQL (connexion inactive coupée):",
+    err.message,
+  );
+});
 
 // Création de l'adaptateur Prisma 7
 const adapter = new PrismaPg(pool);
