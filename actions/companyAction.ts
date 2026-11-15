@@ -20,6 +20,7 @@ type ChangeCurrencyParams = {
   delayTransferableMoney: number;
   delayRefund: number;
   paymentMethod: "cinetpay" | "cash" | "mpesa" | "bank" | "flexpaie";
+  randoNaRandoPrice: number;
 };
 export const changeCurrencies = async ({
   productCurrency,
@@ -29,6 +30,7 @@ export const changeCurrencies = async ({
   delayRefund,
   delayTransferableMoney,
   paymentMethod,
+  randoNaRandoPrice,
 }: ChangeCurrencyParams) => {
   const user = await getUser();
   const isPermited = user ? PERMITED_ROLES.includes(user?.role) : false;
@@ -51,6 +53,7 @@ export const changeCurrencies = async ({
       delayRefund,
       delayTransferableMoney,
       paymentMethod: paymentMethod,
+      randoNaRandoPrice: randoNaRandoPrice,
     },
   });
 
@@ -63,7 +66,7 @@ export const changeCurrencies = async ({
   }
   return {
     error: false,
-    message: "Les Devises ont été mise à jour avec succès",
+    message: "Les préférences ont été mise à jour avec succès",
     data: prefs,
   };
 };

@@ -40,27 +40,31 @@ export type CurrencyType = "USD" | "CDF";
 // change currencies
 export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
   const [productCurrency, setProductCurrency] = useState(
-    companyPrefs?.currency || "USD"
+    companyPrefs?.currency || "USD",
   );
   // const [transfertCurrency, setTransfertCurrency] = useState(
   //   companyPrefs?.transfertCurrency || "USD"
   // );
 
   const [exchangeRate, setExchangeRate] = useState(
-    companyPrefs?.exchangeRate.toString() || ""
+    companyPrefs?.exchangeRate.toString() || "",
   );
   const [cinetPayPercentage, setCinetPayPercentage] = useState(
-    companyPrefs?.cinetPayPercentage || ""
+    companyPrefs?.cinetPayPercentage || "",
   );
   const [delayRefund, setDelayRefund] = useState(
-    companyPrefs?.delayRefund.toString() || ""
+    companyPrefs?.delayRefund.toString() || "",
   );
   const [delayTransferableMoney, setDelayTransferableMoney] = useState(
-    companyPrefs?.delayTransferableMoney.toString() || ""
+    companyPrefs?.delayTransferableMoney.toString() || "",
   );
 
   const [paymentMethod, setPaymentMethod] = useState(
-    companyPrefs?.paymentMethod || "flexpaie"
+    companyPrefs?.paymentMethod || "flexpaie",
+  );
+
+  const [randoNaRandoPrice, setRandoNaRandoPrice] = useState(
+    companyPrefs?.randoNaRandoPrice.toString() || "",
   );
 
   const [loading, setLoading] = useState(false);
@@ -75,7 +79,8 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
       cinetPayPercentage === companyPrefs.cinetPayPercentage &&
       Number(delayRefund) === companyPrefs.delayRefund &&
       Number(delayTransferableMoney) === companyPrefs.delayTransferableMoney &&
-      paymentMethod === companyPrefs.paymentMethod
+      paymentMethod === companyPrefs.paymentMethod &&
+      randoNaRandoPrice === companyPrefs.randoNaRandoPrice.toString()
     )
       return true;
 
@@ -85,7 +90,8 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
       isEmptyString(productCurrency) ||
       isEmptyString(delayRefund) ||
       isEmptyString(delayTransferableMoney) ||
-      isEmptyString(paymentMethod)
+      isEmptyString(paymentMethod) ||
+      isEmptyString(randoNaRandoPrice)
     )
       return true;
     return false;
@@ -98,6 +104,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
     delayTransferableMoney,
     delayRefund,
     paymentMethod,
+    randoNaRandoPrice,
   ]);
 
   const handleChangeCurrency = async () => {
@@ -117,7 +124,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
         isNaN(delayRefundToNumber)
       ) {
         toast.error(
-          "Le taux d'echange, le pourcentage, le delai cinetpay et de remboursement de Cinetpay doivent etre des nombres!"
+          "Le taux d'echange, le pourcentage, le delai cinetpay et de remboursement de Cinetpay doivent etre des nombres!",
         );
         return;
       }
@@ -130,6 +137,7 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
         delayRefund: delayRefundToNumber,
         delayTransferableMoney: delayTransferableMoneyToNumber,
         paymentMethod,
+        randoNaRandoPrice: Number(randoNaRandoPrice),
       };
 
       const result = await changeCurrencies(formData);
@@ -222,6 +230,16 @@ export const ChangeCurenncyComponent = ({ companyPrefs }: Props) => {
             onChange={(e) => setDelayTransferableMoney(e.target.value)}
             min={0}
             max={7}
+          />
+        </div>
+
+        <div className="grid w-full max-w-sm items-center gap-3">
+          <Label htmlFor="transfertCurrency">{`Prix de RandoNaRando`}</Label>
+          <Input
+            type="number"
+            value={randoNaRandoPrice}
+            onChange={(e) => setRandoNaRandoPrice(e.target.value)}
+            min={0}
           />
         </div>
 
