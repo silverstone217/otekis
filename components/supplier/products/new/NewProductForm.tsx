@@ -94,9 +94,8 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
     const list = ["Produit", "Classification"];
     if (isFileProduct) list.push("Fichier");
 
-    // Variantes : inutile pour un produit numérique d'une boutique spéciale
-    // (l'article est déjà forcé à other / 0 / 1 par le useEffect)
-    if (!(isFileProduct && cannotModifySpecialInfo)) list.push("Variantes");
+    // Variantes : uniquement pour les produits physiques
+    if (!isFileProduct) list.push("Variantes");
 
     list.push("Localisation & Contacts");
 
@@ -208,7 +207,7 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
         return false;
       }
 
-      if (!price || parseFloat(price) <= 0) {
+      if (!price || parseFloat(price) < 0) {
         toast.error("Veuillez entrer un prix valide");
         return false;
       }
@@ -323,10 +322,7 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
       return;
     }
 
-    if (
-      selected.size >
-      Number(formatFileSize(MAX_ZIP_SIZE).replace(/[^0-9.]/g, "")) * 1024 * 1024
-    ) {
+    if (selected.size > MAX_ZIP_SIZE) {
       toast.error("Fichier trop volumineux", {
         description: `Taille maximale : ${formatFileSize(MAX_ZIP_SIZE)}`,
       });
@@ -530,17 +526,7 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
                           toast.error("Veuillez sélectionner une image valide");
                           return;
                         }
-                        if (
-                          file.size >
-                          Number(
-                            formatFileSize(2 * 1024 * 1024).replace(
-                              /[^0-9.]/g,
-                              "",
-                            ),
-                          ) *
-                            1024 *
-                            1024
-                        ) {
+                        if (file.size > 2 * 1024 * 1024) {
                           toast.error("L'image doit être inférieure à 2MB");
                           return;
                         }
@@ -725,7 +711,7 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
         )}
 
         {/* STEP : VARIANTES */}
-        {currentStepName === "Variantes" && isFileProduct && (
+        {currentStepName === "Variantes" && (
           <div className="animate-in fade-in duration-200">
             <ProductArticles
               articles={articles}
