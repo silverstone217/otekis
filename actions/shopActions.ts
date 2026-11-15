@@ -195,11 +195,17 @@ export const addItemToShop = async ({
     }
 
     // 📦 VALIDATION
-    if (!price || price <= 0) {
+    // 📦 VALIDATION
+    if (typeof price !== "number" || !Number.isFinite(price) || price < 0) {
       return { error: true, message: "Prix invalide" };
     }
 
-    if (percentage < 0) {
+    if (
+      typeof percentage !== "number" ||
+      !Number.isFinite(percentage) ||
+      percentage < 0 ||
+      percentage > 400
+    ) {
       return { error: true, message: "Pourcentage invalide" };
     }
 

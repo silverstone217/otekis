@@ -172,11 +172,21 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
   useEffect(() => {
     if (isFileProduct) {
       setArticles([{ color: "other", size: "0", quantity: 1 }]);
+      setCommune(SpecialAddressInfo.commune);
+      setQuartier(SpecialAddressInfo.quartier);
+      setAvenue(SpecialAddressInfo.avenue);
+      setIsDelivering(false);
+      setDeliveryPrice("");
     } else {
       setArticles([{ color: "", size: "", quantity: 1 }]);
       setFile(null);
+      if (!cannotModifySpecialInfo) {
+        setCommune("");
+        setQuartier("");
+        setAvenue("");
+      }
     }
-  }, [isFileProduct]);
+  }, [isFileProduct, cannotModifySpecialInfo]);
 
   // 🔹 Validation par étape avant de faire Next
   const validateCurrentStep = () => {
@@ -255,29 +265,31 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
     }
 
     if (currentStepLabel === "Localisation & Contacts") {
-      const errCommune = validateRequired(commune, "Commune");
-      if (errCommune) {
-        toast.error(errCommune);
-        return false;
-      }
-
-      const errQuartier = validateRequired(quartier, "Quartier");
-      if (errQuartier) {
-        toast.error(errQuartier);
-        return false;
-      }
-
-      const errAvenue = validateAvenue(avenue);
-      if (errAvenue) {
-        toast.error(errAvenue);
-        return false;
-      }
-
-      if (isDelivering) {
-        const dp = parseFloat(deliveryPrice);
-        if (isNaN(dp) || dp < 0) {
-          toast.error("Le prix de livraison doit être un nombre positif");
+      if (!isFileProduct) {
+        const errCommune = validateRequired(commune, "Commune");
+        if (errCommune) {
+          toast.error(errCommune);
           return false;
+        }
+
+        const errQuartier = validateRequired(quartier, "Quartier");
+        if (errQuartier) {
+          toast.error(errQuartier);
+          return false;
+        }
+
+        const errAvenue = validateAvenue(avenue);
+        if (errAvenue) {
+          toast.error(errAvenue);
+          return false;
+        }
+
+        if (isDelivering) {
+          const dp = parseFloat(deliveryPrice);
+          if (isNaN(dp) || dp < 0) {
+            toast.error("Le prix de livraison doit être un nombre positif");
+            return false;
+          }
         }
       }
 
@@ -356,17 +368,19 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
         state,
         target,
         isAvailable,
-        commune,
-        quartier,
-        avenue,
+
+        commune: isFileProduct ? SpecialAddressInfo.commune : commune,
+        quartier: isFileProduct ? SpecialAddressInfo.quartier : quartier,
+        avenue: isFileProduct ? SpecialAddressInfo.avenue : avenue,
+        deliveryPrice: isFileProduct ? 0 : parseFloat(deliveryPrice) || 0,
+
+        isDelivering: isFileProduct ? false : isDelivering,
         permittedSellers,
         articles,
         file: uploadedFile ? uploadedFile.url : undefined,
         contactNumber,
         paymentNumber,
-        deliveryPrice: parseFloat(deliveryPrice) || 0,
         image: imageUrl,
-        isDelivering,
       };
 
       const newProduct = await createNewProduct(formData);
@@ -590,7 +604,6 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
                 type="number"
                 placeholder="Ex: 29.99"
                 min="0"
-                step="0.01"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 disabled={loading}
@@ -724,99 +737,105 @@ const NewProductForm = ({ shopId, shopSlug }: NewProductFormProps) => {
         {/* STEP : LOCALISATION & CONTACTS */}
         {currentStepName === "Localisation & Contacts" && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="grid w-full items-center gap-2">
-                <label className="text-sm font-medium">Commune *</label>
-                <SelectorProducts
-                  data={communesKinshasa.map((c) => ({
-                    label: c,
-                    value: c.toLowerCase(),
-                  }))}
-                  onChange={(val) => {
-                    setCommune(val as string);
-                    setQuartier("");
-                  }}
-                  value={commune}
-                  placeholder="Sélectionnez la commune"
-                  disabled={loading || cannotModifySpecialInfo}
-                />
-              </div>
+            {!isFileProduct && (
+              <>
+                <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid w-full items-center gap-2">
+                    <label className="text-sm font-medium">Commune *</label>
+                    <SelectorProducts
+                      data={communesKinshasa.map((c) => ({
+                        label: c,
+                        value: c.toLowerCase(),
+                      }))}
+                      onChange={(val) => {
+                        setCommune(val as string);
+                        setQuartier("");
+                      }}
+                      value={commune}
+                      placeholder="Sélectionnez la commune"
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="grid w-full items-center gap-2">
-                <label className="text-sm font-medium">Quartier *</label>
-                <SelectorProducts
-                  data={communesQuartiers
-                    .filter(
-                      (cq) => cq.name.toLowerCase() === commune.toLowerCase(),
-                    )
-                    .flatMap((cq) => cq.quartiers)
-                    .map((q) => ({ label: q, value: q.toLowerCase() }))}
-                  onChange={setQuartier}
-                  value={quartier}
-                  placeholder="Sélectionnez le quartier"
-                  disabled={!commune || loading || cannotModifySpecialInfo}
-                />
-              </div>
-            </div>
+                  <div className="grid w-full items-center gap-2">
+                    <label className="text-sm font-medium">Quartier *</label>
+                    <SelectorProducts
+                      data={communesQuartiers
+                        .filter(
+                          (cq) =>
+                            cq.name.toLowerCase() === commune.toLowerCase(),
+                        )
+                        .flatMap((cq) => cq.quartiers)
+                        .map((q) => ({ label: q, value: q.toLowerCase() }))}
+                      onChange={setQuartier}
+                      value={quartier}
+                      placeholder="Sélectionnez le quartier"
+                      disabled={!commune || loading}
+                    />
+                  </div>
+                </div>
 
-            <div className="grid w-full items-center gap-2">
-              <label htmlFor="avenue" className="text-sm font-medium">
-                Avenue et numéro *
-              </label>
-              <Input
-                id="avenue"
-                placeholder="Ex: Samba, 12"
-                value={avenue}
-                onChange={(e) => setAvenue(e.target.value)}
-                disabled={loading || cannotModifySpecialInfo}
-              />
-              <p className="text-xs text-muted-foreground">
-                Format : Nom de l’avenue, numéro (ex: Samba, 12)
-              </p>
-            </div>
-
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="grid w-full items-center gap-2">
-                <label className="text-sm font-medium">
-                  Proposez-vous la livraison ?
-                </label>
-                <SelectorProducts
-                  data={[
-                    { label: "Oui", value: "yes" },
-                    { label: "Non", value: "no" },
-                  ]}
-                  onChange={(val) => {
-                    setIsDelivering(val === "yes");
-                    if (val !== "yes") setDeliveryPrice("");
-                  }}
-                  value={isDelivering ? "yes" : "no"}
-                  placeholder="Sélectionnez une option"
-                  disabled={loading || cannotModifySpecialInfo}
-                />
-              </div>
-
-              {isDelivering && (
                 <div className="grid w-full items-center gap-2">
-                  <label
-                    htmlFor="deliveryPrice"
-                    className="text-sm font-medium"
-                  >
-                    Prix de livraison ($) *
+                  <label htmlFor="avenue" className="text-sm font-medium">
+                    Avenue et numéro *
                   </label>
                   <Input
-                    id="deliveryPrice"
-                    type="number"
-                    placeholder="Ex: 3.5"
-                    min="0"
-                    step="0.1"
-                    value={deliveryPrice}
-                    onChange={(e) => setDeliveryPrice(e.target.value)}
-                    disabled={loading || cannotModifySpecialInfo}
+                    id="avenue"
+                    placeholder="Ex: Samba, 12"
+                    value={avenue}
+                    onChange={(e) => setAvenue(e.target.value)}
+                    disabled={loading}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Format : Nom de l’avenue, numéro (ex: Samba, 12)
+                  </p>
                 </div>
-              )}
-            </div>
 
+                <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid w-full items-center gap-2">
+                    <label className="text-sm font-medium">
+                      Proposez-vous la livraison ?
+                    </label>
+                    <SelectorProducts
+                      data={[
+                        { label: "Oui", value: "yes" },
+                        { label: "Non", value: "no" },
+                      ]}
+                      onChange={(val) => {
+                        setIsDelivering(val === "yes");
+                        if (val !== "yes") setDeliveryPrice("");
+                      }}
+                      value={isDelivering ? "yes" : "no"}
+                      placeholder="Sélectionnez une option"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {isDelivering && (
+                    <div className="grid w-full items-center gap-2">
+                      <label
+                        htmlFor="deliveryPrice"
+                        className="text-sm font-medium"
+                      >
+                        Prix de livraison ($) *
+                      </label>
+                      <Input
+                        id="deliveryPrice"
+                        type="number"
+                        placeholder="Ex: 3.5"
+                        min="0"
+                        step="0.1"
+                        value={deliveryPrice}
+                        onChange={(e) => setDeliveryPrice(e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Contacts : toujours visibles */}
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid w-full items-center gap-2">
                 <label htmlFor="contactNumber" className="text-sm font-medium">
