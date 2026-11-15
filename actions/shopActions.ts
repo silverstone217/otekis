@@ -396,15 +396,24 @@ export const modifyItemToShop = async ({
     }
 
     // 📦 VALIDATION
-    if (price <= 0) {
+    if (typeof price !== "number" || !Number.isFinite(price) || price < 0) {
       return { error: true, message: "Prix invalide" };
     }
 
-    if (percentage < 0) {
+    if (
+      typeof percentage !== "number" ||
+      !Number.isFinite(percentage) ||
+      percentage < 0 ||
+      percentage > 400
+    ) {
       return { error: true, message: "Pourcentage invalide" };
     }
 
-    if (promotion < 0) {
+    if (
+      typeof promotion !== "number" ||
+      !Number.isFinite(promotion) ||
+      promotion < 0
+    ) {
       return { error: true, message: "Promotion invalide" };
     }
 
