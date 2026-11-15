@@ -28,6 +28,8 @@ type Props = {
   currency: "USD" | "CDF";
 };
 
+const DEFAULT_PHONE_NUMBER = "822550150"; // 9 chiffres sans le 0
+
 const RandoPaymentForm = ({
   preferences,
   shopSlug,
@@ -38,7 +40,9 @@ const RandoPaymentForm = ({
   const router = useRouter();
 
   const [hwid, setHwid] = useState(initialHwid);
-  const [paymentNumber, setPaymentNumber] = useState("");
+  const [paymentNumber, setPaymentNumber] = useState(
+    price === 0 ? DEFAULT_PHONE_NUMBER : "",
+  );
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState<{
     key: string;
@@ -107,7 +111,8 @@ const RandoPaymentForm = ({
         hwid: normalizeHwid(hwid),
       });
 
-      setPaymentNumber("");
+      setPaymentNumber(price === 0 ? DEFAULT_PHONE_NUMBER : "");
+      setHwid("");
       router.refresh();
     } catch {
       toast.error("Erreur lors du paiement, réessayez.");
@@ -149,7 +154,7 @@ const RandoPaymentForm = ({
             id="hwid"
             value={hwid}
             onChange={(e) => setHwid(e.target.value.toUpperCase())}
-            placeholder="Collez le HWID copié depuis le jeu"
+            placeholder="Collez le code copié depuis le jeu"
             className="font-mono text-sm"
             style={fieldStyle}
             maxLength={64}
@@ -168,43 +173,45 @@ const RandoPaymentForm = ({
         </div>
 
         {/* PAIEMENT */}
-        <div className="space-y-2">
-          <label
-            htmlFor="paymentNumber"
-            className="flex items-center gap-2 text-sm font-medium"
-          >
-            <Phone className="h-4 w-4" />
-            2. Numéro de paiement mobile
-          </label>
-          <div className="relative">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm">
-              +243
-            </span>
-            <Input
-              id="paymentNumber"
-              type="tel"
-              inputMode="numeric"
-              value={paymentNumber}
-              onChange={(e) =>
-                setPaymentNumber(e.target.value.replace(/\D/g, ""))
-              }
-              placeholder="Numéro Mobile Money"
-              className="pl-14"
-              style={fieldStyle}
-              maxLength={9}
-              disabled={loading}
-              aria-invalid={!!paymentError}
-            />
+        {price !== 0 && (
+          <div className="space-y-2">
+            <label
+              htmlFor="paymentNumber"
+              className="flex items-center gap-2 text-sm font-medium"
+            >
+              <Phone className="h-4 w-4" />
+              2. Numéro de paiement mobile
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm">
+                +243
+              </span>
+              <Input
+                id="paymentNumber"
+                type="tel"
+                inputMode="numeric"
+                value={paymentNumber}
+                onChange={(e) =>
+                  setPaymentNumber(e.target.value.replace(/\D/g, ""))
+                }
+                placeholder="Numéro Mobile Money"
+                className="pl-14"
+                style={fieldStyle}
+                maxLength={9}
+                disabled={loading}
+                aria-invalid={!!paymentError}
+              />
+            </div>
+            {paymentError ? (
+              <p className="text-xs text-red-500">{paymentError}</p>
+            ) : (
+              <p className="text-xs opacity-70">
+                9 chiffres sans le 0. Vous validerez le paiement sur votre
+                téléphone.
+              </p>
+            )}
           </div>
-          {paymentError ? (
-            <p className="text-xs text-red-500">{paymentError}</p>
-          ) : (
-            <p className="text-xs opacity-70">
-              9 chiffres sans le 0. Vous validerez le paiement sur votre
-              téléphone.
-            </p>
-          )}
-        </div>
+        )}
 
         {/* CTA */}
         <Button

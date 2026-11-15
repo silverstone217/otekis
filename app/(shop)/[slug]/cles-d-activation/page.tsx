@@ -90,8 +90,8 @@ async function AccesskeyPage({ params, searchParams }: Props) {
       <header className="mx-auto mb-8 max-w-2xl space-y-2 text-center">
         <h1 className="text-3xl font-semibold">{RANDO_GAME_NAME}</h1>
         <p className="opacity-70">
-          Activez le jeu sur votre ordinateur : renseignez votre HWID, payez,
-          puis recopiez la clé reçue dans le jeu.
+          Activez le jeu sur votre ordinateur : renseignez le code affiché sur
+          votre ordinateur, payez, puis recopiez la clé reçue dans le jeu.
         </p>
       </header>
 

@@ -23,7 +23,9 @@ const ShopCartLogin = ({ preferences }: Props) => {
 
   const handleSignIn = async (providerId: string) => {
     try {
-      await signIn(providerId);
+      await signIn(providerId, {
+        callbackUrl: window.location.href,
+      });
     } catch (error) {
       console.error(error);
     }
