@@ -580,6 +580,8 @@ model OtekisPreferences {
   delayTransferableMoney Int                @default(4)
   paymentMethod          PaymentMethodOrder @default(flexpaie) // cinetpay, mpesa, bank, flexpaie
 
+  randoNaRandoPrice Float @default(10)
+
   socialEmail String @default("servigroup.social@gmail.com")
   socialPhone String @default("822550150")
 

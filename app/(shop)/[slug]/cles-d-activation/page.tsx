@@ -39,6 +39,12 @@ const getUserKeys = async (userId: string) => {
   return keys.map((k) => ({ ...k, createdAt: k.createdAt.toISOString() }));
 };
 
+// GET randoNaRandoPrice
+const getRandoNaRandoPrice = async () => {
+  const company = await prisma.otekisPreferences.findFirst();
+  return company?.randoNaRandoPrice ?? RANDO_GAME_PRICE_USD;
+};
+
 async function AccesskeyPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { hwid: hwidParam } = await searchParams;
@@ -60,8 +66,9 @@ async function AccesskeyPage({ params, searchParams }: Props) {
   // PRIX : dollars -> devise de la plateforme
   const currency: "USD" | "CDF" =
     (await getCurrencySymbol()) !== "CDF" ? "USD" : "CDF";
+  const rnrPrice = await getRandoNaRandoPrice();
   const exchange = await exChangeRate(); // USD = 1, CDF = taux de change
-  const gamePrice = RANDO_GAME_PRICE_USD * exchange;
+  const gamePrice = rnrPrice * exchange;
 
   // HWID reçu par l'URL (?hwid=...) : nettoyé, il reste modifiable par le client
   const rawHwid = Array.isArray(hwidParam) ? hwidParam[0] : hwidParam;

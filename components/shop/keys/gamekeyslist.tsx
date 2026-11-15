@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { KeyRound, Monitor } from "lucide-react";
 import type { Preferences } from "@/lib/generated/prisma/client";
 import { getKeyPcTag, withAlpha } from "@/utils/randonarando";
@@ -17,6 +17,8 @@ type Props = {
   preferences: Preferences;
 };
 
+const DISPLAY_LIMIT = 10;
+
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -31,7 +33,11 @@ const formatTime = (iso: string) =>
   });
 
 const GameKeysList = ({ keys, preferences }: Props) => {
+  const [showAll, setShowAll] = useState(false);
+
   const border = withAlpha(preferences.textColor, 0.15);
+
+  const visibleKeys = showAll ? keys : keys.slice(0, DISPLAY_LIMIT);
 
   return (
     <section className="mx-auto w-full max-w-xl space-y-4">
@@ -58,42 +64,59 @@ const GameKeysList = ({ keys, preferences }: Props) => {
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {keys.map((item) => {
-            const pcTag = getKeyPcTag(item.key);
-            return (
-              <li
-                key={item.id}
-                className="space-y-3 border p-4"
-                style={{
-                  borderColor: border,
-                  borderRadius: preferences.buttonRadius,
-                  backgroundColor: withAlpha(preferences.textColor, 0.03),
-                }}
-              >
-                <p className="break-all font-mono text-sm font-semibold tracking-wide">
-                  {item.key}
-                </p>
+        <>
+          <ul className="space-y-3">
+            {visibleKeys.map((item) => {
+              const pcTag = getKeyPcTag(item.key);
 
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs opacity-70">
-                    <span>
-                      {formatDate(item.createdAt)} à{" "}
-                      {formatTime(item.createdAt)}
-                    </span>
-                    {pcTag && (
-                      <span className="inline-flex items-center gap-1 font-mono">
-                        <Monitor className="h-3 w-3" />
-                        PC {pcTag}
+              return (
+                <li
+                  key={item.id}
+                  className="space-y-3 border p-4"
+                  style={{
+                    borderColor: border,
+                    borderRadius: preferences.buttonRadius,
+                    backgroundColor: withAlpha(preferences.textColor, 0.03),
+                  }}
+                >
+                  <p className="break-all font-mono text-sm font-semibold tracking-wide">
+                    {item.key}
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs opacity-70">
+                      <span>
+                        {formatDate(item.createdAt)} à{" "}
+                        {formatTime(item.createdAt)}
                       </span>
-                    )}
+
+                      {pcTag && (
+                        <span className="inline-flex items-center gap-1 font-mono">
+                          <Monitor className="h-3 w-3" />
+                          PC {pcTag}
+                        </span>
+                      )}
+                    </div>
+
+                    <CopyKeyButton value={item.key} preferences={preferences} />
                   </div>
-                  <CopyKeyButton value={item.key} preferences={preferences} />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                </li>
+              );
+            })}
+          </ul>
+
+          {keys.length > DISPLAY_LIMIT && (
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={() => setShowAll((prev) => !prev)}
+                className="text-sm font-medium underline underline-offset-4 opacity-70 transition-opacity hover:opacity-100"
+              >
+                {showAll ? "Afficher moins" : "Afficher toutes les clés"}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </section>
   );
