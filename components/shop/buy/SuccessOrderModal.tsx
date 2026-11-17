@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Preferences } from "@/lib/generated/prisma/client";
+import { Preferences, ProductOrigin } from "@/lib/generated/prisma/client";
 
 type SuccessOrderModalProps = {
   isOpen: boolean;
@@ -24,6 +24,7 @@ type SuccessOrderModalProps = {
   shopSlug: string;
   openChange: (open: boolean) => void;
   preferences: Preferences;
+  origin?: ProductOrigin;
 };
 
 export const SuccessOrderModal = ({
@@ -32,6 +33,7 @@ export const SuccessOrderModal = ({
   shopSlug,
   openChange,
   preferences,
+  origin,
 }: SuccessOrderModalProps) => {
   const router = useRouter();
 
@@ -63,8 +65,15 @@ export const SuccessOrderModal = ({
           {/* ACTIONS */}
           <div className="grid w-full gap-3 pt-2">
             <Button
-              onClick={() => router.push(`/${shopSlug}/commandes/${orderId}`)}
-              className="w-full h-12 text-base font-bold shadow-md transition-transform hover:scale-[1.02]"
+              onClick={() => {
+                if (origin === "supplier") {
+                  router.push(`/${shopSlug}/commandes/fournisseurs/${orderId}`);
+                } else {
+                  router.push(`/${shopSlug}/commandes/${orderId}`);
+                }
+              }}
+              className="w-full h-12 text-base font-bold shadow-md 
+              transition-transform hover:scale-[1.02]"
               style={{
                 backgroundColor: preferences.buttonColor,
                 color: preferences.buttonTextColor,
@@ -78,7 +87,8 @@ export const SuccessOrderModal = ({
             <Button
               variant="outline"
               onClick={() => router.push(`/${shopSlug}/catalogues`)}
-              className="w-full h-12 text-base font-semibold border-2 hover:bg-muted/50"
+              className="w-full h-12 text-base font-semibold border-2 
+              hover:bg-muted/50"
               style={{
                 borderRadius: preferences.buttonRadius,
               }}

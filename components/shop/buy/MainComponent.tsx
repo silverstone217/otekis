@@ -87,7 +87,9 @@ const MainComponent = ({
   // FORM
   const [receiverName, setReceiverName] = useState("");
   const [receiverTel, setReceiverTel] = useState("");
-  const [paymentNumber, setPaymentNumber] = useState("");
+  const [paymentNumber, setPaymentNumber] = useState(
+    isDigitalProduct ? "822550150" : "",
+  );
   const [commune, setCommune] = useState(isDigitalProduct ? "bandalungwa" : "");
   const [quartier, setQuartier] = useState(isDigitalProduct ? "makelele" : "");
   const [avenue, setAvenue] = useState(isDigitalProduct ? "Tshanga, 6529" : "");
@@ -291,7 +293,7 @@ const MainComponent = ({
       );
 
       // RESET FORM
-      setPaymentNumber("");
+      setPaymentNumber(isDigitalProduct ? "822550150" : "");
       setAvenue(isDigitalProduct ? DIGITAL_ADDRESS.avenue : "");
       setCommune(isDigitalProduct ? DIGITAL_ADDRESS.commune : "");
       setQuartier(isDigitalProduct ? DIGITAL_ADDRESS.quartier : "");
@@ -304,6 +306,12 @@ const MainComponent = ({
 
       // ACTION SUCCESS
       setCreatedOrderId(result.data.id);
+
+      if (isDigitalProduct) {
+        router.push(
+          `/${shop.slug}/commandes/fournisseurs/${result.data.id}?download=true`,
+        );
+      }
       setShowSuccess(true);
     } catch {
       toast.error("Erreur lors de la commande");
@@ -353,153 +361,165 @@ const MainComponent = ({
           <p className="text-sm opacity-70 line-clamp-2">
             {capitalizeText(product.description)}
           </p>
-          <div className="mt-2 font-bold">
-            {total.toLocaleString()} {companyPrefs.currency}
-          </div>
+          {total > 0 ? (
+            <div className="mt-2 font-bold">
+              {total.toLocaleString()} {companyPrefs.currency}
+            </div>
+          ) : (
+            <div className="mt-2 font-bold">Gratuit</div>
+          )}
         </div>
       </div>
 
       {/* 1. VARIANTE */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium">1. Variante</h3>
+      {!isDigitalProduct && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">1. Variante</h3>
 
-        <RadioGroup
-          value={selectedArticleId}
-          onValueChange={(val) => {
-            setSelectedArticleId(val);
-            setQuantity(1);
-          }}
-        >
-          {product.Article.map((item) => {
-            const isSelected = item.id === selectedArticleId;
+          <RadioGroup
+            value={selectedArticleId}
+            onValueChange={(val) => {
+              setSelectedArticleId(val);
+              setQuantity(1);
+            }}
+          >
+            {product.Article.map((item) => {
+              const isSelected = item.id === selectedArticleId;
 
-            return (
-              <div
-                key={item.id}
-                className={cn(
-                  "flex items-center justify-between p-3 border rounded-lg transition-all",
-                  isSelected && "ring-2",
-                )}
-                style={{
-                  borderColor: isSelected ? preferences.buttonColor : undefined,
-                  backgroundColor: isSelected
-                    ? `${preferences.buttonColor}10`
-                    : undefined,
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  {/* RADIO CUSTOM */}
-                  <div className="relative flex items-center justify-center">
-                    <RadioGroupItem
-                      value={item.id}
-                      className="h-4 w-4 border"
-                      style={{
-                        borderColor: preferences.buttonColor,
-                      }}
-                    />
-
-                    {/* DOT INTERNE */}
-                    {isSelected && (
-                      <span
-                        className="absolute h-2 w-2 rounded-full"
+              return (
+                <div
+                  key={item.id}
+                  className={cn(
+                    "flex items-center justify-between p-3 border rounded-lg transition-all",
+                    isSelected && "ring-2",
+                  )}
+                  style={{
+                    borderColor: isSelected
+                      ? preferences.buttonColor
+                      : undefined,
+                    backgroundColor: isSelected
+                      ? `${preferences.buttonColor}10`
+                      : undefined,
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    {/* RADIO CUSTOM */}
+                    <div className="relative flex items-center justify-center">
+                      <RadioGroupItem
+                        value={item.id}
+                        className="h-4 w-4 border"
                         style={{
-                          backgroundColor: preferences.buttonColor,
+                          borderColor: preferences.buttonColor,
                         }}
                       />
-                    )}
+
+                      {/* DOT INTERNE */}
+                      {isSelected && (
+                        <span
+                          className="absolute h-2 w-2 rounded-full"
+                          style={{
+                            backgroundColor: preferences.buttonColor,
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    {/* LABEL */}
+                    <span>
+                      {item.color
+                        ? capitalizeText(
+                            returnDataValue(item.color, ColorsData),
+                          )
+                        : "Unique"}
+                    </span>
+
+                    {item.size && <span>{item.size}</span>}
                   </div>
 
-                  {/* LABEL */}
-                  <span>
-                    {item.color
-                      ? capitalizeText(returnDataValue(item.color, ColorsData))
-                      : "Unique"}
-                  </span>
-
-                  {item.size && <span>{item.size}</span>}
+                  {/* STOCK */}
+                  <span className="text-xs opacity-70">{item.stock} dispo</span>
                 </div>
-
-                {/* STOCK */}
-                <span className="text-xs opacity-70">{item.stock} dispo</span>
-              </div>
-            );
-          })}
-        </RadioGroup>
-      </div>
+              );
+            })}
+          </RadioGroup>
+        </div>
+      )}
 
       {/* 2. QUANTITÉ */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">2. Quantité</h3>
+      {!isDigitalProduct && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">2. Quantité</h3>
 
-        {/* OUT OF STOCK */}
-        {(selectedArticle?.stock ?? 0) < 1 ? (
-          <div
-            className="text-sm text-red-500 bg-red-500/10 
-          border border-red-500/20 rounded-lg p-3"
-          >
-            Produit indisponible pour le moment
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            {/* DECREMENT */}
-            <button
-              type="button"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              disabled={quantity <= 1}
-              className={cn(
-                "h-10 w-10 flex items-center justify-center rounded-md border transition",
-                quantity <= 1
-                  ? "opacity-40 cursor-not-allowed"
-                  : isLightBg
-                    ? "hover:bg-muted-foreground"
-                    : "hover:bg-muted",
-              )}
-            >
-              −
-            </button>
-
-            {/* VALUE */}
+          {/* OUT OF STOCK */}
+          {(selectedArticle?.stock ?? 0) < 1 ? (
             <div
-              className="min-w-[60px] text-center text-base font-medium"
-              style={{
-                color: preferences.textColor,
-              }}
+              className="text-sm text-red-500 bg-red-500/10 
+        border border-red-500/20 rounded-lg p-3"
             >
-              {quantity}
+              Produit indisponible pour le moment
             </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              {/* DECREMENT */}
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                className={cn(
+                  "h-10 w-10 flex items-center justify-center rounded-md border transition",
+                  quantity <= 1
+                    ? "opacity-40 cursor-not-allowed"
+                    : isLightBg
+                      ? "hover:bg-muted-foreground"
+                      : "hover:bg-muted",
+                )}
+              >
+                −
+              </button>
 
-            {/* INCREMENT */}
-            <button
-              type="button"
-              onClick={() =>
-                setQuantity((q) => Math.min(selectedArticle!.stock, q + 1))
-              }
-              disabled={quantity >= selectedArticle!.stock}
-              className={cn(
-                "h-10 w-10 flex items-center justify-center rounded-md border transition",
-                quantity >= selectedArticle!.stock
-                  ? "opacity-40 cursor-not-allowed"
-                  : isLightBg
-                    ? "hover:bg-muted-foreground"
-                    : "hover:bg-muted",
-              )}
-            >
-              +
-            </button>
+              {/* VALUE */}
+              <div
+                className="min-w-[60px] text-center text-base font-medium"
+                style={{
+                  color: preferences.textColor,
+                }}
+              >
+                {quantity}
+              </div>
 
-            {/* STOCK INFO */}
-            <span className="text-xs text-muted-foreground ml-2">
-              {selectedArticle?.stock} disponible
-            </span>
-          </div>
-        )}
-      </div>
+              {/* INCREMENT */}
+              <button
+                type="button"
+                onClick={() =>
+                  setQuantity((q) => Math.min(selectedArticle!.stock, q + 1))
+                }
+                disabled={quantity >= selectedArticle!.stock}
+                className={cn(
+                  "h-10 w-10 flex items-center justify-center rounded-md border transition",
+                  quantity >= selectedArticle!.stock
+                    ? "opacity-40 cursor-not-allowed"
+                    : isLightBg
+                      ? "hover:bg-muted-foreground"
+                      : "hover:bg-muted",
+                )}
+              >
+                +
+              </button>
+
+              {/* STOCK INFO */}
+              <span className="text-xs text-muted-foreground ml-2">
+                {selectedArticle?.stock} disponible
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 3. RECEVEUR */}
       <div className="space-y-4">
         <h3 className="flex items-center gap-2 text-sm font-medium">
           <User className="w-4 h-4" />
-          3. Receveur
+          {isDigitalProduct ? " 1. Destinataire" : " 3. Receveur"}
         </h3>
 
         <Input
@@ -643,31 +663,35 @@ const MainComponent = ({
       )}
 
       {/* 6. PAIEMENT */}
-      <div className="space-y-4">
-        <h3 className="flex items-center gap-2 text-sm font-medium">
-          <Phone className="w-4 h-4" />
-          6. Paiement
-        </h3>
+      {!isDigitalProduct && (
+        <div className="space-y-4">
+          <h3 className="flex items-center gap-2 text-sm font-medium">
+            <Phone className="w-4 h-4" />
+            6. Paiement
+          </h3>
 
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2">+243</span>
-          <Input
-            className="pl-14"
-            placeholder="Numéro Mobile Money"
-            value={paymentNumber}
-            onChange={(e) =>
-              setPaymentNumber(e.target.value.replace(/\D/g, ""))
-            }
-            maxLength={9}
-            disabled={loading}
-          />
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2">
+              +243
+            </span>
+            <Input
+              className="pl-14"
+              placeholder="Numéro Mobile Money"
+              value={paymentNumber}
+              onChange={(e) =>
+                setPaymentNumber(e.target.value.replace(/\D/g, ""))
+              }
+              maxLength={9}
+              disabled={loading}
+            />
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Ce numéro sera utilisé pour effectuer le paiement mobile. Numero à 9
+            chiffres sans le 0
+          </p>
         </div>
-
-        <p className="text-xs text-muted-foreground">
-          Ce numéro sera utilisé pour effectuer le paiement mobile. Numero à 9
-          chiffres sans le 0
-        </p>
-      </div>
+      )}
 
       {/* CTA */}
       <Button
@@ -691,6 +715,7 @@ const MainComponent = ({
         shopSlug={shop.slug}
         preferences={preferences}
         openChange={(open) => setShowSuccess(open)}
+        origin={product.origin}
       />
     </div>
   );
