@@ -292,7 +292,7 @@ const MainSupplierOrderView = ({
         </h3>
         <Card
           style={{ borderRadius }}
-          className="overflow-hidden border-none bg-muted/30"
+          className="overflow-hidden border-none bg-muted/90"
         >
           <div className="flex flex-col sm:flex-row items-center gap-6 p-4">
             <div
@@ -451,7 +451,7 @@ const MainSupplierOrderView = ({
           <div
             className="grid grid-cols-1 sm:grid-cols-2 gap-4 
           bg-muted/20 p-4 rounded-2xl border 
-            mt-6
+            mt-6 text-muted-foreground
           "
           >
             {/* Bouton Facture Commande */}
@@ -485,34 +485,38 @@ const MainSupplierOrderView = ({
             </PDFDownloadLink>
 
             {/* Bouton Facture Livraison */}
-            <PDFDownloadLink
-              document={
-                <DeliveryInvoice
-                  order={
-                    order as SupplierOrder & {
-                      supplierEarning: SupplierEarning | null;
-                      deliveryCompany: DeliveryCompany | null;
+            {!isDigitalProduct && (
+              <PDFDownloadLink
+                document={
+                  <DeliveryInvoice
+                    order={
+                      order as SupplierOrder & {
+                        supplierEarning: SupplierEarning | null;
+                        deliveryCompany: DeliveryCompany | null;
+                      }
                     }
-                  }
-                  product={product}
-                  article={article}
-                  shop={shop}
-                />
-              }
-              fileName={`facture_livraison_${order.id}.pdf`}
-            >
-              {({ loading }) => (
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
-                  disabled={loading}
-                >
-                  <Truck className="w-4 h-4 text-indigo-500" />
-                  {loading ? "Génération..." : "Télécharger Facture Livraison"}
-                  <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
-                </Button>
-              )}
-            </PDFDownloadLink>
+                    product={product}
+                    article={article}
+                    shop={shop}
+                  />
+                }
+                fileName={`facture_livraison_${order.id}.pdf`}
+              >
+                {({ loading }) => (
+                  <Button
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-white shadow-sm border font-bold text-xs"
+                    disabled={loading}
+                  >
+                    <Truck className="w-4 h-4 text-indigo-500" />
+                    {loading
+                      ? "Génération..."
+                      : "Télécharger Facture Livraison"}
+                    <Download className="w-3.5 h-3.5 ml-auto text-muted-foreground" />
+                  </Button>
+                )}
+              </PDFDownloadLink>
+            )}
           </div>
         )}
       </section>

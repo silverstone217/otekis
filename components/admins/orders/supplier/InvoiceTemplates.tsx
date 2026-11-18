@@ -140,7 +140,7 @@ export const ProductInvoice = ({
       <View style={{ flexDirection: "row", gap: 30, marginBottom: 30 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.sectionTitle}>Client</Text>
-          <Text style={styles.value}>{order.receiverName}</Text>
+          <Text style={styles.value}>{capitalizeText(order.receiverName)}</Text>
           <Text style={styles.label}>+243 {order.receiverTel}</Text>
           <Text style={[styles.label, { textTransform: "capitalize" }]}>
             {capitalizeText(order.receiverAddress)}
@@ -171,13 +171,18 @@ export const ProductInvoice = ({
         </View>
 
         <View style={styles.tableRow}>
-          <Text style={styles.col1}>
-            {capitalizeText(product.name)}
-            {article.color
-              ? ` • ${capitalizeText(returnDataValue(article.color, ColorsData))}`
-              : ""}
-            {article.size ? ` • Taille ${article.size}` : ""}
-          </Text>
+          {product.category === "digital" ? (
+            <Text style={styles.col1}>{capitalizeText(product.name)}</Text>
+          ) : (
+            <Text style={styles.col1}>
+              {capitalizeText(product.name)}
+              {article.color
+                ? ` • ${capitalizeText(returnDataValue(article.color, ColorsData))}`
+                : ""}
+              {article.size ? ` • Taille ${article.size}` : ""}
+              {product.category}
+            </Text>
+          )}
 
           <Text style={styles.col2}>{order.quantity}</Text>
 
@@ -288,7 +293,7 @@ export const DeliveryInvoice = ({ order, shop }: InvoiceProps) => (
         >
           <Text style={styles.sectionTitle}>Destinataire</Text>
 
-          <Text style={styles.value}>{order.receiverName}</Text>
+          <Text style={styles.value}>{capitalizeText(order.receiverName)}</Text>
 
           <Text style={styles.label}>+243 {order.receiverTel}</Text>
 
