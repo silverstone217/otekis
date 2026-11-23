@@ -16,6 +16,7 @@ import {
 } from "./OrderPaymentAction";
 import { OrderStatusType } from "@/types/orders";
 import { pusher } from "@/lib/pusher-server";
+import { sendNewOrderAlertEmail } from "./paimentActions";
 
 // -------- CAN THIS ORDER BE PROCESSED ---------
 type canThisOrderBeProccessedType = {
@@ -538,6 +539,18 @@ export const createSupplierOrder = async ({
       where: { status: "en cours de traitement" },
     });
     await pusher.trigger("orders-channel", "order-count-updated", { count });
+
+    // SEND NOTIFICATION TO ADMIN ABOUT NEW ORDER WITH RESEND
+    // Email d’alerte interne (admin / employés)
+    sendNewOrderAlertEmail({
+      orderId: order.id,
+      totalAmount: totalAmount,
+      currency,
+      clientName: order.receiverName,
+      clientPhone: order.receiverTel,
+      shopId: order.shopId,
+      origin: "supplier",
+    });
 
     return {
       error: false,

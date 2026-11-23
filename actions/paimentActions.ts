@@ -360,6 +360,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
 // CALL RESEND
 
 const resend = new Resend(RESEND_API_KEY);
+
 interface SendNewOrderAlertProps {
   orderId: string;
   totalAmount: number;
@@ -367,6 +368,7 @@ interface SendNewOrderAlertProps {
   clientName: string;
   clientPhone: string;
   shopId: string;
+  origin?: "otekis" | "supplier";
 }
 
 export async function sendNewOrderAlertEmail({
@@ -376,7 +378,12 @@ export async function sendNewOrderAlertEmail({
   clientName,
   clientPhone,
   shopId,
+  origin = "otekis",
 }: SendNewOrderAlertProps) {
+  const hrefLink =
+    origin === "otekis"
+      ? `https://www.otekis.com/commandes/id/${orderId}`
+      : `https://www.otekis.com/commandes/supplier/id/${orderId}`;
   try {
     await resend.emails.send({
       from: "Otekis <contact@otekis.com>",
@@ -425,7 +432,7 @@ export async function sendNewOrderAlertEmail({
 
             <div style="margin-top:24px;">
               <a 
-                href="https://www.otekis.com/commandes/id/${orderId}"
+                href={${hrefLink}}
                 style="
                   display:inline-block;
                   padding:12px 20px;

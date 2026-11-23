@@ -10,15 +10,10 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const getOrderById = async (id: string, userId: string) => {
+const getOrderById = async (id: string) => {
   const order = await prisma.supplierOrder.findUnique({
     where: {
       id,
-      productShop: {
-        Product: {
-          supplierId: userId,
-        },
-      },
     },
     include: {
       deliveryCompany: true,
@@ -89,9 +84,22 @@ async function SupplierOrderpage({ params }: Props) {
     return null;
   }
 
-  const order = await getOrderById(orderId, user.id);
+  const order = await getOrderById(orderId);
 
-  if (!order) redirect("/commandes");
+  if (!order) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center py-20
+        border-2 border-dashed rounded-3xl bg-muted/10"
+      >
+        <Package className="h-12 w-12 text-muted-foreground/30 mb-4" />
+        <p className="text-muted-foreground font-medium">
+          Aucune commande enregistrée ou un probleme survenue
+        </p>
+      </div>
+    );
+    // return redirect("/commandes");
+  }
 
   const { article, product } = await getProductByArticleId(order.articleId);
   const shop = await shopInfo(order.productShopId);

@@ -85,10 +85,17 @@ const statusConfig: Record<
   },
 };
 
+const truncateText = (value: string | null | undefined, max = 8) => {
+  if (!value) return "N/A";
+  return value.length > max ? `${value.slice(0, max)}…` : value;
+};
+
 const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
   const [loading, setLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  const isDigital = product.category === "digital";
 
   useEffect(() => {
     setIsClient(true);
@@ -328,7 +335,8 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
                       N° Commande: {article.commandNumber}
                     </p>
                     <Link
-                      href={`/produits/${product.id}`}
+                      // href={`/produits/${product.id}`}
+                      href={"#"}
                       className="text-[10px] font-bold text-primary flex items-center gap-1 hover:underline"
                     >
                       Fiche produit <ChevronRight className="w-3 h-3" />
@@ -357,13 +365,15 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
                   <Phone className="w-3.5 h-3.5" /> +243 {order.receiverTel}
                 </a>
 
-                <div
-                  className="flex items-start gap-2 text-sm text-muted-foreground
+                {!isDigital && (
+                  <div
+                    className="flex items-start gap-2 text-sm text-muted-foreground
                  bg-muted/30 py-2 rounded-xl"
-                >
-                  <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                  <span className="capitalize">{order.receiverAddress}</span>
-                </div>
+                  >
+                    <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                    <span className="capitalize">{order.receiverAddress}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -394,12 +404,20 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
                   <span className="text-xs text-muted-foreground">
                     numero de transaction
                   </span>
-                  <span
-                    className="text-sm font-mono text-muted-foreground 
-                  break-all"
+                  <button
+                    type="button"
+                    title={order.paymentRef || undefined}
+                    disabled={!order.paymentRef}
+                    onClick={() => {
+                      navigator.clipboard.writeText(order.paymentRef!);
+                      toast.success("Référence copiée", {
+                        description: order.paymentRef,
+                      });
+                    }}
+                    className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {order.paymentRef || "N/A"}
-                  </span>
+                    {truncateText(order.paymentRef, 8)}
+                  </button>
                 </div>
 
                 <div className="bg-primary/5 p-3 rounded-xl border border-primary/10">
@@ -444,25 +462,31 @@ const MainSupplierAdminOrder = ({ order, product, article, shop }: Props) => {
               </div>
 
               <div className="pt-4 border-t border-white/10 space-y-3">
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Frais Livraison</span>
-                  <span className="font-bold text-amber-400">
-                    +{order.deliveryPrice} {order.currency}
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Transporteur</span>
-                  <span
-                    className="px-2 py-0.5 bg-white/10 rounded-full 
+                {!isDigital && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Frais Livraison</span>
+                    <span className="font-bold text-amber-400">
+                      +{order.deliveryPrice} {order.currency}
+                    </span>
+                  </div>
+                )}
+                {!isDigital && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Transporteur</span>
+                    <span
+                      className="px-2 py-0.5 bg-white/10 rounded-full 
                   text-[9px] font-bold uppercase tracking-wider"
-                  >
-                    {order.deliveryCompany?.name || order.deliverName || "N/A"}{" "}
-                    - +(243){" "}
-                    {order.deliveryCompany?.phone ||
-                      order.deliverPhone ||
-                      "N/A"}
-                  </span>
-                </div>
+                    >
+                      {order.deliveryCompany?.name ||
+                        order.deliverName ||
+                        "N/A"}{" "}
+                      - +(243){" "}
+                      {order.deliveryCompany?.phone ||
+                        order.deliverPhone ||
+                        "N/A"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs capitalize">
                   <span className="text-slate-400">Methode de paiement</span>
                   <span className="font-bold">
