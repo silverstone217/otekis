@@ -157,9 +157,9 @@ const getOrdersForShop = async (shopId: string, clientId: string) => {
 };
 
 // GET ORDERS OTEKIS FOR SHOP WITH CLIENT ID
-const getSupplierOrders = async (shopId: string) => {
+const getSupplierOrders = async (shopId: string, clientId: string) => {
   const orders = await prisma.supplierOrder.findMany({
-    where: { shopId },
+    where: { shopId, clientId },
     orderBy: { createdAt: "desc" },
     include: {
       article: {
@@ -259,7 +259,7 @@ async function CommandesPage(props: { params: Promise<{ slug: string }> }) {
   }
 
   const otekisOrders = await getOrdersForShop(shop.id, user.id);
-  const supplierOrders = await getSupplierOrders(shop.id);
+  const supplierOrders = await getSupplierOrders(shop.id, user.id);
 
   // const allOrders = [...otekisOrders, ...supplierOrders].sort(
   //   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

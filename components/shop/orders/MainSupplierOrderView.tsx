@@ -58,6 +58,7 @@ import {
   ProductInvoice,
 } from "@/components/admins/orders/supplier/InvoiceTemplates";
 import DigitalDownloadCard from "./Digitaldownloadcard";
+import BigDownloadButton from "./BigDownloadButton";
 
 // Sous-composant pour l'ID copiable
 const CopyableOrderId = ({ orderId }: { orderId: string }) => (
@@ -126,6 +127,8 @@ const MainSupplierOrderView = ({
     }
   };
 
+  const status = order.status.toLowerCase();
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
       {/* SECTION 1: HEADER & STATUT */}
@@ -153,6 +156,18 @@ const MainSupplierOrderView = ({
           </div>
         </div>
       </div>
+
+      {/* SECTION 1.5: GROS BOUTON DE TÉLÉCHARGEMENT (produit digital) */}
+      {isDigitalProduct && status === "livrée" && (
+        <BigDownloadButton
+          product={product}
+          article={article}
+          orderId={order.id}
+          orderStatus={order.status}
+          preferences={preferences}
+          autoDownload
+        />
+      )}
 
       {/* SECTION 2: INFOS CLIENT & LIVRAISON / TÉLÉCHARGEMENT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -336,7 +351,7 @@ const MainSupplierOrderView = ({
       </section>
 
       {/* SECTION 4.1: TÉLÉCHARGEMENT DIGITAL */}
-      {isDigitalProduct && (
+      {isDigitalProduct && status === "livrée" && (
         <DigitalDownloadCard
           product={product}
           article={article}
