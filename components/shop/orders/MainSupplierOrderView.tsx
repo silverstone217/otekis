@@ -166,6 +166,7 @@ const MainSupplierOrderView = ({
           orderStatus={order.status}
           preferences={preferences}
           autoDownload
+          mode="stream"
         />
       )}
 
