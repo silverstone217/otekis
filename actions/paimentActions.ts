@@ -384,14 +384,20 @@ export async function sendNewOrderAlertEmail({
     origin === "otekis"
       ? `https://www.otekis.com/commandes/id/${orderId}`
       : `https://www.otekis.com/commandes/supplier/id/${orderId}`;
+
+  const sendTo =
+    origin === "supplier"
+      ? ["nazobetagame@gmail.com"]
+      : [
+          "servigroup.social@gmail.com",
+          "stephuni35@gmail.com",
+          "ngabankumusalem@gmail.com",
+        ];
+
   try {
     await resend.emails.send({
       from: "Otekis <contact@otekis.com>",
-      to: [
-        "servigroup.social@gmail.com",
-        "stephuni35@gmail.com",
-        "ngabankumusalem@gmail.com",
-      ], // employés / admins
+      to: sendTo, // employés / admins
       subject: `🛒 Nouvelle commande reçue — #${orderId}`,
       html: `
         <div style="font-family: Arial, Helvetica, sans-serif; background-color:#f5f7fa; padding:24px;">
