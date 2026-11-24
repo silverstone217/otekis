@@ -17,6 +17,8 @@ import { deleteObject, ref } from "firebase/storage";
 import { DEFAULT_SUPPLIER_IMAGE } from "@/utils/envVariables";
 import { revalidatePath } from "next/cache";
 import { deleteArticleFile } from "@/lib/firebase-files";
+import { Prisma, SupplierCurrency } from "@/lib/generated/prisma/client";
+import { PERMITED_ROLES } from "@/utils/dataAdd";
 
 // GET SHOPS DATA
 export const getShopData = async () => {
@@ -870,3 +872,159 @@ export const deleteProductById = async ({
     message: "Produit supprimé",
   };
 };
+
+// STATS
+
+// Dans supplierAction.ts
+
+const ITEMS_PER_PAGE = 10;
+
+export type SupplierStatsResult = {
+  success: boolean;
+  message?: string;
+  currency: SupplierCurrency;
+  balance: string;
+  totalReceived: string;
+  totalEarnings: string;
+  totalTransactions: number;
+  currentPage: number;
+  totalPages: number;
+  transactions: {
+    id: string;
+    amount: string;
+    currency: string;
+    exchange: number;
+    date: string;
+    status: string;
+    paymentPhone: string;
+    paymentName: string;
+    transfertID: string | null;
+  }[];
+};
+
+export async function getSupplierStats(
+  currency: SupplierCurrency = "USD",
+  page: number = 1,
+): Promise<SupplierStatsResult> {
+  const emptyResult: SupplierStatsResult = {
+    success: false,
+    message: "Impossible de récupérer vos statistiques.",
+    currency,
+    balance: "0",
+    totalReceived: "0",
+    totalEarnings: "0",
+    totalTransactions: 0,
+    currentPage: 1,
+    totalPages: 0,
+    transactions: [],
+  };
+
+  try {
+    // 1. Authentification
+    const user = await getUser();
+
+    if (!user || !PERMITED_ROLES.includes(user.role)) {
+      return {
+        ...emptyResult,
+        message: "Accès non autorisé.",
+      };
+    }
+
+    // 2. Validation des paramètres
+    if (currency !== "USD" && currency !== "CDF") {
+      return emptyResult;
+    }
+
+    const currentPage = Number.isFinite(page)
+      ? Math.max(1, Math.floor(page))
+      : 1;
+
+    const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    // 3. Solde disponible selon la devise
+    const balance =
+      currency === "USD"
+        ? user.supplierBenefitAmount
+        : user.supplierBenefitAmountCDF;
+
+    // 4. Total des retraits traités dans la devise sélectionnée
+    const totalsWhere = {
+      supplierId: user.id,
+      currency,
+      status: "traité",
+    };
+
+    // 5. Historique complet : toutes devises et tous statuts
+    const historyWhere = {
+      supplierId: user.id,
+    };
+
+    const [aggregate, totalTransactions, withdrawals] = await Promise.all([
+      prisma.supplierWithdrawalHistory.aggregate({
+        where: totalsWhere,
+        _sum: {
+          amount: true,
+        },
+      }),
+
+      prisma.supplierWithdrawalHistory.count({
+        where: historyWhere,
+      }),
+
+      prisma.supplierWithdrawalHistory.findMany({
+        where: historyWhere,
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          exchange: true,
+          date: true,
+          status: true,
+          paymentPhone: true,
+          paymentName: true,
+          transfertID: true,
+        },
+        orderBy: {
+          date: "desc",
+        },
+        skip,
+        take: ITEMS_PER_PAGE,
+      }),
+    ]);
+
+    // 6. Total déjà reçu dans la devise sélectionnée
+    const totalReceived = aggregate._sum.amount ?? new Prisma.Decimal(0);
+
+    // 7. Total des gains = solde disponible + total déjà reçu
+    const totalEarnings = new Prisma.Decimal(balance.toString())
+      .plus(totalReceived)
+      .toString();
+
+    // 8. Retour des données sérialisées
+    return {
+      success: true,
+      currency,
+      balance: balance.toString(),
+      totalReceived: totalReceived.toString(),
+      totalEarnings,
+      totalTransactions,
+      currentPage,
+      totalPages: Math.ceil(totalTransactions / ITEMS_PER_PAGE),
+
+      transactions: withdrawals.map((withdrawal) => ({
+        id: withdrawal.id,
+        amount: withdrawal.amount.toString(),
+        currency: withdrawal.currency,
+        exchange: withdrawal.exchange,
+        date: withdrawal.date.toISOString(),
+        status: withdrawal.status,
+        paymentPhone: withdrawal.paymentPhone,
+        paymentName: withdrawal.paymentName,
+        transfertID: withdrawal.transfertID,
+      })),
+    };
+  } catch (error) {
+    console.error("[GET_SUPPLIER_STATS]", error);
+    return emptyResult;
+  }
+}
