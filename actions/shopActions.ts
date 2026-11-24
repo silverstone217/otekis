@@ -26,7 +26,9 @@ export const getShopsByUserIDWithStats = async (
     where: { userId },
     include: {
       orders: true,
+      supplierOrders: true,
       shopProfitWaited: true,
+      supplierShopEarnings: true,
       withdrawalHistory: {
         orderBy: {
           date: "desc",
@@ -39,8 +41,13 @@ export const getShopsByUserIDWithStats = async (
   });
 
   const filteredShops = shops.map((shop) => {
-    const { orders, shopProfitWaited, withdrawalHistory } = shop;
-    const profitsTable = shopProfitWaited.filter(
+    const {
+      orders,
+      shopProfitWaited,
+      withdrawalHistory,
+      supplierShopEarnings,
+    } = shop;
+    const profitsTable = [...shopProfitWaited, ...supplierShopEarnings].filter(
       (profit) => profit.isProcessed && profit.currency === currency,
     );
     const salesCount = profitsTable.length;

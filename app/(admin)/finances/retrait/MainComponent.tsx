@@ -110,10 +110,10 @@ interface CardInfosSoldesProps {
 }
 
 export const CardInfosSoldes = ({
-  productSold = 20, // Valeurs par défaut
-  benefit = 465.0,
-  totalBalance = 1465.0,
-  deliveryPrice = 44.5,
+  productSold = 0, // Valeurs par défaut
+  benefit = 0.0,
+  totalBalance = 0.0,
+  deliveryPrice = 0.0,
   currencySymbol = "$",
 }: CardInfosSoldesProps) => {
   return (
@@ -129,8 +129,8 @@ export const CardInfosSoldes = ({
       <CardContent className="grid gap-4 md:grid-cols-1">
         {/* Card pour les boutiques */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
-          <PackageCheck className="text-blue-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <PackageCheck className="text-blue-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Produits vendus</p>
             <p className="text-xl font-bold text-gray-900">{productSold}</p>
           </div>
@@ -138,8 +138,8 @@ export const CardInfosSoldes = ({
 
         {/* Card pour les benefices faits */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
-          <HandCoins className="text-red-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <HandCoins className="text-red-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Benefices</p>
             <p className="text-xl font-bold text-gray-900">
               {returnFormatedMoney(benefit)}{" "}
@@ -152,8 +152,8 @@ export const CardInfosSoldes = ({
 
         {/* Card pour les prix de chaque livraison obetnue */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
-          <HandCoins className="text-yellow-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <HandCoins className="text-yellow-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">Livraison total</p>
             <p className="text-xl font-bold text-gray-900">
               {returnFormatedMoney(deliveryPrice)}{" "}
@@ -166,8 +166,8 @@ export const CardInfosSoldes = ({
 
         {/* Card pour le solde total */}
         <Card className="flex items-center p-4 border border-gray-200 rounded-md shadow-sm">
-          <Landmark className="text-green-600 size-6 mr-3 flex-shrink-0" />
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <Landmark className="text-green-600 size-6 mr-3 shrink-0" />
+          <div className="grow flex flex-col items-center justify-center">
             <p className="text-sm font-medium text-gray-500">
               Solde disponible
             </p>

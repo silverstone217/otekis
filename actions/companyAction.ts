@@ -119,6 +119,35 @@ export const TotalAmountCompany = async () => {
   return totalBenefit;
 };
 
+// SUPPLIER MONEY MADE
+export const getAllSupplierMoneyMade = async () => {
+  const prefs = await prisma.otekisPreferences.findFirst();
+  if (!prefs) return 0;
+
+  const currency = prefs.currency;
+
+  const suppliers = await prisma.user.findMany({
+    select: {
+      supplierBenefitAmount: true,
+      supplierBenefitAmountCDF: true,
+      id: true,
+    },
+  });
+
+  let totalEarnings = 0;
+  let totalEarningsCDF = 0;
+
+  for (const supplier of suppliers) {
+    totalEarnings += Number(supplier.supplierBenefitAmount);
+  }
+
+  for (const supplier of suppliers) {
+    totalEarningsCDF += Number(supplier.supplierBenefitAmountCDF);
+  }
+
+  return currency === "USD" ? totalEarnings : totalEarningsCDF;
+};
+
 // exchange rate usd ===> CDF
 export const exChangeRate = async () => {
   const prefs = await prisma.otekisPreferences.findFirst();

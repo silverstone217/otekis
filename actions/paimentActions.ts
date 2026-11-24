@@ -192,7 +192,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
 
       shopId: validated.shopId,
       deliveryPrice: validated.deliveryPrice,
-      exchange: currency === "USD" ? 1 : exChange,
+      exchange: exChange,
 
       orderItems: {
         createMany: {
@@ -216,7 +216,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
 
           deliveryPrice: validated.deliveryPrice,
           currency,
-          exchange: currency === "USD" ? 1 : exChange,
+          exchange: exChange,
         },
       },
       shopProfitWaited: {
@@ -224,7 +224,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
           shopId: validated.shopId,
           amount: shopAmountReducedPercentage,
           currency,
-          exchange: currency === "USD" ? 1 : exChange,
+          exchange: exChange,
         },
       },
       otekisProfitWaited: {
@@ -233,7 +233,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
           deliveryPrice: deliveryAmountReducedPercentage,
           currency,
           benefit: companyBenefit,
-          exchange: currency === "USD" ? 1 : exChange,
+          exchange: exChange,
         },
       },
     },
@@ -296,7 +296,7 @@ export const newOrderAction = async (data: OrderCinetPaytype) => {
       deliveryPrice: validated.deliveryPrice,
       paymentMethod: validated.paymentMethod,
       currency,
-      exchange: currency === "USD" ? 1 : exChange,
+      exchange: exChange,
       cinetPayPercentage: prefs.cinetPayPercentage,
     },
   });

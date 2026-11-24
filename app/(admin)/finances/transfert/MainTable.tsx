@@ -12,20 +12,6 @@ type Props = {
 };
 
 const MainTable = ({ shops, currencySymbol, allWidithdraw }: Props) => {
-  //   const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-  // const [loading, setLoading] = useState(true);
-
-  //   useEffect(() => {
-  //     async function fetchData() {
-  //       // Exemple d’appel API pour récupérer la devise et les shops
-  //       const resCurrency = await getCurrencySymbol();
-
-  //       setCurrencySymbol(resCurrency);
-  //       setLoading(false);
-  //     }
-  //     fetchData();
-  //   }, []);
-
   const columns = TransfertColumns(currencySymbol);
 
   return (

@@ -274,7 +274,7 @@ export function PaiementCinetPay({
         return;
       }
       toast.success(
-        "Votre paiement a été effectué avec succès, en attente de validation de la commande"
+        "Votre paiement a été effectué avec succès, en attente de validation de la commande",
       );
       setIsBuyingGeneralTermsAccepted(false);
       setIsBuyingTermsAccepted(false);

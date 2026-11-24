@@ -14,7 +14,7 @@ import { FaSpinner } from "react-icons/fa";
 import { changeCurrencies } from "@/actions/companyAction";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { HandCoins, Landmark, Store } from "lucide-react";
+import { HandCoins, HatGlasses, Landmark, Store } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -300,13 +300,15 @@ interface CardInfosSoldesProps {
   amountToPay: number;
   totalBalance: number;
   currencySymbol?: string; // '$' ou d'autres symboles
+  supplierBalance: number; // Ajout d'une propriété pour le solde des fournisseurs
 }
 
 export const CardInfosSoldes = ({
-  totalShops = 20, // Valeurs par défaut
-  amountToPay = 465.0,
-  totalBalance = 1465.0,
+  totalShops = 0.0, // Valeurs par défaut
+  amountToPay = 0.0,
+  totalBalance = 0.0,
   currencySymbol = "$",
+  supplierBalance = 0.0, // Valeur par défaut pour le solde des fournisseurs
 }: CardInfosSoldesProps) => {
   return (
     <Card className="w-full  shadow rounded-lg">
@@ -345,6 +347,25 @@ export const CardInfosSoldes = ({
             <p className="text-sm font-medium text-gray-500">Montant dû</p>
             <p className="text-xl font-bold text-gray-900 text-center">
               {returnFormatedMoney(amountToPay)}{" "}
+              <span className="font-mono text-sm text-gray-600">
+                {currencySymbol}
+              </span>
+            </p>
+          </div>
+        </Card>
+
+        {/* SUPPLIER MONEY */}
+        <Card
+          className="flex items-center p-4 border border-gray-200 
+        rounded-md shadow-sm w-full"
+        >
+          <HatGlasses className="text-yellow-500 size-6 mr-3 shrink-0 " />
+          <div className="grow flex flex-col items-center justify-center">
+            <p className="text-sm font-medium text-gray-500">
+              Frais des fournisseurs
+            </p>
+            <p className="text-xl font-bold text-gray-900 text-center">
+              {returnFormatedMoney(supplierBalance)}{" "}
               <span className="font-mono text-sm text-gray-600">
                 {currencySymbol}
               </span>

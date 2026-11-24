@@ -79,6 +79,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  supplierBenefitAmount    Decimal @default(0)
+  supplierBenefitAmountCDF Decimal @default(0)
+
   accounts Account[]
   sessions Session[]
 
@@ -89,7 +92,8 @@ model User {
   supplierProducts SupplierProduct[]
   supplierEarnings SupplierEarning[]
 
-  gameAcccesKeys GameAcccesKey[]
+  gameAcccesKeys              GameAcccesKey[]
+  supplierWithdrawalHistories SupplierWithdrawalHistory[]
 }
 
 enum ProductOrigin {
@@ -208,6 +212,7 @@ model Shop {
   permittedproducts    PermittedSeller[]
   supplierProductShops SupplierProductShop[]
   supplierShopEarnings SupplierShopEarning[]
+  supplierOrders       SupplierOrder[]
 }
 
 model Contact {
@@ -768,6 +773,8 @@ model SupplierOrder {
   deliveryCompany DeliveryCompany?    @relation(fields: [deliveryCompanyId], references: [id], onDelete: NoAction)
   article         SupplierArticle     @relation(fields: [articleId], references: [id])
 
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
   supplierEarning     SupplierEarning?
   supplierShopEarning SupplierShopEarning?
   otekisEarning       OtekisEarning?
@@ -875,6 +882,29 @@ model SupplierShopEarning {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Historique des retraits du fournisseur
+model SupplierWithdrawalHistory {
+  id         String @id @default(cuid())
+  supplierId String
+
+  amount   Decimal @default(0)
+  currency String  @default("USD") // "USD" | "CDF"
+  exchange Float // taux USD→CDF au moment du paiement
+
+  date   DateTime @default(now())
+  status String   @default("traité") // non-traité, traité, annulé
+
+  paymentPhone String
+  paymentName  String
+  transfertID  String? @unique // renseigné une fois le transfert effectué
+  createdById  String? // admin qui a fait l'opération
+
+  supplier User @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+
+  @@index([supplierId, date])
+  @@index([status])
 }
 
 // OtekisEarning ENUM
