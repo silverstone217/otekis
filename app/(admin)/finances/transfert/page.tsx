@@ -53,7 +53,7 @@ async function TransfertPage() {
   const totalShops = shops.length;
   const supplierBalance = await getAllSupplierMoneyMade();
 
-  const totalBalance = await TotalAmountCompany();
+  const totalBalance = (await TotalAmountCompany()) + supplierBalance;
   const allWidithdraw = await getAllWithdrawalHistory();
 
   return (

@@ -17,6 +17,7 @@ import {
 import { OrderStatusType } from "@/types/orders";
 import { pusher } from "@/lib/pusher-server";
 import { sendNewOrderAlertEmail } from "./paimentActions";
+import { connect } from "http2";
 
 // -------- CAN THIS ORDER BE PROCESSED ---------
 type canThisOrderBeProccessedType = {
@@ -497,6 +498,16 @@ export const createSupplierOrder = async ({
         deliveryNumber: deliveryInfos?.phone,
       },
     });
+
+    // await prisma.otekisProfitWaited.create({
+    //   data: {
+    //     amount: totalAmount,
+    //     exchange: exchange,
+    //     currency,
+    //     orderId: order.id,
+    //     deliveryPrice: deliveryPrice,
+    //   },
+    // });
 
     // 7. REDUCE ARTICLE STOCK
     // Produit numérique : le stock ne diminue jamais (le client télécharge

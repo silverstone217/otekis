@@ -14,7 +14,16 @@ const getUserByUserId = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
-  return user;
+
+  const serializedUser = user
+    ? {
+        ...user,
+        supplierBenefitAmount: Number(user.supplierBenefitAmount),
+        supplierBenefitAmountCDF: Number(user.supplierBenefitAmountCDF),
+      }
+    : null;
+
+  return serializedUser;
 };
 
 const getAllUserShops = async (userId: string) => {

@@ -100,32 +100,56 @@ export const get_total_sales = async () => {
   }
 
   // total global
-  const totalSales = await prisma.otekisProfitWaited.count({
+  const supplierEarning = await prisma.supplierEarning.count({
     where: { isProcessed: true },
   });
+
+  const otekisProfit = await prisma.otekisProfitWaited.count({
+    where: { isProcessed: true },
+  });
+
+  const totalSales = supplierEarning + otekisProfit;
 
   // période actuelle (semaine en cours)
   const now = new Date();
   const startThisWeek = startOfWeek(now, { weekStartsOn: 1 }); // lundi
   const endThisWeek = endOfWeek(now, { weekStartsOn: 1 });
 
-  const salesThisWeek = await prisma.otekisProfitWaited.count({
+  const salesThisWeekOtekis = await prisma.otekisProfitWaited.count({
     where: {
       isProcessed: true,
       createdAt: { gte: startThisWeek, lte: endThisWeek },
     },
   });
 
+  const supplierSalesThisWeek = await prisma.supplierEarning.count({
+    where: {
+      isProcessed: true,
+      createdAt: { gte: startThisWeek, lte: endThisWeek },
+    },
+  });
+
+  const salesThisWeek = salesThisWeekOtekis + supplierSalesThisWeek;
+
   // période précédente (semaine d’avant)
   const startLastWeek = startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
   const endLastWeek = endOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
 
-  const salesLastWeek = await prisma.otekisProfitWaited.count({
+  const salesLastWeekOtekis = await prisma.otekisProfitWaited.count({
     where: {
       isProcessed: true,
       createdAt: { gte: startLastWeek, lte: endLastWeek },
     },
   });
+
+  const supplierSalesLastWeek = await prisma.supplierEarning.count({
+    where: {
+      isProcessed: true,
+      createdAt: { gte: startLastWeek, lte: endLastWeek },
+    },
+  });
+
+  const salesLastWeek = salesLastWeekOtekis + supplierSalesLastWeek;
 
   // calcul du % de variation
   let percentChange = 0;
@@ -263,13 +287,13 @@ export const get_weekly_benefits = async () => {
   // 📌 Total semaine actuelle
   const totalThisWeek = salesThisWeek.reduce(
     (sum, s) => sum + convert(s.benefit, s.currency, s.exchange),
-    0
+    0,
   );
 
   // 📌 Total semaine précédente
   const totalLastWeek = salesLastWeek.reduce(
     (sum, s) => sum + convert(s.benefit, s.currency, s.exchange),
-    0
+    0,
   );
 
   // 📌 Variation %
@@ -358,122 +382,177 @@ export type ProductsByCategoryType = {
 
 export const get_total_product = async () => {
   const user = await getUser();
-  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+  const isPermit = user && PERMITED_ROLES.includes(user.role);
 
-  if (!isPermit) {
-    return {
-      accessoires: { count: 0, stock: 0 },
-      vetements: { count: 0, stock: 0 },
-      cosmetiques: { count: 0, stock: 0 },
-    };
-  }
-
-  const products = await prisma.product.findMany({
-    include: {
-      Article: {
-        select: {
-          stock: true,
-        },
-      },
-    },
-  });
-
-  // Calcul du stock total par produit
-  const productsWithStock = products.map((prod) => {
-    const stock = prod.Article.reduce((sum, art) => sum + art.stock, 0);
-
-    return {
-      id: prod.id,
-      category: prod.category,
-      stock,
-    };
-  });
-
-  // Agrégation par catégorie
-  const totalByCats = {
-    accessoires: {
-      count: productsWithStock.filter((p) => p.category === "accessoires")
-        .length,
-      stock: productsWithStock
-        .filter((p) => p.category === "accessoires")
-        .reduce((sum, p) => sum + p.stock, 0),
-    },
-    vetements: {
-      count: productsWithStock.filter((p) => p.category === "vetements").length,
-      stock: productsWithStock
-        .filter((p) => p.category === "vetements")
-        .reduce((sum, p) => sum + p.stock, 0),
-    },
-    cosmetiques: {
-      count: productsWithStock.filter((p) => p.category === "cosmetiques")
-        .length,
-      stock: productsWithStock
-        .filter((p) => p.category === "cosmetiques")
-        .reduce((sum, p) => sum + p.stock, 0),
-    },
-  };
-
-  const totalProducts = [
-    { name: "Cosmétiques", value: totalByCats.cosmetiques.stock },
-    { name: "Vêtements", value: totalByCats.vetements.stock },
-    { name: "Accessoires", value: totalByCats.accessoires.stock },
+  const emptyData = [
+    { name: "Cosmétiques", value: 0 },
+    { name: "Vêtements", value: 0 },
+    { name: "Accessoires", value: 0 },
+    { name: "Digital", value: 0 },
   ];
 
-  return totalProducts;
+  if (!isPermit) return emptyData;
+
+  // Group products by category
+  const [otekisProducts, supplierProducts] = await Promise.all([
+    prisma.product.groupBy({
+      by: ["category"],
+      _count: {
+        _all: true,
+      },
+    }),
+
+    prisma.supplierProduct.groupBy({
+      by: ["category"],
+      _count: {
+        _all: true,
+      },
+    }),
+  ]);
+
+  // Combine both sources
+  const categoryCounts = new Map<string, number>();
+
+  for (const product of [...otekisProducts, ...supplierProducts]) {
+    const currentCount = categoryCounts.get(product.category) ?? 0;
+
+    categoryCounts.set(product.category, currentCount + product._count._all);
+  }
+
+  // Format chart data
+  return [
+    {
+      name: "Cosmétiques",
+      value: categoryCounts.get("cosmetiques") ?? 0,
+    },
+    {
+      name: "Vêtements",
+      value: categoryCounts.get("vetements") ?? 0,
+    },
+    {
+      name: "Accessoires",
+      value: categoryCounts.get("accessoires") ?? 0,
+    },
+    {
+      name: "Numériques",
+      value: categoryCounts.get("digital") ?? 0,
+    },
+  ];
 };
 
 // SALES BY DAY in the current week
+
+// SALES BY DAY IN THE CURRENT WEEK
 export const get_sales_week = async () => {
   const user = await getUser();
-  const isPermit = user && PERMITED_ROLES.includes(user?.role);
+  const isPermit = user && PERMITED_ROLES.includes(user.role);
 
-  if (!isPermit) {
-    // Retour par défaut si pas de permission
-    return [
-      { name: "Lun", sales: 0 },
-      { name: "Mar", sales: 0 },
-      { name: "Mer", sales: 0 },
-      { name: "Jeu", sales: 0 },
-      { name: "Ven", sales: 0 },
-      { name: "Sam", sales: 0 },
-      { name: "Dim", sales: 0 },
-    ];
-  }
+  const emptyData = [
+    { name: "Lun", sales: 0 },
+    { name: "Mar", sales: 0 },
+    { name: "Mer", sales: 0 },
+    { name: "Jeu", sales: 0 },
+    { name: "Ven", sales: 0 },
+    { name: "Sam", sales: 0 },
+    { name: "Dim", sales: 0 },
+  ];
+
+  if (!isPermit) return emptyData;
 
   const now = new Date();
 
-  // Début et fin de la semaine (Lundi → Dimanche)
-  const startWeek = startOfWeek(now, { weekStartsOn: 1 });
-  const endWeek = endOfWeek(now, { weekStartsOn: 1 });
+  const startWeek = startOfWeek(now, {
+    weekStartsOn: 1,
+  });
 
-  // Chaque jour de la semaine
-  const days = eachDayOfInterval({ start: startWeek, end: endWeek });
+  const endWeek = endOfWeek(now, {
+    weekStartsOn: 1,
+  });
 
-  // Récupérer les ventes pour chaque jour
-  const salesData = await Promise.all(
-    days.map(async (day) => {
-      const start = startOfDay(day);
-      const end = endOfDay(day);
-
-      const count = await prisma.otekisProfitWaited.findMany({
-        where: {
-          isProcessed: true,
-          createdAt: { gte: start, lte: end },
+  // Fetch all earnings for the current week
+  const [otekisEarnings, supplierEarnings] = await Promise.all([
+    prisma.otekisProfitWaited.findMany({
+      where: {
+        isProcessed: true,
+        createdAt: {
+          gte: startWeek,
+          lte: endWeek,
         },
-      });
+      },
+      select: {
+        benefit: true,
+        currency: true,
+        exchange: true,
+        createdAt: true,
+      },
+    }),
 
-      const totalCount = count.reduce((sum, arr) => {
-        return sum + arr.benefit;
-      }, 0);
+    prisma.supplierEarning.findMany({
+      where: {
+        isProcessed: true,
+        createdAt: {
+          gte: startWeek,
+          lte: endWeek,
+        },
+      },
+      select: {
+        amount: true,
+        currency: true,
+        exchangeRate: true,
+        createdAt: true,
+      },
+    }),
+  ]);
 
-      return {
-        name: format(day, "EEE", { locale: fr }), // Lun, Mar, Mer ...
-        sales: totalCount || 0, // assure 0 si pas de ventes
-      };
-    })
+  // Initialize the 7 days
+  const dailySales = new Map(
+    eachDayOfInterval({
+      start: startWeek,
+      end: endWeek,
+    }).map((day) => [format(day, "yyyy-MM-dd"), 0]),
   );
 
-  return salesData;
+  // Convert all earnings to USD
+  const toUSD = (amount: number, currency: string, exchangeRate: number) => {
+    if (currency === "USD") return amount;
+
+    if (currency === "CDF") {
+      return amount / exchangeRate;
+    }
+
+    return 0;
+  };
+
+  // Otekis earnings
+  for (const earning of otekisEarnings) {
+    const day = format(earning.createdAt, "yyyy-MM-dd");
+
+    const amount = toUSD(earning.benefit, earning.currency, earning.exchange);
+
+    dailySales.set(day, (dailySales.get(day) ?? 0) + amount);
+  }
+
+  // Supplier earnings
+  for (const earning of supplierEarnings) {
+    const day = format(earning.createdAt, "yyyy-MM-dd");
+
+    const amount = toUSD(
+      earning.amount,
+      earning.currency,
+      earning.exchangeRate,
+    );
+
+    dailySales.set(day, (dailySales.get(day) ?? 0) + amount);
+  }
+
+  // Format chart data
+  return eachDayOfInterval({
+    start: startWeek,
+    end: endWeek,
+  }).map((day) => ({
+    name: format(day, "EEE", { locale: fr }),
+    sales: Number((dailySales.get(format(day, "yyyy-MM-dd")) ?? 0).toFixed(2)),
+  }));
 };
 
 //  gets number of shops

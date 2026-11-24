@@ -33,6 +33,7 @@ type Props = {
   companyBenefit: OtekisBenefitAmount;
   productSold: number;
   deliveryWidthdraw: OtekisDelPriceWithdrawalHistory[];
+  supplierBalance: number;
 };
 
 const MainComponent = ({
@@ -42,6 +43,7 @@ const MainComponent = ({
   companyPrefs,
   productSold,
   deliveryWidthdraw,
+  supplierBalance,
 }: Props) => {
   const [index, setIndex] = useState(0);
 
@@ -63,7 +65,7 @@ const MainComponent = ({
         currencySymbol={currencySymbol}
         productSold={productSold}
         benefit={benefit}
-        totalBalance={totalBalance}
+        totalBalance={totalBalance + supplierBalance}
         deliveryPrice={deliveryPrice}
       />
 

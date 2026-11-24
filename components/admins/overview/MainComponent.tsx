@@ -216,21 +216,33 @@ export default function OverviewMainComponent({
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Line chart ventes */}
+
         <Card>
           <CardHeader>
-            <CardTitle>Ventes cette semaine</CardTitle>
+            <CardTitle>Revenus cette semaine</CardTitle>
           </CardHeader>
+
           <CardContent className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={sales_Week}>
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+
+                <YAxis tickFormatter={(value) => `$${value}`} />
+
+                <Tooltip
+                  formatter={(value) => [
+                    `$${Number(value).toFixed(2)}`,
+                    "Revenus",
+                  ]}
+                />
+
                 <Line
                   type="monotone"
                   dataKey="sales"
                   stroke="#6366f1"
                   strokeWidth={3}
+                  dot={false}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -242,6 +254,7 @@ export default function OverviewMainComponent({
           <CardHeader>
             <CardTitle>Produits par catégorie</CardTitle>
           </CardHeader>
+
           <CardContent className="h-72 flex items-center justify-center flex-col">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -251,7 +264,6 @@ export default function OverviewMainComponent({
                   cy="50%"
                   labelLine={false}
                   outerRadius={90}
-                  fill="#8884d8"
                   dataKey="value"
                   label
                 >

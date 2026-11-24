@@ -18,8 +18,20 @@ const getUsers = async () => {
     omit: {
       password: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
-  return users;
+
+  const serializedUsers = users.map((user) => {
+    return {
+      ...user,
+      supplierBenefitAmount: Number(user.supplierBenefitAmount),
+      supplierBenefitAmountCDF: Number(user.supplierBenefitAmountCDF),
+    };
+  });
+
+  return serializedUsers;
 };
 
 const UsersPage = async () => {

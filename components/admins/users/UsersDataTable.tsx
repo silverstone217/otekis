@@ -71,110 +71,117 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export type UserTypeNoPassword = Omit<User, "password">;
+export type UserTypeNoPassword = Omit<
+  User,
+  "password" | "supplierBenefitAmount" | "supplierBenefitAmountCDF"
+> & {
+  supplierBenefitAmount: number;
+  supplierBenefitAmountCDF: number;
+};
 
 // modify admin Role
-const ModifyRoleUser = forwardRef<HTMLDivElement, { admin: User }>(
-  ({ admin }, _ref) => {
-    const [role, setRole] = useState("");
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-    const { data: session } = useSession();
-    const user = session?.user;
+const ModifyRoleUser = forwardRef<
+  HTMLDivElement,
+  { admin: UserTypeNoPassword }
+>(({ admin }, _ref) => {
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const user = session?.user;
 
-    const handleChangeRole = async () => {
-      setLoading(true);
-      try {
-        const newRole = await changeAdminRole(admin.id, role as roleUserType);
+  const handleChangeRole = async () => {
+    setLoading(true);
+    try {
+      const newRole = await changeAdminRole(admin.id, role as roleUserType);
 
-        if (!newRole) {
-          toast.error("Erreur lors de la modification du role", {
-            description: "Vous n'êtes pas un super administrateur.",
-          });
-          return;
-        }
-
-        toast.success("Role modifié avec succès", {
-          description: `Le role de ${admin.name} a été modifié avec succès`,
-        });
-        admin.role = newRole.role;
-        router.refresh();
-      } catch (error) {
-        console.error(error);
-        const err = error as Error;
+      if (!newRole) {
         toast.error("Erreur lors de la modification du role", {
-          description: err.message,
+          description: "Vous n'êtes pas un super administrateur.",
         });
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    return (
-      <AlertDialog>
-        <AlertDialogTrigger
-          disabled={!user?.role.includes("admin") || !admin}
-          className="px-2"
-        >
-          <span className="text-sm">Modify</span>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="bg-white text-black">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Modifier le Role?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {`${admin.name} verra son role changé, vous pouvez lui donner plus d'acces ou lui reduire.`}
-            </AlertDialogDescription>
-            <div className="w-full flex flex-col">
-              <p>Role actuel: {returnRoleWith(admin.role)}</p>
-              <p className="text-sm text-gray-600">
-                Créé le:{" "}
-                {new Date(admin.createdAt).toLocaleDateString("fr-FR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
+      toast.success("Role modifié avec succès", {
+        description: `Le role de ${admin.name} a été modifié avec succès`,
+      });
+      admin.role = newRole.role;
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      const err = error as Error;
+      toast.error("Erreur lors de la modification du role", {
+        description: err.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-              {/* role */}
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger
+        disabled={!user?.role.includes("admin") || !admin}
+        className="px-2"
+      >
+        <span className="text-sm">Modify</span>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="bg-white text-black">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Modifier le Role?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {`${admin.name} verra son role changé, vous pouvez lui donner plus d'acces ou lui reduire.`}
+          </AlertDialogDescription>
+          <div className="w-full flex flex-col">
+            <p>Role actuel: {returnRoleWith(admin.role)}</p>
+            <p className="text-sm text-gray-600">
+              Créé le:{" "}
+              {new Date(admin.createdAt).toLocaleDateString("fr-FR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
 
-              <Select
-                value={role}
-                onValueChange={(val) => setRole(val)}
-                disabled={loading}
-              >
-                <SelectTrigger className="w-full mt-4">
-                  <SelectValue placeholder="Choisir le role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {UserRoleData.map((stat, idx) => (
-                    <SelectItem
-                      key={idx}
-                      value={stat.value}
-                      className="capitalize"
-                    >
-                      {stat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={
-                loading || !role || !admin || !user || role === admin.role
-              }
-              onClick={() => handleChangeRole()}
+            {/* role */}
+
+            <Select
+              value={role}
+              onValueChange={(val) => setRole(val)}
+              disabled={loading}
             >
-              {loading ? "en cours..." : "Continuer"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  }
-);
+              <SelectTrigger className="w-full mt-4">
+                <SelectValue placeholder="Choisir le role" />
+              </SelectTrigger>
+              <SelectContent>
+                {UserRoleData.map((stat, idx) => (
+                  <SelectItem
+                    key={idx}
+                    value={stat.value}
+                    className="capitalize"
+                  >
+                    {stat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={
+              loading || !role || !admin || !user || role === admin.role
+            }
+            onClick={() => handleChangeRole()}
+          >
+            {loading ? "en cours..." : "Continuer"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+});
 
 // Actions menu for each row
 const ActionsCell = ({ admins }: { admins: UserTypeNoPassword }) => {
@@ -306,7 +313,7 @@ export const UsersColumns: ColumnDef<UserTypeNoPassword>[] = [
         <Badge
           variant="default"
           className={`${getBadgeClass(
-            role.toLocaleLowerCase()
+            role.toLocaleLowerCase(),
           )} font-medium rounded px-2 py-1`}
         >
           {capitalizeText(returnRoleWith(role))}
@@ -430,7 +437,7 @@ export function UsersDataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -449,7 +456,7 @@ export function UsersDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="whitespace-nowrap">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

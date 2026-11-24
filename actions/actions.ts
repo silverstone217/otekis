@@ -13,10 +13,20 @@ export const getUser = async () => {
 
   if (!session?.user?.email) return null;
 
-  return await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     omit: { password: true },
   });
+
+  const serializedUser = user
+    ? {
+        ...user,
+        supplierBenefitAmount: Number(user.supplierBenefitAmount),
+        supplierBenefitAmountCDF: Number(user.supplierBenefitAmountCDF),
+      }
+    : null;
+
+  return serializedUser;
 };
 
 // delete products images

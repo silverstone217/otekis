@@ -103,22 +103,6 @@ export const getShopsWithAmountToTransfer = async () => {
   return shops;
 };
 
-// All  money made
-export const TotalAmountCompany = async () => {
-  const prefs = await prisma.otekisPreferences.findFirst();
-  if (!prefs) return 1;
-
-  const companyAmountBenefice = await prisma.otekisBenefitAmount.findFirst({});
-  if (!companyAmountBenefice) return 0;
-
-  const totalBenefit =
-    prefs.currency === "USD"
-      ? companyAmountBenefice.amount
-      : companyAmountBenefice.amountCDF;
-
-  return totalBenefit;
-};
-
 // SUPPLIER MONEY MADE
 export const getAllSupplierMoneyMade = async () => {
   const prefs = await prisma.otekisPreferences.findFirst();
@@ -145,7 +129,23 @@ export const getAllSupplierMoneyMade = async () => {
     totalEarningsCDF += Number(supplier.supplierBenefitAmountCDF);
   }
 
-  return currency === "USD" ? totalEarnings : totalEarningsCDF;
+  return currency === "USD" ? Number(totalEarnings) : Number(totalEarningsCDF);
+};
+
+// All  money made
+export const TotalAmountCompany = async () => {
+  const prefs = await prisma.otekisPreferences.findFirst();
+  if (!prefs) return 1;
+
+  const companyAmountBenefice = await prisma.otekisBenefitAmount.findFirst({});
+  if (!companyAmountBenefice) return 0;
+
+  const totalBenefit =
+    prefs.currency === "USD"
+      ? companyAmountBenefice.amount
+      : companyAmountBenefice.amountCDF;
+
+  return totalBenefit;
 };
 
 // exchange rate usd ===> CDF
