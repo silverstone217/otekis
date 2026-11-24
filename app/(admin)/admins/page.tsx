@@ -25,11 +25,20 @@ const getAdmins = async () => {
       password: true,
     },
   });
-  return admins;
+
+  const serializedUsers = admins.map((user) => {
+    return {
+      ...user,
+      supplierBenefitAmount: Number(user.supplierBenefitAmount),
+      supplierBenefitAmountCDF: Number(user.supplierBenefitAmountCDF),
+    };
+  });
+  return serializedUsers;
 };
 
 const AdminPage = async () => {
   const user = await getUser();
+
   if (!user) {
     return <NoUserComponent />;
   }
