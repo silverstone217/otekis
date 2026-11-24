@@ -923,7 +923,7 @@ export async function getSupplierStats(
     // 1. Authentification
     const user = await getUser();
 
-    if (!user || !PERMITED_ROLES.includes(user.role)) {
+    if (!user) {
       return {
         ...emptyResult,
         message: "Accès non autorisé.",
