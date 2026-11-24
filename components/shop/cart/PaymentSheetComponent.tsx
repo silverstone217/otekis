@@ -39,6 +39,7 @@ import ChoiceDeliveryService from "./ChoiceDeliveryService";
 import { PaymentMethodOrder } from "@/lib/generated/prisma/enums";
 import PaymentWithCash from "./PaymentWithCash";
 import PaymentFlexpaie from "./PaymentFlexpaie";
+import { UserTypeNoPassword } from "./MainCartComponent";
 export type ArticleToBuyType = {
   productId: string;
   articleId: string;
@@ -74,7 +75,7 @@ type Props = {
   cinetPayPercentage: number;
   setIsBuying: React.Dispatch<React.SetStateAction<boolean>>;
   isBuying: boolean;
-  user: Omit<User, "password">;
+  user: UserTypeNoPassword;
   paymentMethod: PaymentMethodOrder;
 };
 

@@ -1,7 +1,20 @@
-import React from "react";
+import { useCurrentUser } from "@/hooks/UserAuth";
+import React, { useState } from "react";
 
 const Stats = () => {
-  return <div>Stats</div>;
+  const user = useCurrentUser();
+
+  return (
+    <div>
+      Stats
+      <br />
+      <p>
+        {user?.supplierBenefitAmount} USD
+        <br />
+        {user?.supplierBenefitAmountCDF} CDF
+      </p>
+    </div>
+  );
 };
 
 export default Stats;

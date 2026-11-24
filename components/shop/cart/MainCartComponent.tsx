@@ -42,6 +42,13 @@ type CombinedItem = {
 type ProductWthArticle = Product & {
   Article: Article[];
 };
+export type UserTypeNoPassword = Omit<
+  User,
+  "password" | "supplierBenefitAmount" | "supplierBenefitAmountCDF"
+> & {
+  supplierBenefitAmount: number;
+  supplierBenefitAmountCDF: number;
+};
 
 type Props = {
   shop: Shop;
@@ -56,7 +63,7 @@ type Props = {
   deliveryService: DeliveryCompany[];
   exchangeValue: number;
   cinetPayPercentage: number;
-  user: Omit<User, "password">;
+  user: UserTypeNoPassword;
   paymentMethod: PaymentMethodOrder;
 };
 
