@@ -147,7 +147,7 @@ export async function paySupplier(input: unknown): Promise<PayResult> {
           amount,
           currency,
           exchange,
-          status: "non-traité",
+          status: "traité",
           paymentPhone: phone,
           paymentName: supplier.name?.trim() || "Sans nom",
           createdById: adminId,
