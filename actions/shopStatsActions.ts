@@ -32,7 +32,7 @@ export const get_total_sales = async ({ shopId }: { shopId: string }) => {
 
   // total global
   const totalSales = await prisma.shopProfitWaited.count({
-    where: { isProcessed: true },
+    where: { isProcessed: true, shopId },
   });
 
   // période actuelle (semaine en cours)
@@ -55,6 +55,7 @@ export const get_total_sales = async ({ shopId }: { shopId: string }) => {
   const salesLastWeek = await prisma.shopProfitWaited.count({
     where: {
       isProcessed: true,
+      shopId,
       createdAt: { gte: startLastWeek, lte: endLastWeek },
     },
   });
@@ -175,13 +176,13 @@ export const get_weekly_benefits = async ({ shopId }: { shopId: string }) => {
   // 📌 Total semaine actuelle
   const totalThisWeek = salesThisWeek.reduce(
     (sum, s) => sum + convert(s.amount, s.currency, s.exchange),
-    0
+    0,
   );
 
   // 📌 Total semaine précédente
   const totalLastWeek = salesLastWeek.reduce(
     (sum, s) => sum + convert(s.amount, s.currency, s.exchange),
-    0
+    0,
   );
 
   // 📌 Variation %
@@ -293,7 +294,7 @@ export const get_sales_week_shop = async ({ shopId }: { shopId: string }) => {
         // tu peux aussi récupérer les bénéfices par jour si besoin :
         // totalBenefit: sales.reduce((sum, s) => sum + s.amount, 0)
       };
-    })
+    }),
   );
 
   return salesData;
