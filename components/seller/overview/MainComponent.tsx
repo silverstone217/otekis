@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,17 +9,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-// import { PieChart, Pie, Cell } from "recharts";
 import {
   TrendingUp,
   ShoppingBag,
   DollarSign,
   ShoppingBasket,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shop } from "@/lib/generated/prisma/client";
 import { ShopDefaultSelect } from "../SelectWIthOptionsDefaultShop";
 import useSelectDefaultShop from "../SelectDefaultShop";
-import { useEffect, useState } from "react";
 import {
   get_sales_week_shop,
   get_today_sales,
@@ -28,25 +29,16 @@ import {
   get_weekly_benefits,
 } from "@/actions/shopStatsActions";
 
-// const salesData = [
-//   { name: "Lun", sales: 120 },
-//   { name: "Mar", sales: 200 },
-//   { name: "Mer", sales: 150 },
-//   { name: "Jeu", sales: 300 },
-//   { name: "Ven", sales: 280 },
-//   { name: "Sam", sales: 500 },
-//   { name: "Dim", sales: 400 },
-// ];
-
-// const revenueByCategory = [
-//   { name: "Cosmétiques", value: 400 },
-//   { name: "Vêtements", value: 300 },
-//   { name: "Accessoires", value: 200 },
-// ];
-
 type SalesType = { total: number | string; change: string };
+type WeeklySale = { name: string; fullName: string; sales: number | null };
 
-// const COLORS = ["#2b6cb0", "#38a169", "#e53e3e"];
+type Stats = {
+  totalSales: SalesType;
+  todaySales: SalesType;
+  weeklyBenefit: SalesType;
+  totalProducts: SalesType;
+  weeklySales: WeeklySale[];
+};
 
 type Props = {
   shops: Shop[];
@@ -54,163 +46,147 @@ type Props = {
 
 export default function OverviewMainComponent({ shops }: Props) {
   const defaultShopId = useSelectDefaultShop({ shops });
-  const [total_sales, setTotal_sales] = useState<SalesType | null>(null);
-  const [today_sales, setToday_sales] = useState<SalesType | null>(null);
-  const [weekly_benefit, setWeekly_benefit] = useState<SalesType | null>(null);
-  const [total_productShop, setTotal_productShop] = useState<SalesType | null>(
-    null
-  );
-  const [weekly_sales, setWeekly_sales] = useState<
-    | {
-        name: string;
-        sales: number;
-      }[]
-    | null
-  >(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!defaultShopId) return;
 
-    const fetchStats = async () => {
-      const [
-        totalSalesRes,
-        todaySalesRes,
-        weeklyBenefitRes,
-        totalProductRes,
-        weeklySalesRes,
-      ] = await Promise.all([
-        get_total_sales({ shopId: defaultShopId }),
-        get_today_sales({ shopId: defaultShopId }),
-        get_weekly_benefits({ shopId: defaultShopId }),
-        get_total_products_shop({ shopId: defaultShopId }),
-        get_sales_week_shop({ shopId: defaultShopId }),
-      ]);
+    let active = true; // évite qu'une ancienne réponse écrase la nouvelle boutique
 
-      setTotal_sales(totalSalesRes.total_sales);
-      setToday_sales(todaySalesRes.today_sales);
-      setWeekly_benefit(weeklyBenefitRes.weekly_benefits);
-      setTotal_productShop(totalProductRes.total_products);
-      setWeekly_sales(weeklySalesRes);
+    // On vide les anciens chiffres : sinon ceux de la boutique précédente restent affichés
+    setStats(null);
+    setError(null);
+
+    (async () => {
+      try {
+        const [totalSales, todaySales, weeklyBenefit, totalProducts, weekly] =
+          await Promise.all([
+            get_total_sales({ shopId: defaultShopId }),
+            get_today_sales({ shopId: defaultShopId }),
+            get_weekly_benefits({ shopId: defaultShopId }),
+            get_total_products_shop({ shopId: defaultShopId }),
+            get_sales_week_shop({ shopId: defaultShopId }),
+          ]);
+
+        if (!active) return;
+
+        setStats({
+          totalSales: totalSales.total_sales,
+          todaySales: todaySales.today_sales,
+          weeklyBenefit: weeklyBenefit.weekly_benefits,
+          totalProducts: totalProducts.total_products,
+          weeklySales: weekly,
+        });
+      } catch (err) {
+        console.error("[Overview] chargement des statistiques :", err);
+        if (active) {
+          setError("Impossible de charger les statistiques de cette boutique.");
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
     };
-
-    fetchStats();
-  }, [defaultShopId]);
-
-  if (!defaultShopId) return null;
+  }, [defaultShopId, reloadKey]);
 
   return (
     <div className="p-6 space-y-8">
-      {/* Header */}
+      {/* Header : toujours affiché, pour pouvoir choisir une boutique */}
       <div className="flex items-center justify-between flex-wrap gap-y-4">
         <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
-        {/* <Button variant="outline">Exporter</Button> */}
         <ShopDefaultSelect shops={shops} />
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {total_sales ? (
-          <StatCard
-            title="Ventes totales"
-            value={total_sales.total.toString()}
-            icon={<ShoppingBag />}
-            change={total_sales.change}
-          />
-        ) : (
-          <StatCardSkeleton />
-        )}
+      {!defaultShopId ? (
+        <p className="text-sm text-muted-foreground">
+          Sélectionnez une boutique pour afficher ses statistiques.
+        </p>
+      ) : error ? (
+        <div
+          role="alert"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+        >
+          <p>{error}</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setReloadKey((key) => key + 1)}
+          >
+            Réessayer
+          </Button>
+        </div>
+      ) : (
+        <>
+          {/* Stat Cards */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {stats ? (
+              <>
+                <StatCard
+                  title="Ventes totales"
+                  value={stats.totalSales.total.toString()}
+                  icon={<ShoppingBag />}
+                  change={stats.totalSales.change}
+                />
+                <StatCard
+                  title="Ventes aujourd’hui"
+                  value={stats.todaySales.total.toString()}
+                  icon={<TrendingUp />}
+                  change={stats.todaySales.change}
+                />
+                <StatCard
+                  title="Bénéfices (hebdo)"
+                  value={stats.weeklyBenefit.total.toString()}
+                  icon={<DollarSign />}
+                  change={stats.weeklyBenefit.change}
+                />
+                <StatCard
+                  title="Produits disponibles"
+                  value={stats.totalProducts.total.toString()}
+                  icon={<ShoppingBasket />}
+                  change={stats.totalProducts.change}
+                />
+              </>
+            ) : (
+              [1, 2, 3, 4].map((item) => <StatCardSkeleton key={item} />)
+            )}
+          </div>
 
-        {today_sales ? (
-          <StatCard
-            title="Ventes aujourd'hui"
-            value={today_sales.total.toString()}
-            icon={<TrendingUp />}
-            change={today_sales.change}
-          />
-        ) : (
-          <StatCardSkeleton />
-        )}
-
-        {weekly_benefit ? (
-          <StatCard
-            title="Bénéfices (hebdo)"
-            value={weekly_benefit.total.toString()}
-            icon={<DollarSign />}
-            change={weekly_benefit.change}
-          />
-        ) : (
-          <StatCardSkeleton />
-        )}
-
-        {total_productShop ? (
-          <StatCard
-            title="Produits disponibles"
-            value={total_productShop.total.toString()}
-            icon={<ShoppingBasket />}
-            change={total_productShop.change}
-          />
-        ) : (
-          <StatCardSkeleton />
-        )}
-      </div>
-
-      {/* Charts */}
-      <div className="grid gap-6 ">
-        {/* Line chart ventes */}
-        {weekly_sales && (
+          {/* Courbe des ventes */}
           <Card>
             <CardHeader>
               <CardTitle>Ventes cette semaine</CardTitle>
             </CardHeader>
             <CardContent className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={weekly_sales}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="sales"
-                    stroke="#6366f1"
-                    strokeWidth={3}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              {stats ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={stats.weeklySales}>
+                    <XAxis dataKey="name" />
+                    <YAxis allowDecimals={false} width={32} />
+                    <Tooltip
+                      labelFormatter={(_, payload) =>
+                        payload?.[0]?.payload?.fullName ?? ""
+                      }
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="sales"
+                      name="Ventes"
+                      stroke="#6366f1"
+                      strokeWidth={3}
+                      connectNulls={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full animate-pulse rounded-lg bg-gray-100" />
+              )}
             </CardContent>
           </Card>
-        )}
-
-        {/* Pie chart répartition */}
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Répartition par catégorie</CardTitle>
-          </CardHeader>
-          <CardContent className="h-72 flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={revenueByCategory}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={90}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label
-                >
-                  {revenueByCategory.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card> */}
-      </div>
+        </>
+      )}
     </div>
   );
 }
@@ -226,18 +202,21 @@ function StatCard({
   icon: React.ReactNode;
   change: string;
 }) {
+  const tone = change.startsWith("+")
+    ? "text-emerald-600"
+    : change.startsWith("-")
+      ? "text-red-600"
+      : "text-muted-foreground";
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader
-        className="flex flex-row items-center justify-between 
-      space-y-0 pb-2"
-      >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground">{change}</p>
+        <p className={`text-xs ${tone}`}>{change}</p>
       </CardContent>
     </Card>
   );
